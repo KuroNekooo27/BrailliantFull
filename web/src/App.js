@@ -1,19 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import Homepage from './pages/archive/home/components/Homepage';
-import Dashboard from './pages/archive/dashboard/components/Dashboard';
-import Materials from './pages/archive/materials/components/Materials';
-import UploadMaterial from './pages/archive/upload materials/components/UploadMaterial';
-import CustomText from './pages/archive/custom text/components/CustomText';
-import UserEdit from './pages/archive/edit/components/UserEdit';
-
-import AdminDashboard from './pages/archive/admin/dashboard/components/AdminDashboard';
-import Account from './pages/archive/admin/account/Account';
-import CreateAccount from './pages/archive/admin/create/components/CreateAccount';
-import UpdateAccount from './pages/archive/admin/update/UpdateAccount';
-//import AuditTrail from './pages/archive/admin/audit trail/AuditTrail';
-
-import MaterialsCharacter from './pages/archive/materials character/MaterialsCharacter';
-import Header from './global/components/user/Header'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import LandingPage from './pages/user/landing page/components/LandingPage';
 import Home from './pages/user/home/components/Home';
