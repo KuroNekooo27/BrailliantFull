@@ -59,7 +59,6 @@ function App() {
 */}
           <Route path="/" element={<LandingPage />} />
           <Route path='/home' element={<Home />}></Route>
-          <Route path='/dashboard' element={<Dashboard />}></Route>
           <Route path='/library' element={<Library />}></Route>
           <Route path='/class' element={<ClassSettings />}></Route>
           <Route path='/upload' element={<UploadBooks />}></Route>
