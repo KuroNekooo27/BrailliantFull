@@ -1,0 +1,283 @@
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Dimensions, ActivityIndicator } from 'react-native';
+import { Ionicons, Feather } from '@expo/vector-icons';
+import CustomHeader from '../ui/CustomHeader';
+import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../context/AuthContext';
+import OtpModal from '../ui/OtpModal';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import EditProfileModal from "../ui/EditProfileModal";
+
+const { width } = Dimensions.get('window');
+
+const ProfileScreen = () => {
+  const navigation = useNavigation();
+  const { state, setState } = useContext(AuthContext);
+  const [showOtp, setShowOtp] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [editVisible, setEditVisible] = useState(false);
+  const [pendingEditData, setPendingEditData] = useState(null);
+  const [otpContext, setOtpContext] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  let name = `${state.user.user_fname} ${state.user.user_lname}`;
+  let isActivated = state.user.isActivated;
+
+  const handleEditSubmit = async (newData) => {
+    try {
+      setLoading(true);
+      const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/send-otp-for-edit', {
+        email: newData.email,
+      });
+      console.log(data)
+
+      if (data.otpSent) {
+        setOtpContext('edit');
+        setPendingEditData(newData);
+        setUserId(data.userId);
+        setShowOtp(true);
+      } else {
+        Alert.alert('Error', 'Could not send OTP');
+      }
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to send OTP');
+    } finally {
+      setEditVisible(false);
+      setLoading(false);
+    }
+  };
+
+  const handleEditOtpSubmit = async (otp) => {
+    try {
+      const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/verify-edit', {
+        userId,
+        otp,
+        ...pendingEditData,
+      });
+      console.log(data)
+
+      if (!data.success) throw new Error(data.message);
+
+      const updatedData = { ...state, user: data.user };
+      await AsyncStorage.setItem('@auth', JSON.stringify(updatedData));
+      setState(updatedData);
+      Alert.alert('Success', 'Profile updated');
+    } catch (err) {
+      Alert.alert('Error', err.response?.data?.message || 'OTP verification failed');
+    } finally {
+      setShowOtp(false);
+      setPendingEditData(null);
+      setOtpContext('');
+    }
+  };
+
+  const handleActivate = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/activate', {
+        email: state.user.user_email,
+      });
+
+      if (data.otpSent) {
+        setOtpContext('activate');
+        setUserId(data._id);
+        setShowOtp(true);
+      } else {
+        Alert.alert('Error', 'Unexpected Activation flow');
+      }
+    } catch (error) {
+      console.log("Activation Error:", error);
+      Alert.alert('Activation Error', error?.response?.data?.message || error.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOtpSubmit = async (otpValue) => {
+    try {
+      const { data } = await axios.post('http://localhost:8000/api/v1/auth/activate-otp', {
+        userId,
+        otp: otpValue,
+      });
+
+      if (!data.success) throw new Error(data.message || 'Activation failed');
+
+      const updatedData = {
+        ...state,
+        user: data.user,
+      };
+      await AsyncStorage.setItem('@auth', JSON.stringify(updatedData));
+      setState(updatedData);
+
+      Alert.alert('Success', 'Account successfully activated.');
+    } catch (error) {
+      Alert.alert('OTP Error', error.response?.data?.message || error.message || 'Invalid OTP');
+    } finally {
+      setShowOtp(false);
+      setOtpContext('');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <CustomHeader title="My Profile" onBack={() => navigation.goBack()} image={state.user.user_img} />
+
+      <View style={styles.content}>
+        <Image
+          source={state.user.user_img}
+          style={styles.avatar}
+        />
+        <Text style={styles.name}>{name}</Text>
+
+        <TouchableOpacity style={styles.uploadButton}>
+          <Ionicons name="camera" size={18} color="#fff" />
+          <Text style={styles.uploadText}>Upload Picture</Text>
+        </TouchableOpacity>
+
+        <View style={styles.infoHeader}>
+          <Text style={styles.infoTitle}>Personal Information</Text>
+          <TouchableOpacity style={styles.editBtn} onPress={() => setEditVisible(true)}>
+            <Feather name="edit" size={16} color="#000" />
+            <Text style={styles.editText}>Edit</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.infoBox}>
+          <Text style={styles.infoText}>First Name: {state.user.user_fname}</Text>
+          <Text style={styles.infoText}>Last Name: {state.user.user_lname}</Text>
+          <Text style={styles.infoText}>Email: {state.user.user_email}</Text>
+
+          <View style={styles.statusRow}>
+            <Text style={styles.infoText}>
+              Account Status: {' '}
+              <Text style={isActivated ? styles.activatedText : styles.notActivatedText}>
+                {isActivated ? "Activated" : "Not Activated"}
+              </Text>
+            </Text>
+
+            {!state.user.isActivated && (
+              <TouchableOpacity
+                style={styles.activateBtn}
+                onPress={handleActivate}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator size="small" color="green" />
+                ) : (
+                  <Text style={styles.activateText}>Activate</Text>
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </View>
+
+      {/* Modals (should be outside conditional blocks) */}
+      <OtpModal
+        visible={showOtp}
+        onClose={() => setShowOtp(false)}
+        onSubmit={otpContext === 'edit' ? handleEditOtpSubmit : handleOtpSubmit}
+      />
+
+      <EditProfileModal
+        visible={editVisible}
+        onClose={() => setEditVisible(false)}
+        onSubmit={handleEditSubmit}
+        user={state.user}
+      />
+    </View>
+  );
+};
+
+export default ProfileScreen;
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f4f4f4' },
+  content: { alignItems: 'center', padding: 16 },
+  avatar: {
+    width: width * 0.2,
+    height: width * 0.2,
+    borderRadius: width * 0.1,
+    marginTop: 12,
+  },
+  name: {
+    fontSize: width < 600 ? 16 : 18,
+    fontWeight: 'bold',
+    marginVertical: 8,
+  },
+  uploadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'orange',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    marginBottom: 20,
+  },
+  uploadText: {
+    color: '#fff',
+    marginLeft: 6,
+    fontWeight: 'bold',
+  },
+  infoHeader: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    paddingHorizontal: 10,
+  },
+  infoTitle: {
+    fontWeight: 'bold',
+    fontSize: width < 600 ? 14 : 16,
+  },
+  editBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderWidth: 1,
+  },
+  editText: {
+    marginLeft: 4,
+    fontSize: width < 600 ? 12 : 14,
+  },
+  infoBox: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#999',
+  },
+  infoText: {
+    fontSize: width < 600 ? 12 : 14,
+    marginBottom: 6,
+  },
+  activatedText: {
+    color: 'green',
+    fontWeight: 'bold',
+  },
+  notActivatedText: {
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  statusRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  activateBtn: {
+    borderWidth: 1,
+    borderColor: 'green',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+  activateText: {
+    color: 'green',
+    fontSize: width < 600 ? 12 : 14,
+  },
+});
