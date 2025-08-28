@@ -30,7 +30,7 @@ const ProfileScreen = () => {
       const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/send-otp-for-edit', {
         email: newData.email,
       });
-      console.log(data)
+      console.log(newData)
 
       if (data.otpSent) {
         setOtpContext('edit');
@@ -51,16 +51,17 @@ const ProfileScreen = () => {
   const handleEditOtpSubmit = async (otp) => {
     try {
       const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/verify-edit', {
-        userId,
         otp,
         ...pendingEditData,
-      });
-      console.log(data)
+      })
 
       if (!data.success) throw new Error(data.message);
 
       const updatedData = { ...state, user: data.user };
-      await AsyncStorage.setItem('@auth', JSON.stringify(updatedData));
+
+      const newData = await axios.put("https://brailliantweb.onrender.com/api/v1/auth/update", pendingEditData)
+
+      await AsyncStorage.setItem('@auth', JSON.stringify(newData));
       setState(updatedData);
       Alert.alert('Success', 'Profile updated');
     } catch (err) {
@@ -96,7 +97,7 @@ const ProfileScreen = () => {
 
   const handleOtpSubmit = async (otpValue) => {
     try {
-      const { data } = await axios.post('http://localhost:8000/api/v1/auth/activate-otp', {
+      const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/activate-otp', {
         userId,
         otp: otpValue,
       });

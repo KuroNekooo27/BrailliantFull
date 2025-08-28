@@ -237,7 +237,7 @@ const updateUserController = async (req, res) => {
   try {
     const { firstname, lastname, email, password } = req.body;
     //find user
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ user_email: email });
     //validation
     if (password && password.length < 6) {
       return res.status(400).send({
@@ -246,11 +246,12 @@ const updateUserController = async (req, res) => {
       })
     }
     const hashedPassword = password ? await hashPassword(password) : undefined;
-    //updated user
-    const updatedUser = await User.findOneAndUpdate({ email }, {
-      firstname: firstname || user.user_fname,
-      lastname: lastname || user.user_lname,
-      password: hashedPassword || user.user_password
+
+
+    const updatedUser = await User.findOneAndUpdate({ user_email: email }, {
+      user_fname: firstname || user.user_fname,
+      user_lname: lastname || user.user_lname,
+      user_password: hashedPassword || user.user_password
     }, { new: true });
     updatedUser.user_password = undefined;
     res.status(201).send({
@@ -273,7 +274,7 @@ const verifyLoginOtpController = async (req, res) => {
   try {
     const { userId, otp } = req.body;
 
-    const user = await User.findById(userId);
+    const user = await User.findById({ _id: userId });
     if (!user || user.loginOtpCode !== otp) {
       return res.status(400).send({
         success: false,
@@ -401,7 +402,7 @@ const sendOtpForEditController = async (req, res) => {
 const verifyEditOtpController = async (req, res) => {
   try {
     const {
-      userId,
+      userID,
       otp,
       firstname,
       email,
@@ -410,11 +411,10 @@ const verifyEditOtpController = async (req, res) => {
       newPassword
     } = req.body;
 
-    const user = await User.findById(userId);
+    const user = await User.findById({ _id: userID });
     if (!user || user.genericOTP !== otp) {
       return res.status(400).send({ success: false, message: "Invalid OTP" });
     }
-
     // Handle password update securely
     if (newPassword) {
       if (!currentPassword) {

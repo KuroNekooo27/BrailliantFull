@@ -26,10 +26,6 @@ const LibraryScreen = () => {
     axios.get('https://brailliantweb.onrender.com/api/allbooks')
       .then((response) => {
         setBooks(response.data.books)
-        console.log(response.data.books)
-      })
-      .catch((error) => {
-        console.log("eto ang error mo " + error)
       })
   }, [])
 

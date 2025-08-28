@@ -33,8 +33,8 @@ const LoginScreen = () => {
         password,
       });
       console.log(data)
-      
-      
+
+
       if (data.otpSent) {
         setUserId(data.userId);
         setShowOtp(true);
@@ -51,7 +51,7 @@ const LoginScreen = () => {
       const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/verify-login-otp', {
         userId,
         otp: otpValue,
-      });
+      })
 
       await AsyncStorage.setItem('@auth', JSON.stringify(data));
       setState(data);

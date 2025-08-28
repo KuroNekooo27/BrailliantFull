@@ -16,7 +16,7 @@ const EditProfileModal = ({ visible, onClose, onSubmit, user }) => {
   const [lastname, setLastname] = useState(user.user_lname);
   const [email, setEmail] = useState(user.user_email);
 
-  let userID = useState(user._id)
+  const userID = user._id;
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');

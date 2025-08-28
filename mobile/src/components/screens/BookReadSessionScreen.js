@@ -103,7 +103,7 @@ const BookReadSessionScreen = ({ route }) => {
           },
           body: JSON.stringify({ pdfUrl: bookUrl })
         })
-
+        
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
         }

@@ -1,4 +1,4 @@
-import React, { useState, useContext} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import CustomHeader from '../ui/CustomHeader';
 import { AuthContext } from '../../context/AuthContext';
+import axios from 'axios';
 
 const { width } = Dimensions.get('window');
 
@@ -23,7 +24,27 @@ const BookDetailsScreen = ({ route }) => {
   const { state, setState } = useContext(AuthContext);
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [sections, setSections] = useState([]);
+  const [students, setStudents] = useState([]);
 
+
+  useEffect(() => {
+    axios.get(`https://brailliantweb.onrender.com/api/allsections/${state.user._id}`)
+      .then((response) => {
+        setSections(response.data.sections)
+      })
+  }, [])
+
+  useEffect(() => {
+    if (!selectedSection) return;
+
+    axios.get(`https://brailliantweb.onrender.com/api/allstudents/section/${selectedSection}`)
+      .then((response) => {
+        setStudents(response.data.students)
+        console.log(response.data.students)
+      })
+      .catch((err) => console.error(err));
+  }, [selectedSection]);
 
   const handleBookSelect = () => {
     if (!selectedSection || !selectedStudent) {
@@ -49,6 +70,7 @@ const BookDetailsScreen = ({ route }) => {
             <Image source={book.book_img} style={styles.bookImage} />
             <View style={styles.bookInfo}>
               <Text style={styles.bookText}>Author: {book?.book_author || 'Unknown'}</Text>
+              <Text style={styles.bookText}>Genre: {book?.book_genre || 'Unknown'}</Text>
               <Text style={styles.bookDesc}>
                 {book?.book_description || 'No description available.'}
               </Text>
@@ -66,10 +88,10 @@ const BookDetailsScreen = ({ route }) => {
             <RNPickerSelect
               onValueChange={(value) => setSelectedSection(value)}
               value={selectedSection}
-              items={[
-                { label: 'Grade 1 - Rizal', value: 'grade1-rizal' },
-                { label: 'Grade 2 - Bonifacio', value: 'grade2-bonifacio' },
-              ]}
+              items={sections.map((s) => ({
+                label: `${s.section_level}  ${s.section_name}`,
+                value: s._id
+              }))}
               placeholder={{ label: 'Select a section...', value: null }}
               style={pickerSelectStyles}
             />
@@ -79,10 +101,10 @@ const BookDetailsScreen = ({ route }) => {
             <RNPickerSelect
               onValueChange={(value) => setSelectedStudent(value)}
               value={selectedStudent}
-              items={[
-                { label: 'DELA CRUZ, Juan G.', value: 'juan-dela-cruz' },
-                { label: 'SANTOS, Maria L.', value: 'maria-santos' },
-              ]}
+              items={students.map((s) => ({
+                label: `${s.student_lname}, ${s.student_fname} ${s.student_mi || ''}`,
+                value: s._id
+              }))}
               placeholder={{ label: 'Select a student...', value: null }}
               style={pickerSelectStyles}
             />
