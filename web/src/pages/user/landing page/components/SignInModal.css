@@ -93,6 +93,7 @@ body.active-modal {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    color: white;
 }
 
 .login-modal:hover {

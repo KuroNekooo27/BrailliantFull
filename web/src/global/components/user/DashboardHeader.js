@@ -43,7 +43,7 @@ export default function DashboardHeader() {
                     <div>
                         <input className="dashboardheader-search" type="text" placeholder="Find a book" />
                     </div>
-                    
+
 
                     <nav onClick={toggleDropdown}>
                         <img
@@ -70,14 +70,22 @@ export default function DashboardHeader() {
 
                 <div className="dashboardheader-books">
                     {book.books?.slice(0, 5).map((book) => (
+                        book.book_img ? (
+                            <img
+                                src={book.book_img}
+                                className='dashboardheader-book'
+                                onClick={() => { navigate('/book/detail', { state: { book: book } }); }}
 
-                        <img
-
-                            src={book.book_img}
-                            className='dashboardheader-book'
-                            onClick={() => { navigate('/book/detail', { state: { book: book } }); }}
-
-                        />
+                            />
+                        ) : (
+                            <div
+                                key={book._id}
+                                className="dashboardheader-book"
+                                onClick={() => { navigate('/book/detail', { state: { book: book } }); }}
+                            >
+                                <text>{book.book_title}</text>
+                            </div>
+                        )
                     ))}
 
 

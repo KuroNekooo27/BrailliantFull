@@ -49,12 +49,6 @@ export default function AdminViewReal() {
         console.log('wat', book.book_img)
     }, [book]);
 
-    let bookImage;
-    try {
-        bookImage = book.book_img
-    } catch (err) {
-        console.log(err)
-    }
 
 
     return (
@@ -73,10 +67,18 @@ export default function AdminViewReal() {
                         <label className='bd-title'>{book.book_title}</label>
                         <div className='bd-details'>
                             <div className='bd-left'>
-                                <img
-                                    className='bd-cover'
-                                    src={bookImage}
-                                />
+                                {book.book_img ? (
+                                    <img
+                                        className='bd-cover'
+                                        src={selectedBook.book.book_img}
+                                    />
+                                ) : (
+                                    <img
+                                        className='bd-cover'
+                                        src={require('../assets/noimg.png')}
+                                    />
+                                )
+                                }
                                 <div className='bd-info'>
                                     <label>Title: {book.book_title}</label>
                                     <label>Author: {book.book_author}</label>

@@ -32,9 +32,7 @@ const LoginScreen = () => {
         email,
         password,
       });
-      console.log(data)
-
-
+      
       if (data.otpSent) {
         setUserId(data.userId);
         setShowOtp(true);

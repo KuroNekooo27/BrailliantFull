@@ -44,7 +44,6 @@ export default function BookDetails() {
             .catch((error) => {
                 console.log("eto ang error mo " + error)
             })
-        //setUsers(JSON.parse(localStorage.getItem('users')))
     }, [])
 
     useEffect(() => {
@@ -63,21 +62,17 @@ export default function BookDetails() {
         else {
             setBook("")
         }
-
     }, [selectedStudent]);
 
 
     const startSession = async () => {
-        if(!selectedSection || !selectedStudent){
+        if (!selectedSection || !selectedStudent) {
             alert("Select student")
             return
         }
         console.log(selectedStudent)
         await axios.put(`https://brailliantweb.onrender.com/increment/${selectedBook.book._id}`);
         await axios.put(`https://brailliantweb.onrender.com/api/update/student/${selectedStudent._id}`, { student_prev_book: selectedBook.book._id });
-
-
-
         navigate('/book/session', {
             state: {
                 book: selectedBook,
@@ -103,10 +98,18 @@ export default function BookDetails() {
                         <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button><label className='bd-title'>{selectedBook.book.book_title}</label>
                         <div className='bd-details'>
                             <div className='bd-left'>
-                                <img
-                                    className='bd-cover'
-                                    src={selectedBook.book.book_img}
-                                />
+                                {selectedBook.book.book_img ? (
+                                    <img
+                                        className='bd-cover'
+                                        src={selectedBook.book.book_img}
+                                    />
+                                ) : (
+                                    <img
+                                        className='bd-cover'
+                                        src={require('../assets/noimg.png')}
+                                    />
+                                )
+                                }
                                 <div className='bd-info'>
                                     <label>Title: {selectedBook.book.book_title}</label>
                                     <label>Author: {selectedBook.book.book_author}</label>
@@ -150,15 +153,9 @@ export default function BookDetails() {
                                                     </option>
                                                 ))}
                                     </select>
-
-
-
-
-
                                     <label>Last Viewed:</label>
                                     <div className='bd-history'>
                                         <p>{book}</p>
-
                                     </div>
                                 </div>
                                 <button

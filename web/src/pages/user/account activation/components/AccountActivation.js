@@ -12,11 +12,7 @@ export default function AccountActivation() {
 
     const [modal, setModal] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false);
-    const [users, setUsers] = useState([])
-    const [editUser, setEditUser] = useState([])
-
     const [hasSentEmail, setHasSentEmail] = useState(true)
-
     const [otp, setOtp] = useState('');
     const [inputOtp, setInputOtp] = useState('');
 
@@ -28,23 +24,15 @@ export default function AccountActivation() {
 
 
 
-    useEffect(() => {
-        setUsers(JSON.parse(localStorage.getItem('users')))
-        setEditUser(JSON.parse(localStorage.getItem('users')))
-
-    }, [])
-
     const toggleDropdown = () => {
         setShowDropdown((prev) => !prev);
     };
 
     const sendEmail = async (generatedOtp) => {
-        console.log(users)
         try {
             const response = await axios.post('https://brailliantweb.onrender.com/send-email', {
-                subject: "Hello from React!",
-                text: "This is a plain text email.",
-                html: "<h3>This is your account activation OTP</h3>" + generatedOtp,
+                context: "activate",
+                otp: generatedOtp,
                 email: user.user_email
             });
             alert("Email sent!");
@@ -67,19 +55,16 @@ export default function AccountActivation() {
         const newOtp = generateOTP();
         setOtp(newOtp);
         sendEmail(newOtp);
-
         setHasSentEmail(false)
     }
 
     const handleVerify = async () => {
-        const updatedData = { ...editUser, user_status: "Activated" };
+        const updatedData = { ...user, user_status: "Activated" };
 
         if (inputOtp === otp) {
-            axios.put(`https://brailliantweb.onrender.com/api/update/user/${users._id}`, updatedData)
+            axios.put(`https://brailliantweb.onrender.com/api/update/user/${user._id}`, updatedData)
                 .then(() => {
-                    console.log(updatedData, "this after update");
                     localStorage.setItem('users', JSON.stringify(updatedData));
-                    setUsers(updatedData);
                     toggleModal()
                 })
                 .catch((error) => {
@@ -87,7 +72,7 @@ export default function AccountActivation() {
                 });
 
             const newAudit = {
-                at_user: users.user_email,
+                at_user: user.user_email,
                 at_date: new Date(),
                 at_action: 'Activated Account'
             };
@@ -96,8 +81,6 @@ export default function AccountActivation() {
         else {
             alert("Invalid OTP.");
         }
-
-
     };
 
     const toggleModal = () => {

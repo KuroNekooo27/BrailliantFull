@@ -45,14 +45,29 @@ export default function Library() {
                         <div className='library-books'>
 
                             {filteredBooks?.map((book) => (
-                                <img
-                                    key={book._id}
-                                    src={book.book_img}
-                                    className='library-book'
-                                    onClick={() => {
-                                        navigate('/book/detail', { state: { book: book } });
-                                    }}
-                                />
+                                book.book_img ? (
+                                    <img
+                                        key={book._id}
+                                        src={book.book_img}
+                                        className="library-book"
+                                        onClick={() => {
+                                            navigate('/book/detail', { state: { book: book } });
+                                        }}
+                                        alt={book.book_title}
+                                    />
+                                ) : (
+                                    <div
+                                        key={book._id}
+                                        className="library-book"
+                                        onClick={() => {
+                                            navigate('/book/detail', { state: { book: book } });
+                                        }}
+                                    >
+                                        <text>{book.book_title}</text>
+
+                                    </div>
+                                )
+
                             ))}
 
                         </div>

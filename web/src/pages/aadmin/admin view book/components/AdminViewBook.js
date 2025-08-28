@@ -75,10 +75,18 @@ export default function AdminViewBook() {
                         <label className='bd-title'>{selectedBook.request_book_title}</label>
                         <div className='bd-details'>
                             <div className='bd-left'>
-                                <img
-                                    className='bd-cover'
-                                    src={selectedBook.request_book_img}
-                                />
+                                {selectedBook.request_book_img ? (
+                                    <img
+                                        className='bd-cover'
+                                        src={selectedBook.request_book_img}
+                                    />
+                                ) : (
+                                    <img
+                                        className='bd-cover'
+                                        src={require('../assets/noimg.png')}
+                                    />
+                                )
+                                }
                                 <div className='bd-info'>
                                     <label>Title: {selectedBook.request_book_title}</label>
                                     <label>Author: {selectedBook.request_book_author}</label>

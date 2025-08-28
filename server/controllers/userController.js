@@ -2,7 +2,6 @@ require('dotenv').config();
 const JWT = require('jsonwebtoken');
 const { hashPassword, comparePassword } = require('../helpers/authHelper');
 const User = require("../models/user.model")
-const userModel = require("../models/userModel")
 const nodemailer = require('nodemailer');
 
 const { ActivationOTP_Template, LoginOTP_Template, ForgotPasswordOTP_Template, TempPassword_Template, EditProfile_Template } = require('./EmailTemplate');
@@ -64,7 +63,6 @@ const sendResetOTPcode = async (email, otp) => {
     console.log("Verification Send Error", error);
   }
 }
-
 
 //Send login verification email
 const sendLoginVerificationCode = async (email, otp) => {

@@ -2,7 +2,6 @@ const Admin = require('../models/admin.model');
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
 const JWT_SECRET = 'aS98fhsdf89sdfF#234j2@#JKHdfk324df';
 
 const login = async (req, res) => {
@@ -11,7 +10,7 @@ const login = async (req, res) => {
     try {
         const adminRaw = await Admin.findOne({ admin_email: email });
         if (adminRaw) {
-            const isMatch = await bcrypt.compare(password, adminRaw.admin_password);
+            const isMatch = bcrypt.compare(password, adminRaw.admin_password);
             if (!isMatch) {
                 return res.status(401).json({ message: 'Invalid admin credentials' });
             }
@@ -31,7 +30,7 @@ const login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid user credentials' });
         }
 
-        const isMatch = await bcrypt.compare(password, userRaw.user_password);
+        const isMatch = bcrypt.compare(password, userRaw.user_password);
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid user credentials' });
         }

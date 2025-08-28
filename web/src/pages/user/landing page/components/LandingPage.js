@@ -47,13 +47,6 @@ export default function LandingPage() {
         return () => clearInterval(interval);
     }, []);
 
-    const confirmOTP = () => {
-        console.log('pasok')
-        const newOtp = generateOTP();
-        setOtp(newOtp);
-        sendEmail(newOtp);
-    };
-
     const generateOTP = () => {
         const digits = '0123456789';
         let otp = '';
@@ -66,9 +59,8 @@ export default function LandingPage() {
     const sendEmail = async (generatedOtp) => {
         try {
             const response = await axios.post('https://brailliantweb.onrender.com/send-email', {
-                subject: "Hello from React!",
-                text: "This is a plain text email.",
-                html: "<h3>This is your login OTP</h3>" + generatedOtp,
+                context: "login",
+                otp: generatedOtp,
                 email: email
             });
             alert("Email sent!");
@@ -80,9 +72,8 @@ export default function LandingPage() {
     const sendEmailForgotpassword = async (generatedOtp) => {
         try {
             const response = await axios.post('https://brailliantweb.onrender.com/send-email', {
-                subject: "Hello from React!",
-                text: "This is a plain text email.",
-                html: "<h3>This is your OTP for password renewal </h3>" + generatedOtp,
+                context: "forgotPassword",
+                otp: generatedOtp,
                 email: email
             });
             alert("Email sent!");
@@ -138,7 +129,6 @@ export default function LandingPage() {
                 console.log(error)
                 alert("Something went wrong in updating.");
             }
-
         }
         else {
             alert("Password does not match.");

@@ -1,38 +1,73 @@
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
-const sendEmail = async (req, res) => {
-    const { subject, text, html, email } = req.body;
+const { ActivationOTP_Template, LoginOTP_Template, ForgotPasswordOTP_Template, EditProfile_Template } = require('./EmailTemplate');
 
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        port: 587,
-        auth: {
-            user: 'michaeljosephmelo464@gmail.com',
-            pass: 'wdpb tgwe judq tjyw'
-        }
-    });
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.AUTH_EMAIL,
+        pass: process.env.AUTH_PASSWORD,
+    },
+    tls: {
+        rejectUnauthorized: false 
+    },
+});
 
+const sendLoginOTP = async (otp, email) => {
     try {
         const info = await transporter.sendMail({
-            from: '"Braille Translator" <braille@example.com>',
-            to:  email,
-            subject: subject || "No Subject",
-            text: text || "Plain text content",
-            html: html || "<b>No HTML content</b>"
+            from: '"Brailliant by Orbit" <mavyorbit@gmail.com>',
+            to: email,
+            subject: "Login Verification Code for Brailliant by Orbit",
+            text: "Verify your Device",
+            html: LoginOTP_Template.replace("{verificationCode}", otp),
         });
-
-        const previewUrl = nodemailer.getTestMessageUrl(info);
-        console.log("Email sent:", info.messageId);
-        console.log("Preview:", previewUrl);
-
-        res.json({
-            success: true,
-            message: 'Email sent successfully!',
-            previewUrl
-        });
+        console.log(otp)
     } catch (error) {
-        console.error("Error sending email:", error);
-        res.status(500).json({ success: false, message: 'Failed to send email.' });
+        console.log("Verification Send Error", error);
+    }
+}
+
+const sendForgotPasswordOTP = async (otp, email) => {
+    try {
+        const info = await transporter.sendMail({
+            from: '"Brailliant by Orbit" <mavyorbit@gmail.com>',
+            to: email,
+            subject: "Reset Password Code for Brailliant by Orbit",
+            text: "Reset your Password",
+            html: ForgotPasswordOTP_Template.replace("{verificationCode}", otp),
+        });
+        console.log(otp)
+    } catch (error) {
+        console.log("Verification Send Error", error);
+    }
+}
+
+const sendActivationOTP = async (otp, email) => {
+    try {
+        const info = await transporter.sendMail({
+            from: '"Brailliant by Orbit" <mavyorbit@gmail.com>',
+            to: email,
+            subject: "Activation Code for Brailliant by Orbit",
+            text: "Activate your Account",
+            html: ActivationOTP_Template.replace("{verificationCode}", otp),
+        });
+        console.log(otp)
+    } catch (error) {
+        console.log("Verification Send Error", error);
+    }
+}
+
+const sendEmail = async (req, res) => {
+    const { context, otp, email } = req.body;
+
+    switch (context) {
+        case "login": sendLoginOTP(otp, email)
+        case "forgotPassword": sendForgotPasswordOTP(otp, email)
+        case "activate": sendActivationOTP(otp, email)
     }
 };
 
