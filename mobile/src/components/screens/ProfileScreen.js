@@ -1,5 +1,14 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Dimensions, ActivityIndicator } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  Image, 
+  TouchableOpacity, 
+  Alert, 
+  Dimensions, 
+  ActivityIndicator 
+} from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import CustomHeader from '../ui/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +17,7 @@ import OtpModal from '../ui/OtpModal';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import EditProfileModal from "../ui/EditProfileModal";
+import * as ImagePicker from 'expo-image-picker';
 
 const { width } = Dimensions.get('window');
 
@@ -23,6 +33,56 @@ const ProfileScreen = () => {
 
   let name = `${state.user.user_fname} ${state.user.user_lname}`;
   let isActivated = state.user.isActivated;
+  const handleUploadPicture = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert("Permission required", "Please allow access to your photos.");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
+
+      if (result.canceled) return;
+
+      const imageUri = result.assets[0].uri;
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("userId", state.user._id);
+      formData.append("profileImage", {
+        uri: imageUri,
+        type: "image/jpeg",
+        name: "profile.jpg",
+      });
+
+      const { data } = await axios.post(
+        "https://brailliantweb.onrender.com/api/v1/auth/upload-profile",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      if (!data.success) throw new Error(data.message);
+
+      const updatedUser = { ...state.user, user_img: data.imageUrl };
+      const updatedData = { ...state, user: updatedUser };
+
+      await AsyncStorage.setItem("@auth", JSON.stringify(updatedData));
+      setState(updatedData);
+
+      Alert.alert("Success", "Profile picture updated!");
+    } catch (error) {
+      console.log("Upload error:", error);
+      Alert.alert("Error", error.response?.data?.message || "Failed to upload image");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEditSubmit = async (newData) => {
     try {
@@ -30,7 +90,6 @@ const ProfileScreen = () => {
       const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/send-otp-for-edit', {
         email: newData.email,
       });
-      console.log(newData)
 
       if (data.otpSent) {
         setOtpContext('edit');
@@ -53,13 +112,13 @@ const ProfileScreen = () => {
       const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/verify-edit', {
         otp,
         ...pendingEditData,
-      })
+      });
 
       if (!data.success) throw new Error(data.message);
 
       const updatedData = { ...state, user: data.user };
 
-      const newData = await axios.put("https://brailliantweb.onrender.com/api/v1/auth/update", pendingEditData)
+      const newData = await axios.put("https://brailliantweb.onrender.com/api/v1/auth/update", pendingEditData);
 
       await AsyncStorage.setItem('@auth', JSON.stringify(newData));
       setState(updatedData);
@@ -126,14 +185,20 @@ const ProfileScreen = () => {
 
       <View style={styles.content}>
         <Image
-          source={state.user.user_img}
+          source={ state.user.user_img ? { uri: state.user.user_img } : require('../../../assets/default-avatar.png') }
           style={styles.avatar}
         />
         <Text style={styles.name}>{name}</Text>
 
-        <TouchableOpacity style={styles.uploadButton}>
-          <Ionicons name="camera" size={18} color="#fff" />
-          <Text style={styles.uploadText}>Upload Picture</Text>
+        <TouchableOpacity style={styles.uploadButton} onPress={handleUploadPicture}>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <>
+              <Ionicons name="camera" size={18} color="#fff" />
+              <Text style={styles.uploadText}>Upload Picture</Text>
+            </>
+          )}
         </TouchableOpacity>
 
         <View style={styles.infoHeader}>
@@ -174,7 +239,7 @@ const ProfileScreen = () => {
         </View>
       </View>
 
-      {/* Modals (should be outside conditional blocks) */}
+      {/* Modals */}
       <OtpModal
         visible={showOtp}
         onClose={() => setShowOtp(false)}
@@ -197,9 +262,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f4f4f4' },
   content: { alignItems: 'center', padding: 16 },
   avatar: {
-    width: width * 0.2,
-    height: width * 0.2,
-    borderRadius: width * 0.1,
+    width: width * 0.25,
+    height: width * 0.25,
+    borderRadius: width * 0.125,
     marginTop: 12,
   },
   name: {
