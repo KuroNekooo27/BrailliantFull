@@ -63,6 +63,7 @@ export default function LandingPage() {
                 otp: generatedOtp,
                 email: email
             });
+            console.log(response)
             alert("Email sent!");
         } catch (err) {
             console.error("Failed to send email", err);
@@ -156,7 +157,6 @@ export default function LandingPage() {
                 email,
                 password
             })
-            console.log(response)
             const { requiresOtp } = response.data;
 
             if (requiresOtp) {

@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
         pass: process.env.AUTH_PASSWORD,
     },
     tls: {
-        rejectUnauthorized: false 
+        rejectUnauthorized: false
     },
 });
 
@@ -25,7 +25,6 @@ const sendLoginOTP = async (otp, email) => {
             text: "Verify your Device",
             html: LoginOTP_Template.replace("{verificationCode}", otp),
         });
-        console.log(otp)
     } catch (error) {
         console.log("Verification Send Error", error);
     }
@@ -61,14 +60,42 @@ const sendActivationOTP = async (otp, email) => {
     }
 }
 
+const sendEditEmailOTP = async (otp, email) => {
+    try {
+        const info = await transporter.sendMail({
+            from: '"Brailliant by Orbit" <mavyorbit@gmail.com>',
+            to: email,
+            subject: "Confirmation Code for Brailliant by Orbit",
+            text: "Edit your profile",
+            html: EditProfile_Template.replace("{verificationCode}", otp).replace("Temporary Password", "Change Email OTP"), 
+        });
+    } catch (error) {
+        console.log("Verification Send Error", error);
+    }
+}
+
 const sendEmail = async (req, res) => {
     const { context, otp, email } = req.body;
 
     switch (context) {
-        case "login": sendLoginOTP(otp, email)
-        case "forgotPassword": sendForgotPasswordOTP(otp, email)
-        case "activate": sendActivationOTP(otp, email)
+        case "login":
+            await sendLoginOTP(otp, email);
+            break;
+        case "forgotPassword":
+            await sendForgotPasswordOTP(otp, email);
+            break;
+        case "activate":
+            await sendActivationOTP(otp, email);
+            break;
+        case "edit":
+            await sendEditEmailOTP(otp, email);
+            break;
+        default:
+            console.log("Unknown context:", context);
     }
+
+    res.status(200).json({ success: true, message: "Email sent" });
 };
+
 
 module.exports = { sendEmail };

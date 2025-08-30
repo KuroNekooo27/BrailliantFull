@@ -3,12 +3,15 @@ import './UploadBooks.css'
 import SideNavigation from '../../../../global/components/user/SideNavigation'
 import Header from '../../../../global/components/user/Header'
 import axios from 'axios'
+import "./confirmationModal.css"
 import { useNavigate } from 'react-router-dom'
 
 
 export default function UploadBooks() {
 
     const navigate = new useNavigate()
+    const page = "Upload Books"
+    const searchBar = false
 
     const [newBook, setNewBook] = useState({
         request_book_title: '',
@@ -21,13 +24,14 @@ export default function UploadBooks() {
         request_book_description: '',
         request_by: ''
     });
+    const [confirmationModal, setConfirmationModal] = useState(false)
 
     const [file, setFile] = useState('')
-    const [allImage, setAllImage] = useState(null)
     const [user, setUser] = useState([])
 
     const [selectedImage, setSelectedImage] = useState('')
 
+    const [image, setImage] = useState(null)
 
 
 
@@ -45,7 +49,11 @@ export default function UploadBooks() {
         });
     };
 
-    const handleUploadBook = async () => {
+    const toggleConfirmationModal = () => {
+        setConfirmationModal(!confirmationModal)
+    }
+
+    const uploadBook = async () => {
         const updatedData = { user_recent_act: 'Requested Upload Material' };
         axios.put(`https://brailliantweb.onrender.com/api/update/user/${user._id}`, updatedData)
             .then(() => {
@@ -54,7 +62,6 @@ export default function UploadBooks() {
             .catch((error) => {
                 console.log(error);
             });
-        console.log('this new req', newBook);
         try {
             const updatedBook = {
                 ...newBook,
@@ -104,6 +111,12 @@ export default function UploadBooks() {
             console.error(error);
             alert("Failed to upload book");
         }
+    }
+
+    const handleUploadBook = () => {
+        if (!image) {
+            toggleConfirmationModal()
+        }
     };
 
     useEffect(() => {
@@ -130,19 +143,21 @@ export default function UploadBooks() {
     };
 
 
-    const [image, setImage] = useState(null)
 
     const submitimage = async (bookId) => {
-        const formData = new FormData();
-        formData.append('bookImage', image);
+        if (image) {
+            const formData = new FormData();
+            formData.append('bookImage', image);
 
-        const result = await axios.put(
-            `https://brailliantweb.onrender.com/upload-requestimage/${bookId}`,
-            formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
-        );
-        console.log("Image uploaded:", result.data);
-        return result.data.imageUrl
+            const result = await axios.put(
+                `https://brailliantweb.onrender.com/upload-requestimage/${bookId}`,
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+            console.log("Image uploaded:", result.data);
+            return result.data.imageUrl
+        }
+
     };
 
 
@@ -158,12 +173,28 @@ export default function UploadBooks() {
 
     return (
         <div className='container'>
+            {confirmationModal && (
+                <div className='modal'>
+                    <div className='overlay'></div>
+                    <div className='confirmationmodal-content'>
+                        <div className='confirmationmodal'>
+                            <label className='upload-label'>Are you sure you want to upload without an image attached?</label>
+                            <div className='upload-btn'>
+                                <button className='upload-yes' onClick={uploadBook} >Yes</button>
+                                <button className='upload-no' onClick={toggleConfirmationModal} >No</button>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            )}
             <div>
                 <SideNavigation />
             </div>
             <div className='upload-container'>
                 <div className='upload-header'>
-                    <Header />
+                    <Header page={page} searchBar={searchBar} />
                 </div>
                 <div className='upload-body'>
 
@@ -195,7 +226,6 @@ export default function UploadBooks() {
                                     type='file'
                                     accept='image/*'
                                     onChange={onInputChange}
-                                    required
                                 />
                             </div>
 
@@ -278,12 +308,6 @@ export default function UploadBooks() {
                             <button type='submit'>Submit Upload Request</button>
                         </div>
                     </form>
-
-
-
-
-
-
                 </div>
             </div>
         </div>

@@ -5,12 +5,15 @@ import SideNavigation from '../../../../global/components/user/SideNavigation';
 import DropDownMenu from '../../../../global/components/user/DropDownMenu';
 import axios from 'axios';
 import Header from '../../../../global/components/user/Header';
+import "./ConfirmationModal.css"
 
 export default function EditProfile() {
     const navigate = useNavigate()
     const [showDropdown, setShowDropdown] = useState(false);
     const [activeForm, setActiveForm] = useState('profile');
     const [users, setUsers] = useState([]);
+    const [inputOtp, setInputOtp] = useState('');
+    const [otp, setOtp] = useState('');
 
     const [editUser, setEditUser] = useState({
         user_fname: '',
@@ -24,6 +27,7 @@ export default function EditProfile() {
     const [cpassword, setCpassword] = useState('')
     const [selectedImage, setSelectedImage] = useState('')
     const [image, setImage] = useState(null)
+    const [modal, setModal] = useState(false)
 
 
     useEffect(() => {
@@ -35,7 +39,39 @@ export default function EditProfile() {
 
     }, []);
 
+    const toggleModal = () => {
+        setModal(!modal)
+    }
+    if (modal) {
+        document.body.classList.add('active-modal')
+    }
+    else {
+        document.body.classList.remove('active-modal')
+    }
 
+    const generateOTP = () => {
+        const digits = '0123456789';
+        let otp = '';
+        for (let i = 0; i < 6; i++) {
+            otp += digits[Math.floor(Math.random() * 10)];
+        }
+        return otp;
+    };
+
+    const handleNewEmail = async (generatedOtp) => {
+        try {
+
+            const response = await axios.post('https://brailliantweb.onrender.com/send-email', {
+                context: "edit",
+                otp: generatedOtp,
+                email: cemail
+            });
+            alert("Email sent!");
+        } catch (err) {
+            console.error("Failed to send email", err);
+            alert("Failed to send email");
+        }
+    }
 
     const confirmPassword = () => {
         const { user_fname, user_lname, user_email, user_dob, user_password } = editUser;
@@ -77,18 +113,6 @@ export default function EditProfile() {
             alert("Date of Birth cannot be in the future.");
             return;
         }
-        /** 
-                if (!user_password) {
-                    alert("Password is required.");
-                    return;
-                }
-        
-                if (user_password !== cpassword) {
-                    alert("Passwords do not match!");
-                    return;
-                }
-        */
-        //submitimage(editUser._id)
         handleProfileUpdate(editUser._id);
         alert("Update Successful!");
     };
@@ -187,24 +211,48 @@ export default function EditProfile() {
         }
     };
 
+    const handleVerify = async () => {
+        const newOtp = generateOTP()
+        setOtp(newOtp)
+
+        if (!cemail) {
+            alert("Enter new email.");
+            return;
+        }
+        if (editUser.user_password !== cpassword) {
+            alert("Passwords do not match.");
+            return;
+        }
+        if (!editUser.user_password || !cpassword) {
+            alert("Enter password.");
+            return;
+        }
+        const response = await axios.post("https://brailliantweb.onrender.com/send-email", {
+            context: 'edit',
+            email: cemail,
+            otp: newOtp
+        });
+        console.log(response.data)
+
+        if (!response.data) {
+            alert("Invalid credentials.");
+            return;
+        }
+        handleNewEmail()
+        toggleModal()
+    }
+    const handleInputOTP = () => {
+        if (!inputOtp) {
+            alert("OTP is required")
+            return
+        }
+        if (inputOtp == otp) {
+            handleEmailSave()
+        }
+    }
+
     const handleEmailSave = async () => {
         try {
-            if (editUser.user_password !== cpassword) {
-                alert("Passwords do not match.");
-                return;
-            }
-
-            const response = await axios.post("https://brailliantweb.onrender.com/api/handle-credentials", {
-                email: users.user_email,
-                password: editUser.user_password,
-            });
-            console.log(response.data)
-
-            if (!response.data) {
-                alert("Invalid credentials.");
-                return;
-            }
-
             const updatedData = {
                 user_email: cemail,
                 user_recent_act: 'Changed Email',
@@ -256,6 +304,24 @@ export default function EditProfile() {
 
     return (
         <div className='container'>
+            {modal && (
+                <div className='modal'>
+                    <div className='overlay' onClick={toggleModal} ></div>
+                    <div className='otpl-modal-content'>
+                        <div className='otpl-loginmodal'>
+                            <button className='close-modal' onClick={toggleModal}>x </button>
+                            <label className='otpl-head'>We just sent an OTP to your new email</label>
+                            <label className='otpl-text'>Enter the One-Time-Pin (OTP) we have sent in your new email.</label>
+                            <input
+                                placeholder='Enter OTP'
+                                value={inputOtp}
+                                onChange={(e) => setInputOtp(e.target.value)}
+                            />
+                            <button className='otpl-login-modal' onClick={handleInputOTP}>Verify</button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div>
                 <SideNavigation />
             </div>
@@ -398,7 +464,7 @@ export default function EditProfile() {
                                                 onChange={(e) => setCpassword(e.target.value)}
                                             />
                                             <div className="form-actions">
-                                                <button className="editsave-btn" onClick={handleEmailSave}>Save</button>
+                                                <button className="editsave-btn" onClick={handleVerify}>Save</button>
                                                 <button type="button" className="cancel-btn" onClick={() => {
                                                     setActiveForm('profile')
                                                     setCpassword('')
