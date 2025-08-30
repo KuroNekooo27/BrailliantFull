@@ -30,6 +30,33 @@
     justify-content: space-evenly;
 }
 
+
+.auddittrail-nav {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
+.audittrail-btn button {
+    border: 1px solid black;
+    border-radius: 20px;
+    background-color: white;
+    height: 30px;
+    align-items: center;
+    justify-content: space-evenly;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.audittrail-btn button.active {
+    background-color: black;
+    color: white;
+    border: 2px solid black;
+    font-weight: bold;
+}
+
+
 .admin-request {
     width: 100%;
     margin-top: 20px;
@@ -38,26 +65,33 @@
 .admin-request-actions {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 10px;
 }
 
 .admin-request-actions input {
     border: 2px solid #f88800;
     border-radius: 10px;
     height: 25px;
-    width: 450px;
+    width: 300px;
 }
 
-.admin-request-buttons {
+.audittrail-page {
     display: flex;
-    gap: 20px;
+    gap: 5px;
+    align-items: center;
 }
 
-.admin-request-buttons button {
+.audittrail-page label {
+    margin-right: 10px;
+}
+
+.audittrail-page button {
     border: 1px solid black;
-    border-radius: 20px;
+    border-radius: 10px;
     background-color: white;
     height: 30px;
-    width: 150px;
+    width: 30px;
+    background-color: black;
     display: flex;
     align-items: center;
     justify-content: space-evenly;

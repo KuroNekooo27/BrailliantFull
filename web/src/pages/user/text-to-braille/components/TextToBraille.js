@@ -134,8 +134,8 @@ export default function TextToBraille() {
                                 <label>Text-to-Braille</label>
                                 <p>Type and sync in simple Braille sentences with the Brailliant RBD!</p>
                             </div>
-                            <div className='ttb-action'>
-                                <button className='brf-btn' onClick={toggleUploadModal}><img src={require('../assets/upload.png')} />Convert to BRF</button>
+                            <div>
+                                <button className='brf-btn' onClick={toggleUploadModal}><img src={require('../assets/upload.png')} />PDF to BRF</button>
                             </div>
                         </div>
                         <div className='ttb-translate'>
@@ -159,7 +159,7 @@ export default function TextToBraille() {
                             </div>
                         </div>
                         <label className='char-limit'>{text.length} / 8 characters</label>
-                        <button onClick={() => toArduino()}><img src={require('../assets/sync.png')} />Sync Text</button>
+                        <button className='ttb-syc' onClick={() => toArduino()}><img src={require('../assets/sync.png')} />Sync Text</button>
                     </div>
                 </div>
             </div>

@@ -26,7 +26,9 @@ export default function AuditTrail() {
     const [actions, setAction] = useState("");
     const [audit, setAudit] = useState([]);
 
-
+    const [selectedActionFilter, setSelectedActionFilter] = useState("");
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 50;
 
     useEffect(() => {
         axios.get('https://brailliantweb.onrender.com/api/allaudittrail')
@@ -35,21 +37,33 @@ export default function AuditTrail() {
                 console.log('this books', response.data)
 
             })
-            .catch((error) => {
-                console.log("eto ang error mo " + error)
-            })
     }, [])
 
     const toggleAuditTrailDetail = (action) => {
         setIsShortened(true);
         setAction(action.at_action)
         setAudit(action)
-        console.log(action)
     }
 
-    const toggleClose = () => {
+    const filteredAudits = audits
+        ?.filter((audit) => {
+            const matchesSearch =
+                audit.at_action?.toLowerCase().includes(searchQuery) ||
+                audit.at_user?.toLowerCase().includes(searchQuery) ||
+                audit.at_date?.toLowerCase().includes(searchQuery);
 
-    }
+            const matchesAction =
+                selectedActionFilter === "" || audit.at_action === selectedActionFilter;
+
+            return matchesSearch && matchesAction;
+        })
+        .sort((a, b) => new Date(b.at_date) - new Date(a.at_date));
+
+
+    const totalPages = Math.ceil(filteredAudits.length / itemsPerPage);
+    const startIndex = (page - 1) * itemsPerPage;
+    const paginatedAudits = filteredAudits.slice(startIndex, startIndex + itemsPerPage);
+
 
     return (
         <div className='container'>
@@ -74,15 +88,125 @@ export default function AuditTrail() {
                         </div>
                         <div className='admin-request'>
                             <div className='admin-request-actions'>
+
                                 <input
                                     placeholder='Search audit'
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}
                                 />
-                                <div className='admin-request-buttons'>
-                                    {/*<button>Remove <img src={require('../assets/delete.png')} /></button>*/}
+                            </div>
+                            <div className='auddittrail-nav'>
+                                <div className="audittrail-btn">
+                                    <button
+                                        className={selectedActionFilter === "" ? "active" : ""}
+                                        onClick={() => {
+                                            setSelectedActionFilter("");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        Show All
+                                    </button>
+                                    <button
+                                        className={selectedActionFilter === "Activated Account" ? "active" : ""}
+                                        onClick={() => {
+                                            setSelectedActionFilter("Activated Account");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        Activated Account
+                                    </button>
+                                    <button
+                                        className={selectedActionFilter === "Added Student" ? "active" : ""}
+                                        onClick={() => {
+                                            setSelectedActionFilter("Added Student");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        Added Student
+                                    </button>
+                                    <button
+                                        className={selectedActionFilter === "Created Section" ? "active" : ""}
+                                        onClick={() => {
+                                            setSelectedActionFilter("Created Section");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        Created Section
+                                    </button>
+                                    <button
+                                        className={selectedActionFilter === "Deleted Section" ? "active" : ""}
+                                        onClick={() => {
+                                            setSelectedActionFilter("Deleted Section");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        Deleted Section
+                                    </button>
+                                    <button
+                                        className={selectedActionFilter === "Edited Profile" ? "active" : ""}
+                                        onClick={() => {
+                                            setSelectedActionFilter("Edited Profile");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        Edited Profile
+                                    </button>
+                                    <button
+                                        className={selectedActionFilter === "Edited Student Detail" ? "active" : ""}
+                                        onClick={() => {
+                                            setSelectedActionFilter("Edited Student Detail");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        Edited Student Detail
+                                    </button>
+                                    <button
+                                        className={selectedActionFilter === "Password Changed" ? "active" : ""}
+                                        onClick={() => {
+                                            setSelectedActionFilter("Password Changed");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        Password Changed
+                                    </button>
+                                    <button
+                                        className={selectedActionFilter === "Removed Student" ? "active" : ""}
+                                        onClick={() => {
+                                            setSelectedActionFilter("Removed Student");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        Removed Student
+                                    </button>
+                                    <button
+                                        className={selectedActionFilter === "Requested Upload Material" ? "active" : ""}
+                                        onClick={() => {
+                                            setSelectedActionFilter("Requested Upload Material");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        Requested Upload Material
+                                    </button>
+                                </div>
+
+                                <div className='audittrail-page'>
+                                    Page {page} of {totalPages}
+                                    <button
+                                        disabled={page === 1}
+                                        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                                    >
+                                        <img src={require("../assets/l.png")} alt="Prev" />
+                                    </button>
+                                    <button
+                                        disabled={page === totalPages}
+                                        onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                                    >
+                                        <img src={require("../assets/r.png")} alt="Next" />
+                                    </button>
+
                                 </div>
                             </div>
+
                             <div className={`cr-table ${isShortened ? "shortened" : ""}`}>
                                 <table className='admin-cr-table'>
                                     <thead>
@@ -95,31 +219,23 @@ export default function AuditTrail() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {allAudits.audit_trail
-                                            ?.filter(
-                                                (audit) =>
-                                                    audit.at_action?.toLowerCase().includes(searchQuery) ||
-                                                    audit.at_user?.toLowerCase().includes(searchQuery) ||
-                                                    audit.at_date?.toLowerCase().includes(searchQuery)
-                                            )
-                                            .sort((a, b) => new Date(b.at_date) - new Date(a.at_date))
-                                            .map((audit) => (
-                                                <tr
-                                                    key={audit._id}
-                                                    onClick={() => setSelectedRowId(audit._id)}
-                                                    className={selectedRowId === audit._id ? "highlighted" : ""}
-                                                >
-                                                    <td>{audit._id}</td>
-                                                    <td>{audit.at_user}</td>
-                                                    <td>{audit.at_action}</td>
-                                                    <td>{new Date(audit.at_date).toLocaleString()}</td>
-                                                    <td>
-                                                        <button onClick={() => { toggleAuditTrailDetail(audit) }}>
-                                                            View Details
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                        {paginatedAudits.map((audit) => (
+                                            <tr
+                                                key={audit._id}
+                                                onClick={() => setSelectedRowId(audit._id)}
+                                                className={selectedRowId === audit._id ? "highlighted" : ""}
+                                            >
+                                                <td>{audit._id}</td>
+                                                <td>{audit.at_user}</td>
+                                                <td>{audit.at_action}</td>
+                                                <td>{new Date(audit.at_date).toLocaleString()}</td>
+                                                <td>
+                                                    <button onClick={() => { toggleAuditTrailDetail(audit) }}>
+                                                        View Details
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
 
@@ -229,6 +345,6 @@ export default function AuditTrail() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

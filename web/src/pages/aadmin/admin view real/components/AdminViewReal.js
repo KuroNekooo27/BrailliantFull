@@ -46,7 +46,6 @@ export default function AdminViewReal() {
                 setResultText(trimmedText);
             })
             .catch(err => console.error('Error extracting text:', err));
-        console.log('wat', book.book_img)
     }, [book]);
 
 
@@ -70,7 +69,7 @@ export default function AdminViewReal() {
                                 {book.book_img ? (
                                     <img
                                         className='bd-cover'
-                                        src={selectedBook.book.book_img}
+                                        src={book.book_img}
                                     />
                                 ) : (
                                     <img
