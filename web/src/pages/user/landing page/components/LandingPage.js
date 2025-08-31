@@ -15,7 +15,8 @@ import SlidesData from './slides/SlidesData'
 
 export default function LandingPage() {
     const navigate = useNavigate()
-
+    localStorage.removeItem('users')
+    
     const [modal, setModal] = useState(false)
     const [OTPModal, setOTPModal] = useState(false)
     const [loginSuccessfulModal, setLoginSuccessfulModal] = useState(false)

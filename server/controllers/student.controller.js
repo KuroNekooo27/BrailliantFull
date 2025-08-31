@@ -26,6 +26,16 @@ const findStudentByName = (req, res) => {
         })
 }
 
+const findStudentById = (req, res) => {
+    Student.findOne({ _id: req.params.id })
+        .then((theStudent) => {
+            res.json({ student: theStudent })
+        })
+        .catch((err) => {
+            res.json({ message: 'Something went wrong', err })
+        })
+}
+
 const findStudentByTeacher = (req, res) => {
     Student.find({ student_instructor: req.params.namex })
         .then((theStudent) => {
@@ -130,4 +140,4 @@ const getStudentCount = async (req, res) => {
     }
 };
 
-module.exports = { findAllStudent, testconnection, createStudent, updateStudent, deleteStudent, findStudentByName, getStudentCount, deleteStudentBySection, findStudentByTeacher, findStudentsBySection }
+module.exports = { findAllStudent, testconnection, createStudent, updateStudent, deleteStudent, findStudentByName, getStudentCount, deleteStudentBySection, findStudentByTeacher, findStudentsBySection, findStudentById}

@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-const { ActivationOTP_Template, LoginOTP_Template, ForgotPasswordOTP_Template, EditProfile_Template } = require('./EmailTemplate');
+const { ActivationOTP_Template, LoginOTP_Template, ForgotPasswordOTP_Template, EditProfile_Template, CreateAccount_Template} = require('./EmailTemplate');
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -39,7 +39,6 @@ const sendForgotPasswordOTP = async (otp, email) => {
             text: "Reset your Password",
             html: ForgotPasswordOTP_Template.replace("{verificationCode}", otp),
         });
-        console.log(otp)
     } catch (error) {
         console.log("Verification Send Error", error);
     }
@@ -54,7 +53,6 @@ const sendActivationOTP = async (otp, email) => {
             text: "Activate your Account",
             html: ActivationOTP_Template.replace("{verificationCode}", otp),
         });
-        console.log(otp)
     } catch (error) {
         console.log("Verification Send Error", error);
     }
@@ -67,7 +65,20 @@ const sendEditEmailOTP = async (otp, email) => {
             to: email,
             subject: "Confirmation Code for Brailliant by Orbit",
             text: "Edit your profile",
-            html: EditProfile_Template.replace("{verificationCode}", otp).replace("Temporary Password", "Change Email OTP"), 
+            html: EditProfile_Template.replace("{verificationCode}", otp).replace("Temporary Password", "Change Email OTP"),
+        });
+    } catch (error) {
+        console.log("Verification Send Error", error);
+    }
+}
+const sendCredentials = async (email, password) => {
+    try {
+        const info = await transporter.sendMail({
+            from: '"Brailliant by Orbit" <mavyorbit@gmail.com>',
+            to: email,
+            subject: "User Credentials for Brailliant by Orbit",
+            text: "User Credentials",
+            html: CreateAccount_Template.replace("{email}", email).replace("{password}", password),
         });
     } catch (error) {
         console.log("Verification Send Error", error);
@@ -75,7 +86,7 @@ const sendEditEmailOTP = async (otp, email) => {
 }
 
 const sendEmail = async (req, res) => {
-    const { context, otp, email } = req.body;
+    const { context, otp, email, password} = req.body;
 
     switch (context) {
         case "login":
@@ -89,6 +100,9 @@ const sendEmail = async (req, res) => {
             break;
         case "edit":
             await sendEditEmailOTP(otp, email);
+            break;
+        case "create":
+            await sendCredentials(email, password);
             break;
         default:
             console.log("Unknown context:", context);

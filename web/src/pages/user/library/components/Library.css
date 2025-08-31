@@ -34,6 +34,7 @@
     flex-wrap: wrap;
     overflow-y: auto;
     max-height: 500px;
+    height: 500px;
 }
 
 .library-book {
@@ -77,6 +78,10 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+
 }
 
 .library-braille-2 {
@@ -89,6 +94,15 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.library-braille-1:hover,
+.library-braille-2:hover {
+    background-color: #ffecd4f2;
+    transform: translateY(-1px);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .library-module {

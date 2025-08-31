@@ -74,7 +74,7 @@ export default function Library() {
                     </div>
                     <div className='library-side'>
                         <label>Braille Characters</label>
-                        <div className='library-braille-1'>
+                        <div className='library-braille-1' onClick={() => navigate("/braille/1")}>
                             <div className='library-module'>
                                 <img src={require('../assets/Module 1.png')} />
                                 <img src={require('../assets/Module 2.png')} />
@@ -82,7 +82,7 @@ export default function Library() {
 
                             <label>Grade 1 Braille</label>
                         </div>
-                        <div className='library-braille-2'>
+                        <div className='library-braille-2' onClick={() => navigate("/braille/2")}>
                             <div className='library-module'>
                                 <img src={require('../assets/Module 1.png')} />
                                 <img src={require('../assets/Module 3.png')} />

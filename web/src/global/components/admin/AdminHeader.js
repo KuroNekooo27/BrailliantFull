@@ -18,7 +18,6 @@ export default function AdminHeader({page}) {
 
     useEffect(() => {
         setAdmin(JSON.parse(localStorage.getItem('admin')))
-        console.log(admin)
     }, [])
 
     const toggleDropdown = () => {

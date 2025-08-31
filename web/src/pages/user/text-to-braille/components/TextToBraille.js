@@ -28,13 +28,17 @@ export default function TextToBraille() {
         const formatted = brailleArray.map((dots, index) => `M${index + 1}:${dots}`).join('\n');
 
         if (formatted.length != 0) {
-            axios.post('https://brailliantweb.onrender.com/send-text', {
-                message: formatted
-            });
+            try {
+                axios.post('https://brailliantweb.onrender.com/send-text', {
+                    message: formatted
+                });
+            } catch (error) {
+                alert("Make sure a device is connected")
+            }
             console.log("hello")
         }
     }
-    
+
     const handleTranslate = (text) => {
         setText(text)
         setLoading(true);

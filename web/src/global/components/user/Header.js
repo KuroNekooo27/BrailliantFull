@@ -46,14 +46,14 @@ export default function Header({ searchQuery, setSearchQuery, searchBar, page })
                     <img
                         className="icon"
                         src={
-                            users.user_img
+                            users?.user_img
                                 ? users.user_img
                                 : "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
                         }
                         alt="Profile"
                     />
 
-                    <p>{users.user_fname}</p>
+                    <p>{users?.user_fname}</p>
                 </nav>
             </div>
             {showDropdown && <DropDownMenu toggleDropdown={toggleDropdown} />}

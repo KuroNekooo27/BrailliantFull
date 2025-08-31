@@ -16,9 +16,6 @@ export default function DeviceSettings() {
         setUsers(JSON.parse(localStorage.getItem('users')))
     }, [])
 
-    const toggleDropdown = () => {
-        setShowDropdown((prev) => !prev);
-    };
     return (
         <div className='container'>
             <div>

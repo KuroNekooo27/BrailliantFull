@@ -31,7 +31,7 @@ export default function BookSession() {
 
     //TTB
 
-    const [text, setText] = useState("hello");
+    const [student, setStudent] = useState({});
     const [loading, setLoading] = useState(false);
     const [brailleDots, setBrailleDots] = useState("");
     const [bookData, setBookData] = useState({})
@@ -105,6 +105,10 @@ export default function BookSession() {
 
             })
             .catch(err => console.error('Error extracting text:', err));
+        axios.get(`http://localhost:8000/api/student/${studentId}`)
+            .then((res) => {
+                setStudent(res.data.student);
+            })
     }, []);
 
     useEffect(() => {
@@ -192,8 +196,8 @@ export default function BookSession() {
                                 <label>{new Date(bookData.book_read_date).toLocaleString().split("T")[0]}</label>
                             </div>
                             <div className='summary-body'>
-                                <label>Student ID:</label>
-                                <label>{studentId}</label>
+                                <label>Student Name:</label>
+                                <label>{student.student_fname} {student.student_lname}</label>
                             </div>
                             <div className='summary-body'>
                                 <label>Book:</label>

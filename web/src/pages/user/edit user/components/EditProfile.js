@@ -60,7 +60,6 @@ export default function EditProfile() {
 
     const handleNewEmail = async (generatedOtp) => {
         try {
-
             const response = await axios.post('https://brailliantweb.onrender.com/send-email', {
                 context: "edit",
                 otp: generatedOtp,
@@ -227,18 +226,16 @@ export default function EditProfile() {
             alert("Enter password.");
             return;
         }
-        const response = await axios.post("https://brailliantweb.onrender.com/send-email", {
-            context: 'edit',
-            email: cemail,
-            otp: newOtp
-        });
-        console.log(response.data)
-
-        if (!response.data) {
-            alert("Invalid credentials.");
-            return;
+        try {
+            const response = await axios.post("https://brailliantweb.onrender.com/api/handle-credentials", {
+                email: cemail,
+                password: editUser.user_password
+            })
+        } catch (error) {
+            alert("Invalid email or password. Please try again.");
+            return
         }
-        handleNewEmail()
+        handleNewEmail(newOtp)
         toggleModal()
     }
     const handleInputOTP = () => {

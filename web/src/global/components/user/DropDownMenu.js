@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './DropDownMenu.css'
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
-export default function DropDownMenu({toggleDropdown}) {
+export default function DropDownMenu({ toggleDropdown }) {
 
     const navigate = new useNavigate()
 
@@ -14,7 +14,6 @@ export default function DropDownMenu({toggleDropdown}) {
     }, [])
 
     const logout = () => {
-        localStorage.removeItem('users')
         navigate('/')
     }
 
@@ -23,7 +22,7 @@ export default function DropDownMenu({toggleDropdown}) {
             <div className='sub-menu-wrap'>
                 <div className='sub-menu'>
                     <div className='user-info'>
-                        <label>{users.user_fname}</label>
+                        <label>{users?.user_fname}</label>
                     </div>
                     <hr />
                     <a className='sub-menu-link'>

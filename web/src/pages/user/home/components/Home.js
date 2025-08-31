@@ -3,10 +3,12 @@ import './Home.css'
 import SideNavigation from '../../../../global/components/user/SideNavigation'
 import DashboardHeader from '../../../../global/components/user/DashboardHeader'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 
 
 export default function Home() {
-    
+    const navigate = useNavigate()
+
     return (
         <div className='container'>
             <div>
@@ -19,25 +21,23 @@ export default function Home() {
                 <div className='home-body'>
                     <div className='home-braille-char'>
                         <label className='braillechar'>Braille Characters</label>
-                        <div className='home-braille-1'>
+                        <div className='home-braille-1' onClick={() => navigate("/braille/1")}>
                             <div className='home-modules'>
                                 <img src={require('../assets/Module 1.png')} />
                                 <img src={require('../assets/Module 2.png')} />
                             </div>
                             <div className='home-text'>
                                 <label className='t1'>Grade 1 Braille</label>
-                                <label className='t2'>Margaret Davidson</label>
                                 <label className='t3'>Grade 1 - Braille Material</label>
                             </div>
                         </div>
-                        <div className='home-braille-2'>
+                        <div className='home-braille-2' onClick={() => navigate("/braille/2")}>
                             <div className='home-modules'>
                                 <img src={require('../assets/Module 1.png')} />
                                 <img src={require('../assets/Module 3.png')} />
                             </div>
                             <div className='home-text'>
                                 <label className='t1'>Grade 2 Braille</label>
-                                <label className='t2'>Margaret Davidson</label>
                                 <label className='t3'>Grade 2 - Braille Material</label>
                             </div>
                         </div>
