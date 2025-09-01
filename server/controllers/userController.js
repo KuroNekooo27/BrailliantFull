@@ -306,7 +306,7 @@ const verifyLoginOtpController = async (req, res) => {
 const activateUserController = async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email }); // ✅ FIXED LINE
+    const user = await User.findOne({ user_email: email }); // ✅ FIXED LINE
     if (!user) {
       return res.status(404).send({
         success: false,
@@ -348,7 +348,7 @@ const verifyActivationCodeController = async (req, res) => {
   try {
     const { userId, otp } = req.body;
 
-    const user = await User.findById(userId);
+    const user = await User.findById({ _id: userId });
     if (!user || user.activationCode !== otp) {
       return res.status(400).send({
         success: false,
@@ -413,6 +413,7 @@ const verifyEditOtpController = async (req, res) => {
     if (!user || user.genericOTP !== otp) {
       return res.status(400).send({ success: false, message: "Invalid OTP" });
     }
+
     // Handle password update securely
     if (newPassword) {
       if (!currentPassword) {
@@ -467,7 +468,7 @@ const verifyEditOtpController = async (req, res) => {
 const sendForgotPasswordOtpController = async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ user_email: email });
 
     if (!user) {
       return res.status(404).send({ success: false, message: "User not found" });
@@ -477,7 +478,7 @@ const sendForgotPasswordOtpController = async (req, res) => {
     user.genericOTP = otp;
     await user.save();
 
-    sendResetOTPcode(user.email, otp);
+    sendResetOTPcode(user.user_email, otp);
 
     return res.status(200).send({
       success: true,
@@ -500,7 +501,7 @@ const verifyForgotPasswordOtpAndSendTempPasswordController = async (req, res) =>
   try {
     const { userId, otp } = req.body; // newPassword is NOT expected from frontend anymore here
 
-    const user = await User.findById(userId);
+    const user = await User.findById({ _id: userId });
     if (!user) {
       return res.status(404).send({ success: false, message: "User not found" });
     }
@@ -515,14 +516,14 @@ const verifyForgotPasswordOtpAndSendTempPasswordController = async (req, res) =>
     const hashedPassword = await hashPassword(temporaryPassword);
 
     // Update user's password and clear the OTP
-    user.password = hashedPassword;
+    user.user_password = hashedPassword;
     user.genericOTP = undefined; // Clear the OTP
     // user.otpExpiresAt = undefined; // Also clear OTP expiration if you add it
 
     await user.save();
 
     // Send the temporary password to the user's email
-    await sendTemporaryPassword(user.email, temporaryPassword);
+    await sendTemporaryPassword(user.user_email, temporaryPassword);
 
     return res.status(200).send({
       success: true,

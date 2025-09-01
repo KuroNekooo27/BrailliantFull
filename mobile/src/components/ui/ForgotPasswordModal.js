@@ -12,10 +12,10 @@ import axios from 'axios';
 import OtpModal from './OtpModal'; // reuse your OTP modal
 
 const ForgotPasswordModal = ({ visible, onClose }) => {
-    const [email, setEmail] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [showOtpModal, setShowOtpModal] = useState(false);
-    const [userId, setUserId] = useState(null);
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   const handleSendOtp = async () => {
     if (!email) {
@@ -25,7 +25,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
 
     try {
       setLoading(true);
-      const { data } = await axios.post('http://192.168.68.101:8080/api/v1/auth/forgot-password', {
+      const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/forgot-password', {
         email,
       });
 
@@ -41,24 +41,24 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
 
   const handleOtpSubmit = async (otpValue) => {
     try {
-        const { data } = await axios.post('http://192.168.68.101:8080/api/v1/auth/verify-forgot-otp', { // Make sure this URL matches your updated router.post path
-            userId,
-            otp: otpValue,
-        });
+      const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/verify-forgot-otp', { // Make sure this URL matches your updated router.post path
+        userId,
+        otp: otpValue,
+      });
 
-        // --- IMPORTANT CHANGE HERE ---
-        // The backend now sends the temporary password via email, not in the response.
-        Alert.alert('Password Reset', data.message || 'A temporary password has been sent to your email address.');
-        // --- END IMPORTANT CHANGE ---
+      // --- IMPORTANT CHANGE HERE ---
+      // The backend now sends the temporary password via email, not in the response.
+      Alert.alert('Password Reset', data.message || 'A temporary password has been sent to your email address.');
+      // --- END IMPORTANT CHANGE ---
 
-        setShowOtpModal(false); // Close the OTP modal
-        onClose(); // Close the Forgot Password modal
-        setEmail(''); // Clear email input
-        setUserId(null); // Clear userId
+      setShowOtpModal(false); // Close the OTP modal
+      onClose(); // Close the Forgot Password modal
+      setEmail(''); // Clear email input
+      setUserId(null); // Clear userId
     } catch (error) {
-        Alert.alert('OTP Error', error.response?.data?.message || 'Invalid OTP. Please try again.');
+      Alert.alert('OTP Error', error.response?.data?.message || 'Invalid OTP. Please try again.');
     }
-};
+  };
 
   return (
     <Modal visible={visible} animationType="slide" transparent>

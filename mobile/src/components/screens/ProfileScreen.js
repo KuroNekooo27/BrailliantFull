@@ -159,7 +159,7 @@ const ProfileScreen = () => {
 
       if (data.otpSent) {
         setOtpContext('activate');
-        setUserId(data._id);
+        setUserId(data.userId);
         setShowOtp(true);
       } else {
         Alert.alert('Error', 'Unexpected Activation flow');
@@ -178,7 +178,6 @@ const ProfileScreen = () => {
         userId,
         otp: otpValue,
       });
-
       if (!data.success) throw new Error(data.message || 'Activation failed');
 
       const newAudit = {
