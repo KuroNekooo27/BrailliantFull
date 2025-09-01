@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View, Text, Image, TouchableOpacity, StyleSheet, StatusBar, Pressable,Dimensions
 } from 'react-native';
@@ -7,10 +7,9 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDevice } from '../../context/DeviceContext';
-import { AuthContext } from '../../context/AuthContext';
-import { useContext } from 'react';
 
-const CustomHeader = ({ title = '', subtitle = '', onBack, image}) => {
+
+const CustomHeader = ({ title = '', subtitle = '', onBack }) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [showMenu, setShowMenu] = useState(false);
