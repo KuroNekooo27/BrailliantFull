@@ -50,7 +50,7 @@ const LoginScreen = () => {
         userId,
         otp: otpValue,
       })
-
+      
       await AsyncStorage.setItem('@auth', JSON.stringify(data));
       setState(data);
       navigation.navigate('Main');

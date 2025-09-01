@@ -41,33 +41,42 @@ export default function Library() {
                 </div>
                 <div className='library-body'>
                     <div className='library'>
-                        <label>Library</label>
+                        <label className='library-title'>Library</label>
                         <div className='library-books'>
 
                             {filteredBooks?.map((book) => (
                                 book.book_img ? (
-                                    <img
-                                        key={book._id}
-                                        src={book.book_img}
-                                        className="library-book"
-                                        onClick={() => {
-                                            navigate('/book/detail', { state: { book: book } });
-                                        }}
-                                        alt={book.book_title}
-                                    />
-                                ) : (
-                                    <div
-                                        key={book._id}
-                                        className="library-book"
-                                        onClick={() => {
-                                            navigate('/book/detail', { state: { book: book } });
-                                        }}
-                                    >
-                                        <text>{book.book_title}</text>
+                                    <div className='library-book-container'>
+                                        <div className='library-book'>
+                                            <img
+                                                key={book._id}
+                                                src={book.book_img}
+                                                className="the-book"
+                                                onClick={() => {
+                                                    navigate('/book/detail', { state: { book: book } });
+                                                }}
+                                                alt={book.book_title}
+                                            />
+                                        </div>
+                                        <label>{book.book_title}</label>
+                                    </div>
 
+                                ) : (
+                                    <div className='library-book-container'>
+                                        <div className='library-book'>
+                                            <img
+                                                key={book._id}
+                                                src={require('../assets/noimg.png')}
+                                                className="the-book"
+                                                onClick={() => {
+                                                    navigate('/book/detail', { state: { book: book } });
+                                                }}
+                                                alt={book.book_title}
+                                            />
+                                        </div>
+                                        <label>{book.book_title}</label>
                                     </div>
                                 )
-
                             ))}
 
                         </div>

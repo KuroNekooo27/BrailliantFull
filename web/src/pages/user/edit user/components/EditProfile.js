@@ -123,9 +123,8 @@ export default function EditProfile() {
             if (image) {
                 const formData = new FormData();
                 formData.append('image', image);
-
                 const result = await axios.put(
-                    `https://brailliantweb.onrender.com/upload-profile-icon/${id}`,
+                    `http://brailliantweb.onrender.com/upload-profile-icon/${id}`,
                     formData,
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );
@@ -359,6 +358,8 @@ export default function EditProfile() {
                                         onChange={(e) => {
                                             setImage(e.target.files[0])
                                             const file = e.target.files?.[0]
+                                            console.log(file)
+
                                             setSelectedImage(
                                                 file ? URL.createObjectURL(file) : undefined
                                             )

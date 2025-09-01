@@ -1,13 +1,13 @@
 import React, { useContext, useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Image, 
-  TouchableOpacity, 
-  Alert, 
-  Dimensions, 
-  ActivityIndicator 
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import CustomHeader from '../ui/CustomHeader';
@@ -33,6 +33,7 @@ const ProfileScreen = () => {
 
   let name = `${state.user.user_fname} ${state.user.user_lname}`;
   let isActivated = state.user.isActivated;
+
   const handleUploadPicture = async () => {
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -46,25 +47,22 @@ const ProfileScreen = () => {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.7,
+        base64: true,
+
       });
 
       if (result.canceled) return;
 
-      const imageUri = result.assets[0].uri;
+      const asset = result.assets[0];
+      const base64Img = `data:${asset.mimeType || "image/jpeg"};base64,${asset.base64}`;
+
       setLoading(true);
 
-      const formData = new FormData();
-      formData.append("userId", state.user._id);
-      formData.append("profileImage", {
-        uri: imageUri,
-        type: "image/jpeg",
-        name: "profile.jpg",
-      });
 
-      const { data } = await axios.post(
-        "https://brailliantweb.onrender.com/api/v1/auth/upload-profile",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+      const { data } = await axios.put(
+        `https://brailliantweb.onrender.com/upload/mobile/${state.user._id}`,
+        { image: base64Img, type: asset.mimeType || "image/jpeg" },
+        { headers: { "Content-Type": "application/json" } }
       );
 
       if (!data.success) throw new Error(data.message);
@@ -116,10 +114,30 @@ const ProfileScreen = () => {
 
       if (!data.success) throw new Error(data.message);
 
-      const updatedData = { ...state, user: data.user };
-
       const newData = await axios.put("https://brailliantweb.onrender.com/api/v1/auth/update", pendingEditData);
+      const updatedData = { ...state, user: newData.data.updatedUser };
 
+      const newAudit = {
+        at_user: newData.data.updatedUser.user_email,
+        at_date: new Date(),
+        at_action: 'Edited Profile',
+        at_details: {
+          at_edit_profile: {
+            at_ep_fn_old: updatedData.user.user_fname,
+            at_ep_ln_old: updatedData.user.user_lname,
+            at_ep_dob_old: updatedData.user.user_dob,
+            at_ep_email_old: updatedData.user.user_email,
+            at_ep_img_old: updatedData.user.user_img,
+
+            at_ep_fn_new: newData.data.updatedUser.user_fname,
+            at_ep_ln_new: newData.data.updatedUser.user_lname,
+            at_ep_dob_new: newData.data.updatedUser.user_dob,
+            at_ep_email_new: newData.data.updatedUser.user_email,
+            at_ep_img_new: newData.data.updatedUser.user_img,
+          }
+        }
+      };
+      await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
       await AsyncStorage.setItem('@auth', JSON.stringify(newData));
       setState(updatedData);
       Alert.alert('Success', 'Profile updated');
@@ -163,6 +181,13 @@ const ProfileScreen = () => {
 
       if (!data.success) throw new Error(data.message || 'Activation failed');
 
+      const newAudit = {
+        at_user: data.user.user_email,
+        at_date: new Date(),
+        at_action: 'Activated Account'
+      };
+      await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
+
       const updatedData = {
         ...state,
         user: data.user,
@@ -185,7 +210,7 @@ const ProfileScreen = () => {
 
       <View style={styles.content}>
         <Image
-          source={ state.user.user_img ? { uri: state.user.user_img } : require('../../../assets/default-avatar.png') }
+          source={state.user.user_img ? { uri: state.user.user_img } : require('../../../assets/adaptive-icon.png')}
           style={styles.avatar}
         />
         <Text style={styles.name}>{name}</Text>

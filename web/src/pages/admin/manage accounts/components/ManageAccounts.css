@@ -47,7 +47,7 @@
 
 .admin-accounts-buttons {
     display: flex;
-    gap: 20px;
+    gap: 10px;
 }
 
 .admin-accounts-buttons button {

@@ -18,7 +18,7 @@
     width: 65%;
 }
 
-.library label {
+.library-title {
     font-weight: bold;
     font-size: 40px;
 
@@ -37,8 +37,21 @@
     height: 500px;
 }
 
-.library-book {
+.library-book-container {
+    display: flex;
+    flex-wrap: wrap;
     width: 18%;
+    align-items: center;
+    justify-content: center;
+}
+
+.library-book-container label{
+    font-weight: 500;
+}
+
+.library-book {
+    width: 100%;
+    height: 90%;
     border-radius: 20px;
     margin-bottom: 10px;
     box-shadow: 1px 1px 10px 8px rgba(136, 136, 136, 0.3);
@@ -49,9 +62,14 @@
     justify-content: center;
 }
 
-
 .library-book:hover {
     transform: scale(1.05);
+}
+
+.the-book {
+    border-radius: 20px;
+    width: 100%;
+    height: 100%;
 }
 
 .library-side {

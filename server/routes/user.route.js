@@ -13,4 +13,6 @@ module.exports = app => {
         UserController.uploadProfileIconMiddleware,
         UserController.uploadProfileIcon
     );
+    app.put('/upload/mobile/:id', UserController.uploadProfileIconMobile); // Mobile
+
 };

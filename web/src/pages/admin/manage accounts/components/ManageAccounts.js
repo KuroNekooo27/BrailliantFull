@@ -4,7 +4,7 @@ import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import './ManageAccounts.css'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import './ConfirmationModal.css'
 
 
 export default function ManageAccounts() {
@@ -15,22 +15,59 @@ export default function ManageAccounts() {
     const [selectedRowId, setSelectedRowId] = useState(null);
     const [selectedUser, setSelectedUser] = useState([]);
     const activatedCount = allUsers.users?.filter(user => user.user_status === "Activated").length || 0;
+    const [confirmationModal, setConfirmationModal] = useState(false)
 
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
+    const toggleConfirmationModal = () => {
+        setConfirmationModal(!confirmationModal)
+    }
+
+    const fetchUsers = () => {
         axios.get('https://brailliantweb.onrender.com/api/allusers')
             .then((response) => {
-                setAllUsers(response.data)
+                setAllUsers(response.data);
             })
             .catch((error) => {
-                console.log("eto ang error mo " + error)
+                console.log("eto ang error mo " + error);
+            });
+    };
+
+    const handleRemoveAccount = () => {
+        axios.delete(`https://brailliantweb.onrender.com/api/delete/user/${selectedRowId}`)
+            .then(() => {
+                fetchUsers();
+                setConfirmationModal(false);
+                alert("User successfully removed!")
             })
-    }, [])
+            .catch((error) => {
+                console.log("Failed to delete user", error);
+            });
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
 
     return (
         <div className='container'>
+            {confirmationModal && (
+                <div className='modal'>
+                    <div className='overlay'></div>
+                    <div className='confirmationmodal-content'>
+                        <div className='confirmationmodal'>
+                            <label className='remove-label'>Are you sure you want to remove user {selectedUser.user_fname} {selectedUser.user_lname}?</label>
+                            <div className='remove-btn'>
+                                <button className='remove-yes' onClick={handleRemoveAccount} >Yes</button>
+                                <button className='remove-no' onClick={toggleConfirmationModal} >No</button>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            )}
             <div>
                 <AdminSideNavigation />
             </div>
@@ -68,7 +105,7 @@ export default function ManageAccounts() {
                                         navigate('/admin/edit-account', { state: { user: selectedUser } })
 
                                     }}>Edit Details <img src={require('../assets/edit.png')} /></button>
-                                    {/*<button>Remove <img src={require('../assets/delete.png')} /></button>*/}
+                                    <button onClick={toggleConfirmationModal}>Remove <img src={require('../assets/delete.png')} /></button>
                                 </div>
                             </div>
                             <div className='ma-table'>
