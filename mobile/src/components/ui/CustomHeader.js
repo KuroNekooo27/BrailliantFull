@@ -7,13 +7,15 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDevice } from '../../context/DeviceContext';
-
+import { AuthContext } from '../../context/AuthContext';
+import { useContext } from 'react';
 
 const CustomHeader = ({ title = '', subtitle = '', onBack, image}) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [showMenu, setShowMenu] = useState(false);
   const { connectedDevice } = useDevice();
+  const { state, setState } = useContext(AuthContext);
 
 
   const handleLogout = async () => {
@@ -46,7 +48,10 @@ const CustomHeader = ({ title = '', subtitle = '', onBack, image}) => {
         </View>
         <View style={styles.rightIcons}>
           <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
-            <Image source={image} style={styles.avatar} />
+            <Image
+              source={state.user.user_img ? { uri: state.user.user_img } : require('../../../assets/adaptive-icon.png')}
+              style={styles.avatar}
+            />
           </TouchableOpacity>
         </View>
       </View>

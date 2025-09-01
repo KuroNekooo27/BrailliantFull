@@ -102,7 +102,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: '#fff',
-    width: width,
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
   },
   activeLabel: {
     color: '#0c1536',
