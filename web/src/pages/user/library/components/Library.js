@@ -32,9 +32,7 @@ export default function Library() {
 
     return (
         <div className='container'>
-            <div>
-                <SideNavigation />
-            </div>
+            <SideNavigation />
             <div className='library-container'>
                 <div className='library-header'>
                     <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} searchBar={searchBar} />

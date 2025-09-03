@@ -143,7 +143,7 @@ export default function ManageAccounts() {
                                                 <td>{user.user_dob}</td>
                                                 <td>{new Date(user.user_last_in).toLocaleString()}</td>
                                                 <td>{user?.user_recent_act?.trim() ? user.user_recent_act : "N/A"}</td>
-                                                <td>{user?.user_status?.trim() ? user.user_status : "Not Activated"}</td>
+                                                <td>{user?.isActivated ? "Activated" : "Not Activated"}</td>
                                             </tr>
                                         ))}
 

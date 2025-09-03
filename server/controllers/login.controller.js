@@ -124,7 +124,7 @@ const handleEmailVerifiction = async (req, res) => {
             return res.status(401).json({ message: 'Invalid user credentials' });
         }
 
-        return res.json({ status: 'ok match cla' });
+        return res.json({ status: 'Email match' });
 
     } catch (err) {
         return res.status(500).json({ message: 'Something went wrong', error: err.message });

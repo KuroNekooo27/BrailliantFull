@@ -180,6 +180,7 @@ export default function AddStudent() {
                 <div className='as-body'>
                     <div className='back-container'>
                         <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button>
+                        <label>sa</label>
                     </div>
                     <div className='as-body-cont'>
                         <form className='as'>

@@ -206,7 +206,8 @@ export default function LandingPage() {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
-                });
+                })
+                .then((res)=>console.log(res));
                 navigate('/home')
             }
 

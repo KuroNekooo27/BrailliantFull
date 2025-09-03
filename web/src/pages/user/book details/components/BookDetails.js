@@ -18,6 +18,7 @@ export default function BookDetails() {
     const [selectedSection, setSelectedSection] = useState('')
     const [selectedStudent, setSelectedStudent] = useState('')
     const [book, setBook] = useState('')
+    const [resultText, setResultText] = useState('')
 
 
 
@@ -30,7 +31,6 @@ export default function BookDetails() {
     useEffect(() => {
         axios.get('https://brailliantweb.onrender.com/api/allsections')
             .then((response) => {
-                console.log(response.data)
                 setSections(response.data)
             })
             .catch((error) => {
@@ -38,12 +38,22 @@ export default function BookDetails() {
             })
         axios.get('https://brailliantweb.onrender.com/api/allstudents')
             .then((response) => {
-                console.log(response.data)
                 setStudents(response.data)
             })
             .catch((error) => {
                 console.log("eto ang error mo " + error)
             })
+
+        axios.post('http://localhost:8000/extract-text', {
+            pdfUrl: selectedBook.book.book_file
+        })
+            .then((response) => {
+                setResultText(response.data.trim());
+            })
+            .catch((error) => {
+                console.error("Error extracting text:", error);
+            });
+
     }, [])
 
     useEffect(() => {
@@ -84,8 +94,6 @@ export default function BookDetails() {
 
     return (
         <div className='container'>
-
-
             <div>
                 <SideNavigation />
             </div>
@@ -98,26 +106,33 @@ export default function BookDetails() {
                         <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button><label className='bd-title'>{selectedBook.book.book_title}</label>
                         <div className='bd-details'>
                             <div className='bd-left'>
-                                {selectedBook.book.book_img ? (
-                                    <img
-                                        className='bd-cover'
-                                        src={selectedBook.book.book_img}
-                                    />
-                                ) : (
-                                    <img
-                                        className='bd-cover'
-                                        src={require('../assets/noimg.png')}
-                                    />
-                                )
-                                }
-                                <div className='bd-info'>
-                                    <label>Title: {selectedBook.book.book_title}</label>
-                                    <label>Author: {selectedBook.book.book_author}</label>
-                                    <label>Genre: {selectedBook.book.book_genre}</label>
-                                    <label>Date Published: {new Date(selectedBook.book.book_date_published).toLocaleDateString().split("T")[0]}</label>
-                                    <label>Description: {selectedBook.book.book_description}</label>
+                                <div className='bd-left-cont'>
+                                    {selectedBook.book.book_img ? (
+                                        <img
+                                            className='bd-cover'
+                                            src={selectedBook.book.book_img}
+                                        />
+                                    ) : (
+                                        <img
+                                            className='bd-cover'
+                                            src={require('../assets/noimg.png')}
+                                        />
+                                    )
+                                    }
+                                    <div className='bd-info'>
+                                        <label>Title: {selectedBook.book.book_title}</label>
+                                        <label>Author: {selectedBook.book.book_author}</label>
+                                        <label>Genre: {selectedBook.book.book_genre}</label>
+                                        <label>Date Published: {new Date(selectedBook.book.book_date_published).toLocaleDateString().split("T")[0]}</label>
+                                        <label>Description: {selectedBook.book.book_description}</label>
+                                    </div>
+                                </div>
+                                <label className='bd-file-preview'>Book Preview</label>
+                                <div className='bd-highlighted-textarea'>
+                                    {resultText}
                                 </div>
                             </div>
+
                             <div className='bd-right'>
                                 <label className='class-list'>Class List</label>
                                 <div className='bd-class-list'>

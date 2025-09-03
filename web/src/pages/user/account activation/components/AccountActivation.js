@@ -59,7 +59,7 @@ export default function AccountActivation() {
     }
 
     const handleVerify = async () => {
-        const updatedData = { ...user, user_status: "Activated" };
+        const updatedData = { ...user, isActivated: true };
 
         if (inputOtp === otp) {
             axios.put(`https://brailliantweb.onrender.com/api/update/user/${user._id}`, updatedData)
