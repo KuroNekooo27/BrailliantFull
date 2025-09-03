@@ -209,7 +209,7 @@ const ProfileScreen = () => {
 
       <View style={styles.content}>
         <Image
-          source={state.user.user_img ? { uri: state.user.user_img } : require('../../../assets/adaptive-icon.png')}
+          source={state.user.user_img ? { uri: state.user.user_img } : require('../../../assets/defaultAvatar.png')}
           style={styles.avatar}
         />
         <Text style={styles.name}>{name}</Text>

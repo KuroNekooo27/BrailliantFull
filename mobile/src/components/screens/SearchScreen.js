@@ -87,7 +87,6 @@ const SearchScreen = () => {
 
   // Function to handle navigation to book details
   const handleBookPress = (book) => {
-    console.log("test");
     navigation.navigate('BookDetails', { book });
   };
 

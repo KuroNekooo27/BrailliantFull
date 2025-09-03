@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import {
   View, Text, Image, TouchableOpacity, StyleSheet, StatusBar, Pressable, Dimensions
 } from 'react-native';
@@ -7,6 +7,10 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDevice } from '../../context/DeviceContext';
+import { AuthContext } from '../../context/AuthContext';
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 
 const CustomHeader = ({ title = '', subtitle = '', onBack }) => {
@@ -29,36 +33,7 @@ const CustomHeader = ({ title = '', subtitle = '', onBack }) => {
   }
 
   // Calculate menu position above the header
-  const calculateMenuPosition = () => {
-    if (avatarRef.current) {
-      avatarRef.current.measureInWindow((x, y, width, height) => {
-        const menuWidth = 150; // Approximate menu width
-        const menuHeight = 140; // Approximate menu height
-        
-        let rightPosition = windowWidth - x - width;
-        let topPosition = y - menuHeight - 10; // Position above the avatar
-        
-        // Adjust if menu would go off the left edge
-        if (x - menuWidth < 0) {
-          rightPosition = 16;
-        }
-        
-        // Adjust if menu would go off the top edge
-        if (topPosition < 0) {
-          topPosition = 10;
-        }
-        
-        setMenuPosition({ top: topPosition, right: rightPosition });
-      });
-    }
-  };
 
-  const toggleMenu = () => {
-    if (!showMenu) {
-      calculateMenuPosition();
-    }
-    setShowMenu(!showMenu);
-  };
 
   return (
     <View style={{ position: 'relative', zIndex: 100 }}>

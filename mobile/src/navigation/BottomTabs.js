@@ -9,7 +9,6 @@ import DeviceSettingsScreen from '../components/screens/DeviceSettingsScreen';
 import TextToBrailleScreen from '../components/screens/TextToBrailleScreen';
 import HomeStack from './HomeStack';
 import LibraryStack from './LibraryStack';
-import SearchStack from './SearchStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -120,7 +119,7 @@ export default function BottomTabs() {
     >
       <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Library" component={LibraryStack} />
-      <Tab.Screen name="Search" component={SearchStack} />
+      <Tab.Screen name="Search" component={SearchScreen} />
       <Tab.Screen name="Braille" component={TextToBrailleScreen} />
       <Tab.Screen name="Settings" component={DeviceSettingsScreen} />
     </Tab.Navigator>
@@ -136,7 +135,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: '#fff',
-    width: Dimensions.get('window').width,
+    position: 'relative',
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
   },
   activeLabel: {
     color: '#0c1536',
