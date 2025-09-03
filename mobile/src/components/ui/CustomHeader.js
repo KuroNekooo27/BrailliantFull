@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View, Text, Image, TouchableOpacity, StyleSheet, StatusBar, Pressable, Dimensions
 } from 'react-native';
@@ -8,25 +8,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDevice } from '../../context/DeviceContext';
 
-const CustomHeader = ({ title = '', subtitle = '', onBack, image }) => {
+
+const CustomHeader = ({ title = '', subtitle = '', onBack }) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [showMenu, setShowMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 16 });
   const avatarRef = useRef(null);
   const { connectedDevice } = useDevice();
-  const windowDimensions = Dimensions.get('window');
-  const [windowWidth, setWindowWidth] = useState(windowDimensions.width);
-  const [windowHeight, setWindowHeight] = useState(windowDimensions.height);
+  const { state, setState } = useContext(AuthContext);
 
-  // Update dimensions on screen rotation
-  useEffect(() => {
-    const subscription = Dimensions.addEventListener('change', ({ window }) => {
-      setWindowWidth(window.width);
-      setWindowHeight(window.height);
-    });
-    return () => subscription?.remove();
-  }, []);
 
   const handleLogout = async () => {
     setShowMenu(false);
@@ -126,11 +117,11 @@ const CustomHeader = ({ title = '', subtitle = '', onBack, image }) => {
           </View>
         </View>
         <View style={styles.rightIcons}>
-          <TouchableOpacity 
-            onPress={toggleMenu}
-            ref={avatarRef}
-          >
-            <Image source={image} style={styles.avatar} />
+          <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
+            <Image
+              source={state.user.user_img ? { uri: state.user.user_img } : require('../../../assets/adaptive-icon.png')}
+              style={styles.avatar}
+            />
           </TouchableOpacity>
         </View>
       </View>
