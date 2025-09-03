@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, useWindowDimensions } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { Animated } from 'react-native';
@@ -9,14 +9,33 @@ import DeviceSettingsScreen from '../components/screens/DeviceSettingsScreen';
 import TextToBrailleScreen from '../components/screens/TextToBrailleScreen';
 import HomeStack from './HomeStack';
 import LibraryStack from './LibraryStack';
-
+import SearchStack from './SearchStack';
 
 const Tab = createBottomTabNavigator();
-const { width } = Dimensions.get('window');
 
 const CustomTabBar = ({ state, descriptors, navigation }) => {
+  const { width, height } = useWindowDimensions();
+  const [isLandscape, setIsLandscape] = useState(width > height);
+  const [fontScale, setFontScale] = useState(1);
+  
+  // Update orientation and font scale when dimensions change
+  useEffect(() => {
+    setIsLandscape(width > height);
+    const scale = Math.min(width / 375, 1.2); // Base width of 375 (iPhone 6/7/8)
+    setFontScale(scale);
+  }, [width, height]);
+
+  // Responsive tab bar height
+  const tabBarHeight = isLandscape ? 70 : 90;
+  
+  // Responsive icon size
+  const iconSize = isLandscape ? 20 : 24;
+  
+  // Responsive font size
+  const labelFontSize = Math.max(8, Math.min(10, 10 * fontScale));
+
   return (
-    <View style={styles.tabContainer}>
+    <View style={[styles.tabContainer, { height: tabBarHeight }]}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -44,16 +63,26 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             onPress={onPress}
             style={[styles.tabButton, isFocused && styles.activeTab]}
           >
-            <Animated.View style={{ transform: [{ scale: scaleAnim }], alignItems: 'center' }}>
+            <Animated.View style={{ 
+              transform: [{ scale: scaleAnim }], 
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
               <Ionicons
                 name={icon}
-                size={24}
+                size={iconSize}
                 color={isFocused ? '#0c1536' : '#d1cfd6'}
               />
               <Text
-                style={[styles.label, isFocused ? styles.activeLabel : styles.inactiveLabel]}
+                style={[
+                  styles.label, 
+                  { fontSize: labelFontSize, lineHeight: labelFontSize + 2 },
+                  isFocused ? styles.activeLabel : styles.inactiveLabel
+                ]}
+                numberOfLines={2}
+                adjustsFontSizeToFit
               >
-                {route.name === 'Braille' ? 'Text-to-\nBraille' : route.name === 'Settings' ? 'Device\nSettings' : route.name}
+                {route.name === 'Braille' ? 'Text-to-Braille' : route.name === 'Settings' ? 'Device Settings' : route.name}
               </Text>
             </Animated.View>
           </TouchableOpacity>
@@ -82,10 +111,16 @@ const getIcon = (name) => {
 
 export default function BottomTabs() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }} tabBar={(props) => <CustomTabBar {...props} />}>
+    <Tab.Navigator 
+      screenOptions={{ 
+        headerShown: false,
+        tabBarHideOnKeyboard: true, // Hide tab bar when keyboard is open
+      }} 
+      tabBar={(props) => <CustomTabBar {...props} />}
+    >
       <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Library" component={LibraryStack} />
-      <Tab.Screen name="Search" component={SearchScreen} />
+      <Tab.Screen name="Search" component={SearchStack} />
       <Tab.Screen name="Braille" component={TextToBrailleScreen} />
       <Tab.Screen name="Settings" component={DeviceSettingsScreen} />
     </Tab.Navigator>
@@ -95,14 +130,22 @@ export default function BottomTabs() {
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
-    height: 90,
     paddingBottom: 10,
     borderTopStartRadius: 20,
     borderTopEndRadius: 20,
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: '#fff',
-    width: width,
+    position: 'relative',
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
   },
   activeLabel: {
     color: '#0c1536',
@@ -115,16 +158,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+    paddingVertical: 5,
+    maxWidth: 100, // Prevent tabs from becoming too wide on large screens
   },
   label: {
-    fontSize: 10,
     textAlign: 'center',
     marginTop: 4,
+    flexShrink: 1, // Allow text to shrink if needed
   },
   activeTab: {
     borderTopWidth: 3,
     borderTopColor: '#0c1536',
     paddingTop: 10,
-    marginHorizontal:1,
   },
 });

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  View, Text, Image, TouchableOpacity, StyleSheet, StatusBar, Pressable,Dimensions
+  View, Text, Image, TouchableOpacity, StyleSheet, StatusBar, Pressable, Dimensions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -8,13 +8,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDevice } from '../../context/DeviceContext';
 
-
-const CustomHeader = ({ title = '', subtitle = '', onBack, image}) => {
+const CustomHeader = ({ title = '', subtitle = '', onBack, image }) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [showMenu, setShowMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 16 });
+  const avatarRef = useRef(null);
   const { connectedDevice } = useDevice();
+  const windowDimensions = Dimensions.get('window');
+  const [windowWidth, setWindowWidth] = useState(windowDimensions.width);
+  const [windowHeight, setWindowHeight] = useState(windowDimensions.height);
 
+  // Update dimensions on screen rotation
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setWindowWidth(window.width);
+      setWindowHeight(window.height);
+    });
+    return () => subscription?.remove();
+  }, []);
 
   const handleLogout = async () => {
     setShowMenu(false);
@@ -25,9 +37,78 @@ const CustomHeader = ({ title = '', subtitle = '', onBack, image}) => {
     });
   }
 
+  // Calculate menu position above the header
+  const calculateMenuPosition = () => {
+    if (avatarRef.current) {
+      avatarRef.current.measureInWindow((x, y, width, height) => {
+        const menuWidth = 150; // Approximate menu width
+        const menuHeight = 140; // Approximate menu height
+        
+        let rightPosition = windowWidth - x - width;
+        let topPosition = y - menuHeight - 10; // Position above the avatar
+        
+        // Adjust if menu would go off the left edge
+        if (x - menuWidth < 0) {
+          rightPosition = 16;
+        }
+        
+        // Adjust if menu would go off the top edge
+        if (topPosition < 0) {
+          topPosition = 10;
+        }
+        
+        setMenuPosition({ top: topPosition, right: rightPosition });
+      });
+    }
+  };
+
+  const toggleMenu = () => {
+    if (!showMenu) {
+      calculateMenuPosition();
+    }
+    setShowMenu(!showMenu);
+  };
+
   return (
     <View style={{ position: 'relative', zIndex: 100 }}>
       <StatusBar barStyle="light-content" backgroundColor="#0c1536" />
+      
+      {/* Dropdown Menu (positioned above the header) */}
+      {showMenu && (
+        <>
+          <Pressable
+            style={[styles.fullscreenOverlay, { height: windowHeight, width: windowWidth }]}
+            onPress={() => setShowMenu(false)}
+          >
+            <View style={[styles.dropdownMenu, { 
+              top: menuPosition.top, 
+              right: menuPosition.right,
+              maxWidth: windowWidth - 32, // Ensure menu doesn't exceed screen width
+            }]}>
+              <TouchableOpacity onPress={() => {
+                setShowMenu(false);
+                navigation.navigate('Profile');
+              }} style={styles.menuItemButton}>
+                <Text style={styles.menuItem}>Profile</Text>
+              </TouchableOpacity>
+              <View style={[styles.menuItemButton, { flexDirection: 'row', alignItems: 'center' }]}>
+                <View style={[
+                  styles.connectionIndicator, 
+                  { backgroundColor: connectedDevice ? 'green' : 'gray' }
+                ]} />
+                <Text style={styles.menuItem}>
+                  Device: {connectedDevice ? 'Connected' : 'Disconnected'}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={handleLogout} style={styles.menuItemButton}>
+                <Text style={[styles.menuItem, { color: 'red' }]}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </>
+      )}
+      
+      {/* Header Content */}
       <View style={[styles.container, { paddingTop: insets.top + 10 }]}>
         <View style={styles.leftSection}>
           {onBack && (
@@ -38,50 +119,26 @@ const CustomHeader = ({ title = '', subtitle = '', onBack, image}) => {
           <View>
             {subtitle ? 
               <>
-              <Text style={styles.title}>{title}</Text>
-              <Text style={styles.subtitle}>{subtitle}</Text>
+                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.subtitle}>{subtitle}</Text>
               </>
-              : <Text style={[styles.title,{fontSize:25}]}>{title}</Text>}
-        </View>
+              : <Text style={[styles.title, { fontSize: 25 }]}>{title}</Text>}
+          </View>
         </View>
         <View style={styles.rightIcons}>
-          <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
+          <TouchableOpacity 
+            onPress={toggleMenu}
+            ref={avatarRef}
+          >
             <Image source={image} style={styles.avatar} />
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* Overlay and Dropdown */}
-      {showMenu && (
-        <>
-          <Pressable
-            style={styles.fullscreenOverlay}
-            onPress={() => setShowMenu(false)}
-          >
-            <View style={styles.dropdownMenu}>
-              <TouchableOpacity onPress={() => {
-                setShowMenu(false);
-                navigation.navigate('Profile');
-              }}>
-                <Text style={styles.menuItem}>Profile</Text>
-              </TouchableOpacity>
-              <Text style={[ styles.menuItem, { color: connectedDevice ? 'green' : 'gray' },]}>
-                Device: {connectedDevice ? 'Connected' : 'Disconnected'}
-              </Text>
-
-              <TouchableOpacity onPress={handleLogout}>
-                <Text style={[styles.menuItem, { color: 'red' }]}>Logout</Text>
-              </TouchableOpacity>
-            </View>
-          </Pressable>
-        </>
-      )}
     </View>
   );
 };
 
 export default CustomHeader;
-
 
 const styles = StyleSheet.create({
   container: {
@@ -93,7 +150,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
-    zIndex: 100,
+    zIndex: 90, // Lower zIndex than dropdown
   },
   title: {
     fontSize: 20,
@@ -109,19 +166,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  notificationWrapper: {
-    position: 'relative',
-    marginRight: 12,
-  },
-  redDot: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    width: 8,
-    height: 8,
-    backgroundColor: 'red',
-    borderRadius: 4,
-  },
   avatar: {
     width: 30,
     height: 30,
@@ -131,14 +175,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
     zIndex: 100,
   },
   dropdownMenu: {
     position: 'absolute',
-    top: 70,
-    right: 16,
     backgroundColor: '#fff',
     borderRadius: 10,
     paddingVertical: 8,
@@ -148,11 +188,21 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
     elevation: 6,
-    zIndex: 100,
+    zIndex: 101,
+    minWidth: 150,
+    marginTop:"2%"
+  },
+  menuItemButton: {
+    paddingVertical: 8,
   },
   menuItem: {
-    paddingVertical: 8,
     fontSize: 14,
+  },
+  connectionIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 8,
   },
   leftSection: {
     flexDirection: 'row',
