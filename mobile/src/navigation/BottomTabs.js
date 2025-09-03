@@ -4,11 +4,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { Animated } from 'react-native';
 
-import SearchScreen from '../components/screens/SearchScreen';
 import DeviceSettingsScreen from '../components/screens/DeviceSettingsScreen';
 import TextToBrailleScreen from '../components/screens/TextToBrailleScreen';
 import HomeStack from './HomeStack';
 import LibraryStack from './LibraryStack';
+import SearchStack from './SearchStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -119,7 +119,7 @@ export default function BottomTabs() {
     >
       <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Library" component={LibraryStack} />
-      <Tab.Screen name="Search" component={SearchScreen} />
+      <Tab.Screen name="Search" component={SearchStack} />
       <Tab.Screen name="Braille" component={TextToBrailleScreen} />
       <Tab.Screen name="Settings" component={DeviceSettingsScreen} />
     </Tab.Navigator>
