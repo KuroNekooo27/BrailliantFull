@@ -378,7 +378,7 @@ const EditProfile_Template = `
   </head>
   <body>
       <div class="container">
-          <div class="header">Temporary Password</div>
+          <div class="header">Verification Password</div>
           <div class="content">
               <p>Hello,</p>
               <p>Here is your verification code to confirm the changes in your account..</p>

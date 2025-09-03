@@ -75,9 +75,6 @@ const BookDetailsScreen = ({ route }) => {
                 {book?.book_description || 'No description available.'}
               </Text>
             </View>
-            <TouchableOpacity>
-              <Ionicons name="heart-outline" size={36} color="black" />
-            </TouchableOpacity>
           </View>
 
           {/* Class List */}

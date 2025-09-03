@@ -8,36 +8,44 @@ import {
   TouchableOpacity,
   RefreshControl,
   Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import CustomHeader from '../ui/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
 import axios from "axios"
 import { AuthContext } from '../../context/AuthContext';
 
-const filters = ['Filipino', 'English', 'Uploads', 'Favorites'];
-
+const filters = ['Filipino', 'English', 'Uploads'];
 
 const AllBooksScreen = () => {
   const navigation = useNavigation();
-  const [books, setBooks] = useState();
+  const [books, setBooks] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { state, setState } = useContext(AuthContext);
 
+  const fetchBooks = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`https://brailliantweb.onrender.com/api/allbooks`);
+      setBooks(response.data.books);
+    } catch (err) {
+      console.error('Error fetching books:', err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => {
-      setBooks(initialBooks);
-      setRefreshing(false);
-    }, 1500);
-  }, []);
+    fetchBooks();
+  }, [fetchBooks]);
 
   useEffect(() => {
-    axios.get(`https://brailliantweb.onrender.com/api/allbooks`)
-      .then((response) => setBooks(response.data.books))
-      .catch(err => console.error(err));
-  }, [])
+    fetchBooks();
+  }, [fetchBooks]);
 
   const toggleFilter = (filter) => {
     setSelectedFilters((prev) =>
@@ -47,15 +55,42 @@ const AllBooksScreen = () => {
     );
   };
 
-  // Filter books dynamically
+  // Filter books based on selected filters
   const filteredBooks = useMemo(() => {
     if (selectedFilters.length === 0) return books;
-    return books.filter((book) => selectedFilters.includes(book.category));
-  }, [books, selectedFilters]);
+    
+    return books.filter((book) => {
+      // Check if book matches any of the selected filters
+      return selectedFilters.some(filter => {
+        switch(filter) {
+          case 'Filipino':
+            return book.language === 'Filipino' || book.category === 'Filipino';
+          case 'English':
+            return book.language === 'English' || book.category === 'English';
+          case 'Uploads':
+            // Assuming 'Uploads' filter shows user-uploaded books
+            return book.uploadedBy === state.user?.id;
+          default:
+            return book.category === filter || book.language === filter;
+        }
+      });
+    });
+  }, [books, selectedFilters, state.user]);
+
+  if (loading) {
+    return (
+      <>
+        <CustomHeader title="Library" onBack={() => navigation.goBack()} image={state.user?.user_img} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0c1536" />
+        </View>
+      </>
+    );
+  }
 
   return (
     <>
-      <CustomHeader title="Library" onBack={() => navigation.goBack()} image={state.user.user_img} />
+      <CustomHeader title="Library" onBack={() => navigation.goBack()} image={state.user?.user_img} />
       <View style={styles.container}>
         <View style={styles.content}>
           <View style={styles.headerRow}>
@@ -102,14 +137,22 @@ const AllBooksScreen = () => {
                 onPress={() => navigation.navigate('BookDetails', { book: item })}
               >
                 <View style={styles.shadowWrapper}>
-                  <Image source={{ uri: item.book_img }} style={styles.bookImage} />
+                  <Image 
+                    source={{ uri: item.book_img }} 
+                    style={styles.bookImage} 
+                    onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
+                  />
                 </View>
               </TouchableOpacity>
             )}
             ListEmptyComponent={
-              <Text style={{ textAlign: 'center', marginTop: 20 }}>
-                No books match the selected filters.
-              </Text>
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>
+                  {selectedFilters.length > 0 
+                    ? 'No books match the selected filters.' 
+                    : 'No books available.'}
+                </Text>
+              </View>
             }
           />
         </View>
@@ -130,6 +173,12 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
   },
   sectionTitle: {
     fontSize: width < 600 ? 20 : 24,
@@ -190,5 +239,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#666',
+    fontSize: 16,
   },
 });
