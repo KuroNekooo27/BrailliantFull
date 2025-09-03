@@ -9,17 +9,14 @@ import Grade1 from '../components/screens/Grade1';
 
 const Stack = createNativeStackNavigator();
 
-const LibraryStack = () => {
+const SearchStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="LibraryMain" component={LibraryScreen} />
-      <Stack.Screen name="AllBooks" component={AllBooksScreen} />
+      <Stack.Screen name="SearchScreen" component={SearchScreen} />
       <Stack.Screen name="BookDetails" component={BookDetailsScreen} />
       <Stack.Screen name="ReadSession" component={BookReadSessionScreen} />
-      <Stack.Screen name="SearchScreen" component={SearchScreen} />
-      <Stack.Screen name="Grade1" component={Grade1} />
     </Stack.Navigator>
   );
 };
 
-export default LibraryStack;
+export default SearchStack;

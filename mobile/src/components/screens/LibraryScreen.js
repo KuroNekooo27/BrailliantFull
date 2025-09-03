@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   Dimensions,
+  ScrollView
 } from 'react-native';
 import CustomHeader from '../ui/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
@@ -34,7 +35,7 @@ const LibraryScreen = () => {
   return (
     <>
       <CustomHeader title="Library" image = {state.user.user_img}/>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <View style={styles.contentWrapper}>
           {/* Braille Section */}
           <Text style={styles.sectionTitle}>Braille Characters</Text>
@@ -94,7 +95,7 @@ const LibraryScreen = () => {
             </>
           )}
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 };
