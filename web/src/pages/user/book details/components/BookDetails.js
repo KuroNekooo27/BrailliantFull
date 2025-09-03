@@ -44,7 +44,7 @@ export default function BookDetails() {
                 console.log("eto ang error mo " + error)
             })
 
-        axios.post('http://localhost:8000/extract-text', {
+        axios.post('https://brailliantweb.onrender.com/extract-text', {
             pdfUrl: selectedBook.book.book_file
         })
             .then((response) => {

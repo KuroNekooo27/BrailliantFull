@@ -279,7 +279,11 @@ const verifyLoginOtpController = async (req, res) => {
         message: "Invalid OTP",
       });
     }
+
     user.loginOtpCode = undefined; // Clear the verification code after successful verification
+    user.user_last_in = new Date();
+    await user.save();
+
     await user.save();
 
     const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
@@ -379,7 +383,7 @@ const verifyActivationCodeController = async (req, res) => {
 const sendOtpForEditController = async (req, res) => {
   try {
     const { email, userID } = req.body;
-    const user = await User.findOne({ userID });
+    const user = await User.findById(userID);
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     user.genericOTP = otp;
     await user.save();
@@ -441,10 +445,10 @@ const verifyEditOtpController = async (req, res) => {
       user.user_password = await hashPassword(newPassword);
     }
 
-    user.firstname = firstname || user.user_fname;
-    user.lastname = lastname || user.user_lname;
-    user.email = email || user.user_email;
-    user.genericOTP = undefined;
+    user.user_fname = firstname || user.user_fname;
+    user.user_lname = lastname || user.user_lname;
+    user.user_email = email || user.user_email;
+
 
     await user.save();
 

@@ -41,7 +41,7 @@ export default function ContentRequest() {
                     <div className='admin-content-request'>
 
                         <div className='admin-cr-accounts'>
-                            <label className='all-req'>All Request</label>
+                            <label className='all-req'>All Upload Requests</label>
                             <div className='admin-cr-request'>
                                 <img className='cr-img' src={require('../assets/book.png')} />
                                 <div className='cr-details'>

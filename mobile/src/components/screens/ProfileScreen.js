@@ -34,6 +34,31 @@ const ProfileScreen = () => {
   let name = `${state.user.user_fname} ${state.user.user_lname}`;
   let isActivated = state.user.isActivated;
 
+  const auditTrail = async (updatedUser) => {
+    const newAudit = {
+      at_user: updatedUser.user_email,
+      at_date: new Date(),
+      at_action: 'Edited Profile',
+      at_details: {
+        at_edit_profile: {
+          at_ep_fn_old: state.user.user_fname,
+          at_ep_ln_old: state.user.user_lname,
+          at_ep_dob_old: state.user.user_dob,
+          at_ep_email_old: state.user.user_email,
+          at_ep_img_old: state.user.user_img,
+
+          at_ep_fn_new: updatedUser.user_fname,
+          at_ep_ln_new: updatedUser.user_lname,
+          at_ep_dob_new: updatedUser.user_dob,
+          at_ep_email_new: updatedUser.user_email,
+          at_ep_img_new: updatedUser.user_img,
+        }
+      }
+    };
+    console.log(newAudit)
+    await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
+  }
+
   const handleUploadPicture = async () => {
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -50,14 +75,12 @@ const ProfileScreen = () => {
         base64: true,
 
       });
-
       if (result.canceled) return;
 
       const asset = result.assets[0];
       const base64Img = `data:${asset.mimeType || "image/jpeg"};base64,${asset.base64}`;
 
       setLoading(true);
-
 
       const { data } = await axios.put(
         `https://brailliantweb.onrender.com/upload/mobile/${state.user._id}`,
@@ -69,6 +92,7 @@ const ProfileScreen = () => {
 
       const updatedUser = { ...state.user, user_img: data.imageUrl };
       const updatedData = { ...state, user: updatedUser };
+      await auditTrail(updatedData.user)
 
       await AsyncStorage.setItem("@auth", JSON.stringify(updatedData));
       setState(updatedData);
@@ -87,6 +111,7 @@ const ProfileScreen = () => {
       setLoading(true);
       const { data } = await axios.post('https://brailliantweb.onrender.com/api/v1/auth/send-otp-for-edit', {
         email: newData.email,
+        userID: state.user._id
       });
 
       if (data.otpSent) {
@@ -117,27 +142,8 @@ const ProfileScreen = () => {
       const newData = await axios.put("https://brailliantweb.onrender.com/api/v1/auth/update", pendingEditData);
       const updatedData = { ...state, user: newData.data.updatedUser };
 
-      const newAudit = {
-        at_user: newData.data.updatedUser.user_email,
-        at_date: new Date(),
-        at_action: 'Edited Profile',
-        at_details: {
-          at_edit_profile: {
-            at_ep_fn_old: updatedData.user.user_fname,
-            at_ep_ln_old: updatedData.user.user_lname,
-            at_ep_dob_old: updatedData.user.user_dob,
-            at_ep_email_old: updatedData.user.user_email,
-            at_ep_img_old: updatedData.user.user_img,
+      await auditTrail(updatedData.user)
 
-            at_ep_fn_new: newData.data.updatedUser.user_fname,
-            at_ep_ln_new: newData.data.updatedUser.user_lname,
-            at_ep_dob_new: newData.data.updatedUser.user_dob,
-            at_ep_email_new: newData.data.updatedUser.user_email,
-            at_ep_img_new: newData.data.updatedUser.user_img,
-          }
-        }
-      };
-      await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
       await AsyncStorage.setItem('@auth', JSON.stringify(newData));
       setState(updatedData);
       Alert.alert('Success', 'Profile updated');
