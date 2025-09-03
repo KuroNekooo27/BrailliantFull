@@ -85,11 +85,6 @@ const SearchScreen = () => {
     }
   };
 
-  // Function to handle navigation to book details
-  const handleBookPress = (book) => {
-    navigation.navigate('BookDetails', { book });
-  };
-
   const imageWidth = (width - 48) / 3;
 
   return (
@@ -134,7 +129,7 @@ const SearchScreen = () => {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.bookItem}
-                  onPress={() => handleBookPress(item)} // Fixed navigation call
+                  onPress={() => navigation.navigate('BookDetails', { book : item })}
                 >
                   <View style={styles.shadowWrapper}>
                     <Image 
