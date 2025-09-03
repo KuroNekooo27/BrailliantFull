@@ -127,3 +127,13 @@
 .highlighted {
     background-color: #ecf0ff;
 }
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    text-decoration: underline;
+    font-weight: 500;
+    cursor: pointer;
+    gap: 5px;
+}

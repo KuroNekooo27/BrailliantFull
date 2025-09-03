@@ -109,7 +109,7 @@ export default function AdminEditUser() {
                     <div className='admin-edit-account'>
 
                         <div className="profile-page">
-                            <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button>
+                            <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
 
                             <main className="profile-container">
 

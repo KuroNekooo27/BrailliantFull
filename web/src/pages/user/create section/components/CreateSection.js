@@ -175,7 +175,7 @@ export default function CreateSection() {
                     <div className='cre-s'>
 
                         <div className='cre-try'>
-                            <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />   <label className='cre-section'>{section?.section?.section_name || "Enter Section"}</label></button>
+                            <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
 
                             <form className='section-create'>
                                 <div className='c1'>

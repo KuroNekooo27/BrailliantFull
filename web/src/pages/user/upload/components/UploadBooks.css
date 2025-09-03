@@ -3,19 +3,17 @@
 }
 
 .uploadmaterial-container {
-  padding-top: 2rem;
+  margin-top: 20px;
   display: flex;
 }
 
-.upload-body {
-  padding-top: 20px;
+.upload-body-container{
+  padding: 40px;
 }
 
 .up {
   font-weight: bold;
   font-size: 35px;
-
-  margin-left: 80px;
 }
 
 .left-container {
@@ -48,6 +46,9 @@ input[type="file"] {
 
 .right-container {
   width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .right-container input {
@@ -109,7 +110,7 @@ input[type="file"] {
 
 
 .upload-image {
- 
+
   background-color: #101734;
   padding: 20px 60px;
   color: white;
@@ -132,12 +133,14 @@ input[type="file"] {
 
 
 
-
-
-
-
 .back-btn {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  text-decoration: underline;
+  font-weight: 500;
+  cursor: pointer;
+  gap: 5px;
   border: none;
   background-color: white;
-  cursor: pointer;
 }

@@ -103,7 +103,7 @@ export default function BookDetails() {
                 </div>
                 <div className='bd-body'>
                     <div className='book-details'>
-                        <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button><label className='bd-title'>{selectedBook.book.book_title}</label>
+                        <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /> Back</button>
                         <div className='bd-details'>
                             <div className='bd-left'>
                                 <div className='bd-left-cont'>

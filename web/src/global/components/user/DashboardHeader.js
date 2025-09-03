@@ -35,13 +35,13 @@ export default function DashboardHeader() {
         setShowDropdown((prev) => !prev);
     };
 
-
     return (
         <>
             <div className="dashboardheader-container">
                 <div className="dashboardheader-navigation">
-                    <div>
-                        <input className="dashboardheader-search" type="text" placeholder="Find a book" />
+                    <div className='dashboardheader-title-cont'>
+                        <label className='dashboardheader-title'>Home</label>
+                        <label className='dashboardheader-sub'>Hello, Teacher {users.user_fname}</label>
                     </div>
 
 
@@ -62,7 +62,7 @@ export default function DashboardHeader() {
                 {showDropdown && <DropDownMenu />}
 
                 <div className="dashboardheader-navigation">
-                    <label>Library</label>
+                    <label className='dashboardheader-library'>Library</label>
                     <nav>
                         <a href="/library">All Books</a>
                     </nav>
@@ -75,7 +75,6 @@ export default function DashboardHeader() {
                                 src={book.book_img}
                                 className='dashboardheader-book'
                                 onClick={() => { navigate('/book/detail', { state: { book: book } }); }}
-
                             />
                         ) : (
                             <div
