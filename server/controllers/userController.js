@@ -90,7 +90,6 @@ const sendEditVerificationCode = async (email, otp) => {
       text: "Edit your profile", // plain‑text body
       html: EditProfile_Template.replace("{verificationCode}", otp), // HTML body
     });
-    console.log(otp)
   } catch (error) {
     console.log("Verification Send Error", error);
   }
@@ -383,7 +382,7 @@ const verifyActivationCodeController = async (req, res) => {
 const sendOtpForEditController = async (req, res) => {
   try {
     const { email, userID } = req.body;
-    const user = await User.findById(userID);
+    const user = await User.findById({ _id: userID });
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     user.genericOTP = otp;
     await user.save();
