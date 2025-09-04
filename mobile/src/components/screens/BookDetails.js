@@ -41,7 +41,6 @@ const BookDetailsScreen = ({ route }) => {
     axios.get(`https://brailliantweb.onrender.com/api/allstudents/section/${selectedSection}`)
       .then((response) => {
         setStudents(response.data.students)
-        console.log(response.data.students)
       })
       .catch((err) => console.error(err));
   }, [selectedSection]);
@@ -59,6 +58,7 @@ const BookDetailsScreen = ({ route }) => {
     navigation.navigate('ReadSession', {
       bookTitle: book?.book_title,
       bookUrl: book?.book_file,
+      bookId: book._id,
       studentName: `${studentObj?.student_fname} ${studentObj?.student_mi || ''} ${studentObj?.student_lname}`.trim(),
       studentId: studentObj?._id
     });

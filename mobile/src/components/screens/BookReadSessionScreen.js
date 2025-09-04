@@ -17,7 +17,7 @@ import DisconnectionModal from '../ui/DisconnectionModal';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthContext';
 import SessionSummaryModal from '../ui/SessionSummaryModal';
-import moment from "moment";
+import axios from 'axios';
 
 const CHUNK_SIZE = 8;
 const { width } = Dimensions.get('window');
@@ -31,25 +31,26 @@ const BookReadSessionScreen = ({ route }) => {
   const [isDisconnected, setIsDisconnected] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const { state, setState } = useContext(AuthContext);
+  const [sessionStartTime] = useState(Date.now());
 
-  const { bookTitle = 'Unknown Book', bookUrl = '', studentName = 'Unknown Student', studentId = '' } = route.params || {};
+  const { bookTitle = 'Unknown Book', bookUrl = '', studentName = 'Unknown Student', studentId = '', bookId = '' } = route.params || {};
 
-  useEffect(() => {
-    setSessionStartTime(Date.now());
-  }, []);
-  
   const handleData = async () => {
+    const diff = Date.now() - sessionStartTime;
+    const seconds = Math.floor(diff / 1000);
+
     const BookReadData = {
       book_read_title: bookTitle,
       book_read_time_elapsed: seconds,
       book_read_date: Date.now(),
       book_read_student_id: studentId
     }
-
+    await axios.put(`https://brailliantweb.onrender.com/increment/${bookId}`);
     await axios.post('https://brailliantweb.onrender.com/api/create/bookread', BookReadData)
       .then((res) => {
         console.log("Book added:", res.data);
       })
+
   };
 
   const handleEndSession = () => {
@@ -117,7 +118,6 @@ const BookReadSessionScreen = ({ route }) => {
         setIsLoading(false);
         return;
       }
-
       try {
         const response = await fetch('https://brailliantweb.onrender.com/extract-text', {
           method: 'POST',
@@ -221,7 +221,7 @@ const BookReadSessionScreen = ({ route }) => {
         <TouchableOpacity style={styles.syncButton} onPress={handleSync}>
           <Text style={styles.syncText}>🔄 SYNC</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.endButton} onPress={handleEndSession}>
+        <TouchableOpacity style={styles.endButton} onPress={handleData}>
           <Text style={styles.endText}>🛑 END SESSION</Text>
         </TouchableOpacity>
       </View>

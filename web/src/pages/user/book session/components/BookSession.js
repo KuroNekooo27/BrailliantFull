@@ -59,7 +59,6 @@ export default function BookSession() {
 
     useEffect(() => {
         let startTime = Date.now();
-
         const updateElapsed = () => {
             const now = Date.now();
             const elapsed = Math.floor((now - startTime) / 1000);
@@ -105,7 +104,7 @@ export default function BookSession() {
 
             })
             .catch(err => console.error('Error extracting text:', err));
-        axios.get(`http://localhost:8000/api/student/${studentId}`)
+        axios.get(`https://brailliantweb.onrender.com/api/student/${studentId}`)
             .then((res) => {
                 setStudent(res.data.student);
             })
@@ -207,19 +206,10 @@ export default function BookSession() {
                                 navigate(-1)
                             }
                             }>Proceed</button>
-
-
-
-
                         </div>
                     </div>
                 </div>
             )}
-
-
-
-
-
             <div>
                 <SideNavigation />
             </div>

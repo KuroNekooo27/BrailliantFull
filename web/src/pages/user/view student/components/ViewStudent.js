@@ -37,7 +37,7 @@ export default function ViewStudent() {
             student_gender: selectedStudent.student_gender
         });
 
-        axios.get(`http://localhost:8000/api/bookread/${selectedStudent._id}`)
+        axios.get(`https://brailliantweb.onrender.com/api/bookread/${selectedStudent._id}`)
             .then((response) => {
                 console.log(response.data)
                 setBookRead(response.data.book)

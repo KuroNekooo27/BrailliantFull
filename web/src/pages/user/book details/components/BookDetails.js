@@ -55,15 +55,12 @@ export default function BookDetails() {
             });
 
     }, [])
-
     useEffect(() => {
         if (selectedStudent?.student_prev_book) {
             axios.get(`https://brailliantweb.onrender.com/book/${selectedStudent.student_prev_book}`)
                 .then((response) => {
                     console.log(response)
-
                     setBook(response.data.book.book_title)
-
                 })
                 .catch((error) => {
                     console.log("eto ang error mo " + error)
@@ -80,7 +77,6 @@ export default function BookDetails() {
             alert("Select student")
             return
         }
-        console.log(selectedStudent)
         await axios.put(`https://brailliantweb.onrender.com/increment/${selectedBook.book._id}`);
         await axios.put(`https://brailliantweb.onrender.com/api/update/student/${selectedStudent._id}`, { student_prev_book: selectedBook.book._id });
         navigate('/book/session', {
