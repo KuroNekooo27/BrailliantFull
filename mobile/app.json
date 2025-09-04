@@ -16,6 +16,7 @@
       "supportsTablet": true
     },
     "android": {
+      "icon":"./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -28,7 +29,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "4bb885aa-075a-4cf8-b932-821f8958500a"
+        "projectId": "f2ca34e3-1c5a-46bf-9adf-d843904b77a9"
       }
     }
   }
