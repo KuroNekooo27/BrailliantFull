@@ -59,7 +59,8 @@ const BookDetailsScreen = ({ route }) => {
     navigation.navigate('ReadSession', {
       bookTitle: book?.book_title,
       bookUrl: book?.book_file,
-      studentName: `${studentObj?.student_fname} ${studentObj?.student_mi || ''} ${studentObj?.student_lname}`.trim()
+      studentName: `${studentObj?.student_fname} ${studentObj?.student_mi || ''} ${studentObj?.student_lname}`.trim(),
+      studentId: studentObj?._id
     });
   };
 

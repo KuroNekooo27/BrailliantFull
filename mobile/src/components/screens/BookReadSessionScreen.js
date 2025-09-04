@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,8 @@ import { useDevice } from '../../context/DeviceContext';
 import DisconnectionModal from '../ui/DisconnectionModal';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthContext';
-import SessionSummaryModal from '../ui/SessionSummaryModal'; 
+import SessionSummaryModal from '../ui/SessionSummaryModal';
+import moment from "moment";
 
 const CHUNK_SIZE = 8;
 const { width } = Dimensions.get('window');
@@ -29,9 +30,27 @@ const BookReadSessionScreen = ({ route }) => {
   const { connectedDevice, setConnectedDevice } = useDevice();
   const [isDisconnected, setIsDisconnected] = useState(false);
   const { state, setState } = useContext(AuthContext);
+  const [sessionStartTime, setSessionStartTime] = useState(null);
 
-  const { bookTitle = 'Unknown Book', bookUrl = '', studentName = 'Unknown Student' } = route.params || {};
+  const { bookTitle = 'Unknown Book', bookUrl = '', studentName = 'Unknown Student', studentId = '' } = route.params || {};
 
+  useEffect(() => {
+    setSessionStartTime(Date.now());
+  }, []);
+  
+  const handleData = async () => {
+    const BookReadData = {
+      book_read_title: bookTitle,
+      book_read_time_elapsed: seconds,
+      book_read_date: Date.now(),
+      book_read_student_id: studentId
+    }
+
+    await axios.post('https://brailliantweb.onrender.com/api/create/bookread', BookReadData)
+      .then((res) => {
+        console.log("Book added:", res.data);
+      })
+  };
 
   const handleEndSession = () => {
     Alert.alert(
@@ -64,7 +83,8 @@ const BookReadSessionScreen = ({ route }) => {
     studentName: studentName,
     book: bookTitle,
     timeElapsed: getElapsedTime(),
-  };  
+    studentId: studentId
+  };
 
   useEffect(() => {
     if (!connectedDevice) return;
@@ -106,7 +126,7 @@ const BookReadSessionScreen = ({ route }) => {
           },
           body: JSON.stringify({ pdfUrl: bookUrl })
         })
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
         }
@@ -212,6 +232,7 @@ const BookReadSessionScreen = ({ route }) => {
         sessionData={sessionData}
         onProceed={() => {
           setShowSummary(false);
+          handleData()
           navigation.goBack();
         }}
       />

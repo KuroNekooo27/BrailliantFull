@@ -142,11 +142,6 @@ export default function BookSession() {
             .then((res) => {
                 console.log("Book added:", res.data);
             })
-            .catch((error) => {
-                console.error("Failed to add student", error);
-                alert("Failed to add student. Please try again.");
-            });
-
     }
 
     const togggleConfirmationModal = () => {
