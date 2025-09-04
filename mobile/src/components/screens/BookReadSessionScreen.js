@@ -46,11 +46,8 @@ const BookReadSessionScreen = ({ route }) => {
       book_read_student_id: studentId
     }
     await axios.put(`https://brailliantweb.onrender.com/increment/${bookId}`);
+    await axios.put(`https://brailliantweb.onrender.com/api/update/student/${studentId}`, { student_prev_book: bookId });
     await axios.post('https://brailliantweb.onrender.com/api/create/bookread', BookReadData)
-      .then((res) => {
-        console.log("Book added:", res.data);
-      })
-
   };
 
   const handleEndSession = () => {
@@ -221,7 +218,7 @@ const BookReadSessionScreen = ({ route }) => {
         <TouchableOpacity style={styles.syncButton} onPress={handleSync}>
           <Text style={styles.syncText}>🔄 SYNC</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.endButton} onPress={handleData}>
+        <TouchableOpacity style={styles.endButton} onPress={handleEndSession}>
           <Text style={styles.endText}>🛑 END SESSION</Text>
         </TouchableOpacity>
       </View>
