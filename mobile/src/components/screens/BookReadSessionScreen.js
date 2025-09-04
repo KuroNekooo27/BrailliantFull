@@ -28,7 +28,9 @@ const BookReadSessionScreen = ({ route }) => {
   const [error, setError] = useState(null);
   const { connectedDevice, setConnectedDevice } = useDevice();
   const [isDisconnected, setIsDisconnected] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
   const { state, setState } = useContext(AuthContext);
+  const [sessionStartTime] = useState(Date.now());
 
   const { bookTitle = 'Unknown Book', bookUrl = '', studentName = 'Unknown Student' } = route.params || {};
 
@@ -60,7 +62,7 @@ const BookReadSessionScreen = ({ route }) => {
   };
 
   const sessionData = {
-    date: moment().format("MMMM D, YYYY"),
+    date: new Date().toLocaleDateString(),
     studentName: studentName,
     book: bookTitle,
     timeElapsed: getElapsedTime(),
