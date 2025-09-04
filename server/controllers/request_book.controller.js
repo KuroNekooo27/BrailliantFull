@@ -104,8 +104,6 @@ const extractRequestBookPDFText = async (req, res) => {
     }
 };
 
-// Other basic CRUD
-const testconnection = (req, res) => res.json({ status: "Okay connection" });
 
 const findAllRequestBooks = async (req, res) => {
     try {
@@ -157,7 +155,6 @@ const deleteRequestBook = async (req, res) => {
 };
 
 module.exports = {
-    testconnection,
     deleteRequestBook,
     updateRequestBook,
     findRequestBookByName,

@@ -1,10 +1,6 @@
 const BookRead = require("../models/book_read.model");
 const mongoose = require('mongoose');
 
-const testconnection = (req, res) => {
-    res.json({ status: "Okay connection" })
-}
-
 const findBookReadById = (req, res) => {
     BookRead.findById(req.params.id)
         .then((theBook) => {
@@ -44,7 +40,6 @@ const createBookRead = (req, res) => {
 
 
 module.exports = {
-    testconnection,
     findBookReadById,
     findBookReadByName,
     createBookRead,

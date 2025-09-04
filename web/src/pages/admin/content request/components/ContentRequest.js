@@ -20,8 +20,6 @@ export default function ContentRequest() {
         axios.get('https://brailliantweb.onrender.com/api/allrequestbooks')
             .then((response) => {
                 setAllBooks(response.data)
-                console.log('this books', response.data)
-
             })
             .catch((error) => {
                 console.log("eto ang error mo " + error)
@@ -39,7 +37,6 @@ export default function ContentRequest() {
                 </div>
                 <div className='admin-cr-body'>
                     <div className='admin-content-request'>
-
                         <div className='admin-cr-accounts'>
                             <label className='all-req'>All Upload Requests</label>
                             <div className='admin-cr-request'>
@@ -48,7 +45,6 @@ export default function ContentRequest() {
                                     <label className='cr-count'>{pendingBooks.length}</label>
                                     <label className='cr-text'>Pending Request</label>
                                 </div>
-
                             </div>
                         </div>
                         <div className='admin-request'>
@@ -100,14 +96,9 @@ export default function ContentRequest() {
                                                 </td>
                                             </tr>
                                         ))}
-
                                 </table>
                             </div>
-
                         </div>
-
-
-
                     </div>
                 </div>
             </div>

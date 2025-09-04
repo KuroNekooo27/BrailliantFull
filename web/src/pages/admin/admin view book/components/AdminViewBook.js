@@ -15,7 +15,6 @@ export default function AdminViewBook() {
     const location = useLocation();
     const selectedBook = location.state.book;
 
-    console.log(selectedBook)
 
     useEffect(() => {
         if (!selectedBook?.request_book_file) return;
@@ -39,7 +38,6 @@ export default function AdminViewBook() {
         axios.put(`https://brailliantweb.onrender.com/api/update/requestbook/${selectedBook._id}`, {
             request_book_status: 'Approved'
         })
-
         const approvedBook = {
             book_title: selectedBook.request_book_title,
             book_author: selectedBook.request_book_title,
@@ -51,12 +49,18 @@ export default function AdminViewBook() {
             book_file: selectedBook.request_book_file,
             book_last_modified: new Date(),
         };
-
-
-        const response = await axios.post('https://brailliantweb.onrender.com/api/newbook', approvedBook);
+        await axios.post('https://brailliantweb.onrender.com/api/newbook', approvedBook);
         navigate('/admin/content-request')
-
     }
+
+    const handleDecline = async () => {
+        try {
+            await axios.delete(`https://brailliantweb.onrender.com/api/delete/requestbook/${selectedBook._id}`);
+            navigate('/admin/content-request');
+        } catch (err) {
+            console.error("Error deleting book:", err);
+        }
+    };
 
     return (
         <div className='container'>
@@ -106,7 +110,7 @@ export default function AdminViewBook() {
 
                         </div>
                         <button className='avb-btn' onClick={handleApprove}>Approve Material</button>
-
+                        <button className='avb-btn' onClick={handleDecline}>Decline Material</button>
 
                     </div>
 

@@ -18,7 +18,6 @@ export default function ManageLibrary() {
     useEffect(() => {
         axios.get('https://brailliantweb.onrender.com/api/allbooks')
             .then((response) => {
-                console.log(response.data)
                 setAllBooks(response.data)
             })
             .catch((error) => {

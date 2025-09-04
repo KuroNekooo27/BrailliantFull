@@ -255,21 +255,24 @@ export default function ViewStudent() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {bookRead?.map((book, index) => (
-                                                <tr key={index}>
-                                                    <td>{book.book_read_title}</td>
-                                                    <td>
-                                                        {book.book_read_time_elapsed != null
-                                                            ? formatTime(book.book_read_time_elapsed)
-                                                            : ""}
-                                                    </td>
-                                                    <td>
-                                                        {book.book_read_date
-                                                            ? new Date(book.book_read_date).toLocaleString()
-                                                            : ""}
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                            {bookRead
+                                                ?.slice()
+                                                .sort((a, b) => new Date(b.book_read_date) - new Date(a.book_read_date))
+                                                .map((book, index) => (
+                                                    <tr key={index}>
+                                                        <td>{book.book_read_title}</td>
+                                                        <td>
+                                                            {book.book_read_time_elapsed != null
+                                                                ? formatTime(book.book_read_time_elapsed)
+                                                                : ""}
+                                                        </td>
+                                                        <td>
+                                                            {book.book_read_date
+                                                                ? new Date(book.book_read_date).toLocaleString()
+                                                                : ""}
+                                                        </td>
+                                                    </tr>
+                                                ))}
                                         </tbody>
                                     </table>
 
