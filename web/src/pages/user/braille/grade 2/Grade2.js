@@ -28,7 +28,7 @@ export default function Grade1() {
                     <div className='g2-body-container'>
                         <div className='g2-title'>
                             <div>
-                                <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button>
+                                <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
                                 <label className='g2-title-main'>Braille Characters</label>
 
                             </div>

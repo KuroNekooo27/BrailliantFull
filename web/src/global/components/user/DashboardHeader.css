@@ -141,6 +141,7 @@ input:focus {
     justify-content: center;
     color: black;
     font-weight: 600;
+    text-align: center;
 }
 
 .dashboardheader-book img {

@@ -82,7 +82,7 @@ export default function DashboardHeader() {
                                 className="dashboardheader-book"
                                 onClick={() => { navigate('/book/detail', { state: { book: book } }); }}
                             >
-                                <text>{book.book_title}</text>
+                                <label>{book.book_title}</label>
                             </div>
                         )
                     ))}
