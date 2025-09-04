@@ -137,9 +137,12 @@ const AllBooksScreen = () => {
                 onPress={() => navigation.navigate('BookDetails', { book: item })}
               >
                 <View style={styles.shadowWrapper}>
-                  <Image 
-                    source={{ uri: item.book_img }} 
-                    style={styles.bookImage} 
+                  <Image
+                    source={item.book_img 
+                      ? { uri: item.book_img } 
+                      : require('../../../assets/noimg.png')
+                    }
+                    style={styles.bookImage}
                     onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
                   />
                 </View>

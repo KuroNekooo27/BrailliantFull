@@ -125,7 +125,10 @@ const AnalyticsScreen = () => {
           {topBooks.map((book, index) => (
             <View key={book.book_title} style={styles.topBookCard}>
               <Text style={styles.rank}>#{index + 1}</Text>
-              <Image source={book.book_img} style={styles.bookImage} />
+              <Image source={item.book_img 
+                      ? { uri: item.book_img } 
+                      : require('../../../assets/noimg.png')
+                    } style={styles.bookImage} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.bookTitle}>{book.book_title}</Text>
                 <Text style={styles.accessCount}>Access Count: {book.book_count}</Text>

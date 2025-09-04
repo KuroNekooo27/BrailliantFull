@@ -73,7 +73,11 @@ const LibraryScreen = () => {
                     style={styles.bookCard}
                     onPress={() => navigation.navigate('BookDetails', { book: item })} // replace with onPressBook if defined
                   >
-                    <Image source={item.book_img} style={styles.bookImage} />
+                    <Image source={item.book_img 
+                      ? { uri: item.book_img } 
+                      : require('../../../assets/noimg.png')
+                      } style={styles.bookImage} 
+                    />
                     <Text style={styles.bookTitle} numberOfLines={1}>
                       {item.book_title}
                     </Text>
