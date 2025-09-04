@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useMemo } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { 
   View, 
   TextInput, 
@@ -23,15 +23,15 @@ const SearchScreen = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [allBooks, setAllBooks] = useState([]);
-  const { state, setState } = useContext(AuthContext);
-  const navigation = useNavigation(); // Get navigation object
+  const { state } = useContext(AuthContext);
+  const navigation = useNavigation();
 
   // Fetch all books on component mount
   useEffect(() => {
     const fetchAllBooks = async () => {
       try {
         const response = await axios.get('https://brailliantweb.onrender.com/api/allbooks');
-        setAllBooks(response.data.books);
+        setAllBooks(response.data.books || []);
       } catch (error) {
         console.error('Error fetching books:', error);
       }
@@ -40,33 +40,27 @@ const SearchScreen = () => {
     fetchAllBooks();
   }, []);
 
-  // Search function using the API
-  const searchBooks = async (query) => {
+  // Local search function
+  const searchBooks = (query) => {
     if (!query.trim()) {
       setSearchResults([]);
       return;
     }
 
     setIsSearching(true);
-    try {
-      // Using the same API endpoint with query parameters
-      const response = await axios.get(`https://brailliantweb.onrender.com/api/allbooks?search=${encodeURIComponent(query)}`);
-      setSearchResults(response.data.books);
-    } catch (error) {
-      console.error('Search error:', error);
-      // Fallback to client-side search if API search fails
-      const filteredBooks = allBooks.filter(book => 
-        book.title.toLowerCase().includes(query.toLowerCase()) ||
-        book.author.toLowerCase().includes(query.toLowerCase()) ||
-        book.category.toLowerCase().includes(query.toLowerCase())
-      );
-      setSearchResults(filteredBooks);
-    } finally {
-      setIsSearching(false);
-    }
+    const lowerQuery = query.toLowerCase();
+
+    const filteredBooks = allBooks.filter((book) =>
+      book.book_title?.toLowerCase().includes(lowerQuery) ||
+      book.book_author?.toLowerCase().includes(lowerQuery) ||
+      book.book_category?.toLowerCase().includes(lowerQuery)
+    );
+
+    setSearchResults(filteredBooks);
+    setIsSearching(false);
   };
 
-  // Debounced search to avoid too many API calls
+  // Debounced search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchQuery) {
@@ -74,18 +68,16 @@ const SearchScreen = () => {
       } else {
         setSearchResults([]);
       }
-    }, 500); // 500ms debounce
+    }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
+  }, [searchQuery, allBooks]);
 
   const handleSearchSubmit = () => {
     if (searchQuery) {
       searchBooks(searchQuery);
     }
   };
-
-  const imageWidth = (width - 48) / 3;
 
   return (
     <>
@@ -133,7 +125,10 @@ const SearchScreen = () => {
                 >
                   <View style={styles.shadowWrapper}>
                     <Image 
-                      source={{ uri: item.book_img }} 
+                      source={item.book_img 
+                        ? { uri: item.book_img } 
+                        : require('../../../assets/noimg.png')
+                      } 
                       style={styles.bookImage} 
                       onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
                     />
