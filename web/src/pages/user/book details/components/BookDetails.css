@@ -6,6 +6,16 @@
     padding: 40px;
 }
 
+.back-btn {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    text-decoration: underline;
+    font-weight: 500;
+    cursor: pointer;
+    gap: 5px;
+}
+
 .bd-title {
     font-weight: bold;
     font-size: 32px;
@@ -24,10 +34,11 @@
     flex-direction: column;
 }
 
-.bd-left-cont{
+.bd-left-cont {
     display: flex;
 }
-.bd-file-preview{
+
+.bd-file-preview {
     margin-top: 20px;
     font-weight: 500;
     font-size: 25px;

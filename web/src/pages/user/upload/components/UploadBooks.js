@@ -197,117 +197,116 @@ export default function UploadBooks() {
                     <Header page={page} searchBar={searchBar} />
                 </div>
                 <div className='upload-body'>
+                    <div className='upload-body-container'>
+                        <label className='up'>
+                            <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../assets/back.png')} />Back</button>
+                            Upload Books</label>
+                        <form className="uploadmaterial-container" onSubmit={(e) => {
+                            e.preventDefault()
+                            handleUploadBook()
 
-                    <label className='up'>
-                        <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../assets/back.png')} /></button>
-                        Upload Books</label>
+                        }}>
+                            <div className='left-container'>
 
-
-                    <form className="uploadmaterial-container" onSubmit={(e) => {
-                        e.preventDefault()
-                        handleUploadBook()
-
-                    }}>
-                        <div className='left-container'>
-
-                            <img
-                                className='upload-image-container'
-                                src={selectedImage}
-                            />
-
-                            <div>
-
-                                <label for="image-upload" className='upload-image'>
-                                    Upload Book Cover
-                                </label>
-
-                                <input
-                                    id='image-upload'
-                                    type='file'
-                                    accept='image/*'
-                                    onChange={onInputChange}
+                                <img
+                                    className='upload-image-container'
+                                    src={selectedImage}
                                 />
+
+                                <div>
+
+                                    <label for="image-upload" className='upload-image'>
+                                        Upload Book Cover
+                                    </label>
+
+                                    <input
+                                        id='image-upload'
+                                        type='file'
+                                        accept='image/*'
+                                        onChange={onInputChange}
+                                    />
+                                </div>
+
+
+
+
+                                <div className='lower-left-container'>
+
+                                    <label for="file-upload" class="custom-file-upload">
+                                        {file.name ? file.name : "Attach file here"}
+                                    </label>
+                                    <input
+                                        id="file-upload"
+                                        type="file"
+                                        accept='application/pdf'
+                                        required
+                                        onChange={(e) => {
+                                            setFile(e.target.files[0])
+                                        }}
+
+                                    />
+
+
+                                </div>
                             </div>
 
 
 
-
-                            <div className='lower-left-container'>
-
-                                <label for="file-upload" class="custom-file-upload">
-                                    {file.name ? file.name : "Attach file here"}
-                                </label>
+                            <div className='right-container'>
+                                <label>Title</label>
                                 <input
-                                    id="file-upload"
-                                    type="file"
-                                    accept='application/pdf'
                                     required
-                                    onChange={(e) => {
-                                        setFile(e.target.files[0])
-                                    }}
-
+                                    type='text'
+                                    placeholder='Enter book title here'
+                                    value={newBook.request_book_title}
+                                    onChange={(e) => setNewBook({ ...newBook, request_book_title: e.target.value })}
                                 />
-
-
+                                <label>Author</label>
+                                <input
+                                    required
+                                    type='text'
+                                    placeholder='Enter author name here'
+                                    value={newBook.request_book_author}
+                                    onChange={(e) => setNewBook({ ...newBook, request_book_author: e.target.value })}
+                                />
+                                <label>Genre</label>
+                                <input
+                                    required
+                                    type='text'
+                                    placeholder=' Enter genre here'
+                                    value={newBook.request_book_genre}
+                                    onChange={(e) => setNewBook({ ...newBook, request_book_genre: e.target.value })}
+                                />
+                                <label>Description</label>
+                                <textarea
+                                    required
+                                    type='text'
+                                    placeholder='Enter description here'
+                                    value={newBook.request_book_description}
+                                    onChange={(e) => setNewBook({ ...newBook, request_book_description: e.target.value })}
+                                />
+                                <label>Level</label>
+                                <input
+                                    required
+                                    type='text'
+                                    placeholder=' Enter book level here'
+                                    value={newBook.request_book_level}
+                                    onChange={(e) => setNewBook({ ...newBook, request_book_level: e.target.value })}
+                                />
+                                <label>Date Published</label>
+                                <input
+                                    required
+                                    type='date'
+                                    placeholder='MM/DD/YYYY'
+                                    value={newBook.request_book_date_published}
+                                    onChange={(e) => setNewBook({ ...newBook, request_book_date_published: e.target.value })}
+                                />
+                                <button type='submit'>Submit Upload Request</button>
                             </div>
-                        </div>
+                        </form>
+                    </div>
 
 
-
-
-
-                        <div className='right-container'>
-                            <p>Title</p>
-                            <input
-                                required
-                                type='text'
-                                placeholder='Enter book title here'
-                                value={newBook.request_book_title}
-                                onChange={(e) => setNewBook({ ...newBook, request_book_title: e.target.value })}
-                            />
-                            <p>Author</p>
-                            <input
-                                required
-                                type='text'
-                                placeholder='Enter author name here'
-                                value={newBook.request_book_author}
-                                onChange={(e) => setNewBook({ ...newBook, request_book_author: e.target.value })}
-                            />
-                            <p>Genre</p>
-                            <input
-                                required
-                                type='text'
-                                placeholder=' Enter genre here'
-                                value={newBook.request_book_genre}
-                                onChange={(e) => setNewBook({ ...newBook, request_book_genre: e.target.value })}
-                            />
-                            <p>Description</p>
-                            <textarea
-                                required
-                                type='text'
-                                placeholder='Enter description here'
-                                value={newBook.request_book_description}
-                                onChange={(e) => setNewBook({ ...newBook, request_book_description: e.target.value })}
-                            />
-                            <p>Level</p>
-                            <input
-                                required
-                                type='text'
-                                placeholder=' Enter book level here'
-                                value={newBook.request_book_level}
-                                onChange={(e) => setNewBook({ ...newBook, request_book_level: e.target.value })}
-                            />
-                            <p>Date Published</p>
-                            <input
-                                required
-                                type='date'
-                                placeholder='MM/DD/YYYY'
-                                value={newBook.request_book_date_published}
-                                onChange={(e) => setNewBook({ ...newBook, request_book_date_published: e.target.value })}
-                            />
-                            <button type='submit'>Submit Upload Request</button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>

@@ -79,3 +79,13 @@
     table-layout: fixed;
 
 }
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    text-decoration: underline;
+    font-weight: 500;
+    cursor: pointer;
+    gap: 5px;
+}

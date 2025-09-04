@@ -130,120 +130,107 @@ export default function AdminUploadBooks() {
                     <AdminHeader page={"Upload Books"} />
                 </div>
                 <div className='upload-body'>
-                    <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button>
-                    <label className='up'>Upload Books</label>
+                    <div className='upload-body-container'>
+                        <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
+                        <label className='up'>Upload Books</label>
 
-                    <form className="uploadmaterial-container" onSubmit={(e) => {
-                        e.preventDefault()
-                        handleUploadBook()
-
-
-                    }}>
-                        <div className='left-container'>
-
-                            <img
-                                className='upload-image-container'
-                                src={selectedImage}
-                            />
-
-                            <div>
-
-                                <label for="image-upload" className='upload-image'>
-                                    Upload Book Cover
-                                </label>
-
-                                <input
-                                    id='image-upload'
-                                    type='file'
-                                    accept='image/*'
-                                    onChange={onInputChange}
-                                    required
-                                />
-                            </div>
+                        <form className="uploadmaterial-container" onSubmit={(e) => {
+                            e.preventDefault()
+                            handleUploadBook()
 
 
-                            <div className='lower-left-container'>
+                        }}>
+                            <div className='left-container'>
 
-                                <label for="file-upload" class="custom-file-upload">
-                                    <img src={require('../assets/file.png')} /> Attach file here
-                                </label>
-                                <input
-                                    id="file-upload"
-                                    type="file"
-                                    accept='application/pdf'
-                                    required
-                                    onChange={(e) => setFile(e.target.files[0])}
-
+                                <img
+                                    className='upload-image-container'
+                                    src={selectedImage}
                                 />
 
+                                <div>
 
+                                    <label for="image-upload" className='upload-image'>
+                                        Upload Book Cover
+                                    </label>
+
+                                    <input
+                                        id='image-upload'
+                                        type='file'
+                                        accept='image/*'
+                                        onChange={onInputChange}
+                                        required
+                                    />
+                                </div>
+                                <div className='lower-left-container'>
+                                    <label for="file-upload" class="custom-file-upload">
+                                        {file.name ? file.name : "Attach file here"}
+                                    </label>
+                                    <input
+                                        id="file-upload"
+                                        type="file"
+                                        accept='application/pdf'
+                                        required
+                                        onChange={(e) => {
+                                            setFile(e.target.files[0])
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        </div>
 
+                            <div className='right-container'>
+                                <label>Title</label>
+                                <input
+                                    required
+                                    type='text'
+                                    placeholder='Enter book title here'
+                                    value={newBook.book_title}
+                                    onChange={(e) => setNewBook({ ...newBook, book_title: e.target.value })}
+                                />
+                                <label>Author</label>
+                                <input
+                                    required
+                                    type='text'
+                                    placeholder='Enter author name here'
+                                    value={newBook.book_author}
+                                    onChange={(e) => setNewBook({ ...newBook, book_author: e.target.value })}
+                                />
+                                <label>Genre</label>
+                                <input
+                                    required
+                                    type='text'
+                                    placeholder=' Enter genre here'
+                                    value={newBook.book_genre}
+                                    onChange={(e) => setNewBook({ ...newBook, book_genre: e.target.value })}
+                                />
+                                <label>Level</label>
+                                <input
+                                    required
+                                    type='text'
+                                    placeholder=' Enter book level here'
+                                    value={newBook.book_level}
+                                    onChange={(e) => setNewBook({ ...newBook, book_level: e.target.value })}
+                                />
+                                <label>Description</label>
+                                <input
+                                    required
+                                    type='text'
+                                    placeholder=' Enter book level here'
+                                    value={newBook.book_description}
+                                    onChange={(e) => setNewBook({ ...newBook, book_description: e.target.value })}
+                                />
+                                <label>Date Published</label>
+                                <input
+                                    required
+                                    type='date'
+                                    placeholder='MM/DD/YYYY'
+                                    value={newBook.book_date_published}
+                                    onChange={(e) => setNewBook({ ...newBook, book_date_published: e.target.value })}
+                                />
+                                <button type='submit'><img src={require('../assets/upload.png')} /> Upload Book</button>
+                            </div>
+                        </form>
 
-
-
-
-                        <div className='right-container'>
-                            <p>Title</p>
-                            <input
-                                required
-                                type='text'
-                                placeholder='Enter book title here'
-                                value={newBook.book_title}
-                                onChange={(e) => setNewBook({ ...newBook, book_title: e.target.value })}
-                            />
-                            <p>Author</p>
-                            <input
-                                required
-                                type='text'
-                                placeholder='Enter author name here'
-                                value={newBook.book_author}
-                                onChange={(e) => setNewBook({ ...newBook, book_author: e.target.value })}
-                            />
-                            <p>Genre</p>
-                            <input
-                                required
-                                type='text'
-                                placeholder=' Enter genre here'
-                                value={newBook.book_genre}
-                                onChange={(e) => setNewBook({ ...newBook, book_genre: e.target.value })}
-                            />
-                            <p>Level</p>
-                            <input
-                                required
-                                type='text'
-                                placeholder=' Enter book level here'
-                                value={newBook.book_level}
-                                onChange={(e) => setNewBook({ ...newBook, book_level: e.target.value })}
-                            />
-                            <p>Description</p>
-                            <input
-                                required
-                                type='text'
-                                placeholder=' Enter book level here'
-                                value={newBook.book_description}
-                                onChange={(e) => setNewBook({ ...newBook, book_description: e.target.value })}
-                            />
-                            <p>Date Published</p>
-                            <input
-                                required
-                                type='date'
-                                placeholder='MM/DD/YYYY'
-                                value={newBook.book_date_published}
-                                onChange={(e) => setNewBook({ ...newBook, book_date_published: e.target.value })}
-                            />
-                            <button type='submit'><img src={require('../assets/upload.png')} /> Upload Book</button>
-                        </div>
-                    </form>
-
-
-
-
-
-
-
-
+                    </div>
                 </div>
             </div>
         </div>

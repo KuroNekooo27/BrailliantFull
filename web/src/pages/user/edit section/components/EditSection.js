@@ -117,7 +117,7 @@ export default function EditSection() {
                     <div className='edit-sect'>
                         <div className='es-title'>
                             <div>
-                                <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button>
+                                <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /> Back</button>
                                 <label className='level-section'>
                                     {section?.section_level ?? 'Loading...'} {section?.section_name ?? ''}
                                 </label>

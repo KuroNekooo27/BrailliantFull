@@ -161,7 +161,7 @@ export default function ViewStudent() {
                 <div className='vs-body'>
                     <div className='view-student'>
                         <button className='back-btn' onClick={() => navigate(-1)}>
-                            <img src={require('../../../../global/asset/back.png')} />
+                            <img src={require('../../../../global/asset/back.png')} /> Back
                         </button>
                         <label className='vs-student'>{formData.student_lname}, {formData.student_fname}</label>
                         <div className='vs'>

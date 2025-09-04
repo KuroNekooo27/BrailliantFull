@@ -68,7 +68,8 @@ input:focus {
     display: flex;
 }
 
-.dashboardheader-navigation label {
+
+.dashboardheader-library {
     font-size: 40px;
     font-weight: bold;
     margin-left: 30px;
@@ -81,6 +82,22 @@ input:focus {
     margin-top: 50px;
 }
 
+.dashboardheader-title-cont {
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboardheader-title {
+    font-size: 35px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.dashboardheader-sub {
+    font-size: 18px;
+    font-weight: 500;
+}
 
 
 
@@ -109,13 +126,12 @@ input:focus {
     max-height: 100%;
     width: 95%;
     margin: 0 auto;
-    background-color: beige;
 }
 
 .dashboardheader-book {
     background-color: #e5e7eb;
-    height: 80%;
-    width: 15%;
+    height: 85%;
+    width: 13%;
     margin: 10px;
     cursor: pointer;
     transition: transform 0.2s;
@@ -124,7 +140,7 @@ input:focus {
     align-items: center;
     justify-content: center;
     color: black;
-    font-weight:600;
+    font-weight: 600;
 }
 
 .dashboardheader-book img {

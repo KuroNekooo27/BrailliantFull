@@ -70,7 +70,7 @@ export default function AdminViewBook() {
                 </div>
                 <div className='bd-body'>
                     <div className='book-details'>
-                        <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button>
+                        <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
 
                         <label className='bd-title'>{selectedBook.request_book_title}</label>
                         <div className='bd-details'>

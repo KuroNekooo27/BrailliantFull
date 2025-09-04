@@ -179,8 +179,7 @@ export default function AddStudent() {
                 {showDropdown && <DropDownMenu />}
                 <div className='as-body'>
                     <div className='back-container'>
-                        <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button>
-                        <label>sa</label>
+                        <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
                     </div>
                     <div className='as-body-cont'>
                         <form className='as'>
