@@ -21,7 +21,7 @@ const characters = [
   { char: 'g', label: 'g(7)', image: require('../../../assets/brailleChar/g.png') },
   { char: 'h', label: 'h(8)', image: require('../../../assets/brailleChar/h.png') },
   { char: 'i', label: 'i(9)', image: require('../../../assets/brailleChar/i.png') },
-  { char: 'j', label: 'j(10)', image: require('../../../assets/brailleChar/j.png') },
+  { char: 'j', label: 'j(0)', image: require('../../../assets/brailleChar/j.png') },
   { char: 'k', label: 'k', image: require('../../../assets/brailleChar/k.png') },
   { char: 'l', label: 'l', image: require('../../../assets/brailleChar/l.png') },
   { char: 'm', label: 'm', image: require('../../../assets/brailleChar/m.png') },
@@ -51,8 +51,8 @@ const Grade1 = () => {
         <View style={styles.content}>
           <Text style={styles.title}>Grade 1 Braille</Text>
           <Text style={styles.description}>
-            Grade 1 braille is a letter-for-letter substitution of its printed counterpart. This is the preferred code for beginners because it allows people to get familiar with, and recognize different aspects of, the code while learning how to read braille.
-            {'\n\n'}English grade 1 braille consists of the 26 standard letters of the alphabet as well as punctuation.
+            Grade 1 braille is a letter-for-letter substitution of its printed counterpart. This is the preferred code for beginners because it allows people to get familiar with, and recognize different aspects of the code while learning how to read braille.
+            {'\n\n'}English grade 1 braille consists of the 26 standard letters of the alphabet, and numbers 0-9.
           </Text>
 
           <Text style={styles.gridHeader}>Click a character to sync it to the display!</Text>
