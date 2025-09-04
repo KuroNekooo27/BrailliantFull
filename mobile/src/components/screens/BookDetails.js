@@ -54,9 +54,12 @@ const BookDetailsScreen = ({ route }) => {
       );
       return;
     }
+    const studentObj = students.find((s) => s._id === selectedStudent);
+
     navigation.navigate('ReadSession', {
       bookTitle: book?.book_title,
       bookUrl: book?.book_file,
+      studentName: `${studentObj?.student_fname} ${studentObj?.student_mi || ''} ${studentObj?.student_lname}`.trim()
     });
   };
 

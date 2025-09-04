@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -61,6 +61,7 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Image source={require('../../../assets/splash-icon.png')} style={styles.banner}/>
       <Text style={styles.title}>Log In</Text>
 
       <View style={styles.inputContainer}>
@@ -111,6 +112,14 @@ const LoginScreen = () => {
 export default LoginScreen;
 
 const styles = StyleSheet.create({
+  banner:{
+    width: '100%',
+    resizeMode: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
+    flex: 0.3,
+    marginBottom: 20,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f6fa',

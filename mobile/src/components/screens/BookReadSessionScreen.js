@@ -16,6 +16,7 @@ import { useDevice } from '../../context/DeviceContext';
 import DisconnectionModal from '../ui/DisconnectionModal';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthContext';
+import SessionSummaryModal from '../ui/SessionSummaryModal'; 
 
 const CHUNK_SIZE = 8;
 const { width } = Dimensions.get('window');
@@ -29,7 +30,8 @@ const BookReadSessionScreen = ({ route }) => {
   const [isDisconnected, setIsDisconnected] = useState(false);
   const { state, setState } = useContext(AuthContext);
 
-  const { bookTitle = 'Unknown Book', bookUrl = '' } = route.params || {};
+  const { bookTitle = 'Unknown Book', bookUrl = '', studentName = 'Unknown Student' } = route.params || {};
+
 
   const handleEndSession = () => {
     Alert.alert(
@@ -40,28 +42,29 @@ const BookReadSessionScreen = ({ route }) => {
         {
           text: 'Yes',
           style: 'destructive',
-          onPress: async () => {
-            try {
-              // If connected, disconnect device
-              if (connectedDevice) {
-                await connectedDevice.cancelConnection?.();
-              }
-            } catch (err) {
-              console.warn('Error disconnecting device:', err);
-            }
-            setConnectedDevice(null);
-            navigation.goBack(); // Or navigation.navigate('Home')
+          onPress: () => {
+            setShowSummary(true); // show modal first
           }
         },
       ]
     );
   };
 
+  const getElapsedTime = () => {
+    const diff = Date.now() - sessionStartTime;
+    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
-
-
-
-
+  const sessionData = {
+    date: moment().format("MMMM D, YYYY"),
+    studentName: studentName,
+    book: bookTitle,
+    timeElapsed: getElapsedTime(),
+  };  
 
   useEffect(() => {
     if (!connectedDevice) return;
@@ -204,6 +207,14 @@ const BookReadSessionScreen = ({ route }) => {
       </View>
 
       <DisconnectionModal visible={isDisconnected} onClose={() => setIsDisconnected(false)} />
+      <SessionSummaryModal
+        visible={showSummary}
+        sessionData={sessionData}
+        onProceed={() => {
+          setShowSummary(false);
+          navigation.goBack();
+        }}
+      />
 
     </View>
   );
