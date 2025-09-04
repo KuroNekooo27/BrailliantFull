@@ -67,13 +67,6 @@ const HomeScreen = () => {
                 <Text style={styles.brailleText}>Grade 1{'\n'}Braille</Text>
               </TouchableOpacity>
             </View>
-
-            <View style={[styles.brailleCard, { backgroundColor: '#ffd6d6' }]}>
-              <TouchableOpacity style={styles.brailleTouchable} onPress={() => navigation.navigate('Grade2')}>
-                <Image source={require('../../../assets/brailleChar/G2.png')} />
-                <Text style={styles.brailleText}>Grade 2{'\n'}Braille</Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
       </ScrollView>
