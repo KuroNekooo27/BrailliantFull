@@ -54,30 +54,30 @@ export default function AdminViewReal() {
             <div>
                 <AdminSideNavigation />
             </div>
-            <div className='bd-container'>
-                <div className='bd-header'>
+            <div className='a-bd-container'>
+                <div className='a-bd-header'>
                     <AdminHeader page={"Book Details"} />
                 </div>
-                <div className='bd-body'>
-                    <div className='book-details'>
+                <div className='a-bd-body'>
+                    <div className='a-book-details'>
                         <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
 
-                        <label className='bd-title'>{book.book_title}</label>
-                        <div className='bd-details'>
-                            <div className='bd-left'>
+                        <label className='a-bd-title'>{book.book_title}</label>
+                        <div className='a-bd-details'>
+                            <div className='a-bd-left'>
                                 {book.book_img ? (
                                     <img
-                                        className='bd-cover'
+                                        className='a-bd-cover'
                                         src={book.book_img}
                                     />
                                 ) : (
                                     <img
-                                        className='bd-cover'
+                                        className='a-bd-cover'
                                         src={require('../assets/noimg.png')}
                                     />
                                 )
                                 }
-                                <div className='bd-info'>
+                                <div className='a-bd-info'>
                                     <label>Title: {book.book_title}</label>
                                     <label>Author: {book.book_author}</label>
                                     <label>Genre: {book.book_genre}</label>
@@ -86,9 +86,9 @@ export default function AdminViewReal() {
                                 </div>
 
                             </div>
-                            <div className='bd-right'>
-                                <label className='class-list'>File Preview</label>
-                                <div className='highlighted-textarea'>
+                            <div className='a-bd-right'>
+                                <label className='a-class-list'>File Preview</label>
+                                <div className='a-highlighted-textarea'>
                                     <span>{resultText}</span>
                                 </div>
                             </div>

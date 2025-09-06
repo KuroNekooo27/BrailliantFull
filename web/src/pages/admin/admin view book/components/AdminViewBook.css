@@ -1,60 +1,60 @@
-.bd-container {
+.a-crbd-container {
     width: 100%;
 }
 
-.book-details {
+.a-crbook-details {
     padding: 40px;
 }
 
-.bd-title {
+.a-crbd-title {
     font-weight: bold;
     font-size: 32px;
 }
 
 
-.bd-details {
+.a-crbd-details {
     display: flex;
     justify-content: space-evenly;
     margin-top: 20px;
 }
 
-.bd-left {
+.a-crbd-left {
     margin-top: 20px;
     display: flex;
     width: 40%;
     margin-bottom: 20px;
 }
 
-.bd-info {
+.a-crbd-info {
     display: flex;
     margin-top: 30px;
     flex-direction: column;
     gap: 10px;
 }
 
-.bd-title {
+.a-crbd-title {
     margin-top: 40px;
     margin-left: 40px;
 }
 
-.bd-cover {
+.a-crbd-cover {
     width: 200px;
     height: 280px;
     border-radius: 20px;
     margin-right: 20px;
 }
 
-.bd-right {
+.a-crbd-right {
     width:30%;
 }
 
-.class-list {
+.a-crclass-list {
     font-weight: bold;
     font-size: 20px;
 
 }
 
-.bd-class-list {
+.a-crbd-class-list {
     margin-top: 15px;
     display: flex;
     flex-direction: column;
@@ -65,14 +65,14 @@
     margin-bottom: 30px;
 }
 
-.bd-class-list select {
+.a-crbd-class-list select {
     border: none;
     border-radius: 5px;
     background-color: #d9d9d9;
     height: 30px;
 }
 
-.bd-history {
+.a-crbd-history {
     border: none;
     border-radius: 5px;
     background-color: #d9d9d9;
@@ -83,12 +83,12 @@
     padding: 5px;
 }
 
-.bd-class-list label {
+.a-crbd-class-list label {
     font-weight: bold;
     font-size: 16px;
 }
 
-.avb-btn {
+.a-cravb-btn {
     border: none;
     font-weight: bold;
     font-size: 16px;
@@ -100,13 +100,13 @@
     height: 60px;
     background-color: #f88800;
     margin: 0 auto;
-    margin-left: 125px;
+    
     float: left;
     cursor: pointer;
 }
 
 
-.highlighted-textarea {
+.a-crhighlighted-textarea {
     margin-top: 10px;
     white-space: pre-wrap;
     padding: 1rem;
@@ -115,14 +115,6 @@
     min-height: 150px;
     border: 1px solid #ccc;
     height: 100%;
-}
-
-.highlight {
-    background-color: yellow;
-    font-weight: bold;
-}
-
-.highlighted-textarea {
     overflow-y: auto;
     max-height: 300px;
 }

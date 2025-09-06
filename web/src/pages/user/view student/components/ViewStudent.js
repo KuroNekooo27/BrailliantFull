@@ -6,11 +6,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DeleteConfirmationModal from '../../../../global/components/user/DeleteConfirmationModal';
 import Header from '../../../../global/components/user/Header';
+import Loading from '../../../../global/components/user/Loading';
 
 export default function ViewStudent() {
     const navigate = useNavigate();
-    const [showDropdown, setShowDropdown] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [users, setUsers] = useState([]);
     const [bookRead, setBookRead] = useState([]);
 
@@ -28,6 +29,7 @@ export default function ViewStudent() {
     });
 
     useEffect(() => {
+        setLoading(true)
         setUsers(JSON.parse(localStorage.getItem('users')));
         setFormData({
             student_fname: selectedStudent.student_fname,
@@ -39,7 +41,7 @@ export default function ViewStudent() {
 
         axios.get(`https://brailliantweb.onrender.com/api/bookread/${selectedStudent._id}`)
             .then((response) => {
-                console.log(response.data)
+                setLoading(false)
                 setBookRead(response.data.book)
             })
             .catch((error) => {
@@ -146,12 +148,14 @@ export default function ViewStudent() {
 
     return (
         <div className='container'>
+            {loading && (
+                <Loading />
+            )}
             <SideNavigation />
             <div className='vs-container'>
                 <div className='vs-header'>
                     <Header page={"View Student"} searchBar={false} />
                 </div>
-                {showDropdown && <DropDownMenu />}
                 {showConfirmation && (
                     <DeleteConfirmationModal
                         onDelete={handleDelete}

@@ -5,7 +5,7 @@ import DropDownMenu from '../../../../global/components/user/DropDownMenu';
 import SideNavigation from '../../../../global/components/user/SideNavigation'
 import Header from '../../../../global/components/user/Header'
 import axios from 'axios'
-
+import Loading from '../../../../global/components/user/Loading';
 export default function ClassSettings() {
 
     const navigate = useNavigate()
@@ -14,7 +14,7 @@ export default function ClassSettings() {
     const [users, setUsers] = useState([])
     const [sections, setSections] = useState([])
     const [students, setStudents] = useState([])
-
+    const [loading, setLoading] = useState(false);
     const [studentCount, setStudentCount] = useState(0);
     const [sectionCount, setSectionCount] = useState(0);
     const [selectedSection, setSelectedSection] = useState('')
@@ -25,11 +25,12 @@ export default function ClassSettings() {
 
 
     useEffect(() => {
+        setLoading(true)
         axios.get(`https://brailliantweb.onrender.com/api/allsections/${user?._id}`)
             .then((response) => {
                 setSectionCount(response.data.sections.length)
-                console.log(response.data)
                 setSections(response.data)
+                setLoading(false)
             })
             .catch((error) => {
                 console.log("eto ang error mo " + error)
@@ -37,7 +38,6 @@ export default function ClassSettings() {
         axios.get(`https://brailliantweb.onrender.com/api/allstudents/${user?._id}`)
             .then((response) => {
                 setStudentCount(response.data.students.length)
-                console.log(response.data)
                 setStudents(response.data)
             })
             .catch((error) => {
@@ -53,6 +53,9 @@ export default function ClassSettings() {
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )}
                 <SideNavigation />
             </div>
             <div className='cs-container'>

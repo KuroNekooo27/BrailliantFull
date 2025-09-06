@@ -4,7 +4,7 @@ import Header from '../../../../global/components/user/Header'
 import './BookDetails.css'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import Loading from '../../../../global/components/user/Loading';
 
 export default function BookDetails() {
 
@@ -19,6 +19,7 @@ export default function BookDetails() {
     const [selectedStudent, setSelectedStudent] = useState('')
     const [book, setBook] = useState('')
     const [resultText, setResultText] = useState('')
+    const [loading, setLoading] = useState(false)
 
 
 
@@ -29,6 +30,7 @@ export default function BookDetails() {
 
 
     useEffect(() => {
+        setLoading(true)
         axios.get('https://brailliantweb.onrender.com/api/allsections')
             .then((response) => {
                 setSections(response.data)
@@ -48,6 +50,7 @@ export default function BookDetails() {
             pdfUrl: selectedBook.book.book_file
         })
             .then((response) => {
+                setLoading(false)
                 setResultText(response.data.trim());
             })
             .catch((error) => {
@@ -55,11 +58,11 @@ export default function BookDetails() {
             });
 
     }, [])
+
     useEffect(() => {
         if (selectedStudent?.student_prev_book) {
             axios.get(`https://brailliantweb.onrender.com/book/${selectedStudent.student_prev_book}`)
                 .then((response) => {
-                    console.log(response)
                     setBook(response.data.book.book_title)
                 })
                 .catch((error) => {
@@ -67,12 +70,13 @@ export default function BookDetails() {
                 });
         }
         else {
-            setBook("")
+            setBook("N/A")
         }
     }, [selectedStudent]);
 
 
     const startSession = async () => {
+        setLoading(true)
         if (!selectedSection || !selectedStudent) {
             alert("Select student")
             return
@@ -85,11 +89,15 @@ export default function BookDetails() {
                 studentId: selectedStudent._id
             }
         });
+        setLoading(false)
     };
 
 
     return (
         <div className='container'>
+            {loading && (
+                <Loading />
+            )}
             <div>
                 <SideNavigation />
             </div>

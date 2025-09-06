@@ -1,9 +1,7 @@
 .sub-menu-wrap {
     position: absolute;
     top: 110px;
-    /* adjust as needed */
     right: 90px;
-    /* match padding or icon placement */
     width: 200px;
     z-index: 999;
 }
@@ -26,6 +24,7 @@
     margin: 10px;
     color: black;
     border: 1px solid gray;
+    
 }
 
 .sub-menu hr {

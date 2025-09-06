@@ -1,60 +1,60 @@
-.bd-container {
+.a-bd-container {
     width: 100%;
 }
 
-.book-details {
+.a-book-details {
     padding: 40px;
 }
 
-.bd-title {
+.a-bd-title {
     font-weight: bold;
     font-size: 32px;
 }
 
 
-.bd-details {
+.a-bd-details {
     display: flex;
     justify-content: space-evenly;
     margin-top: 20px;
 }
 
-.bd-left {
+.a-bd-left {
     margin-top: 20px;
     display: flex;
     width: 40%;
     margin-bottom: 20px;
 }
 
-.bd-info {
+.a-bd-info {
     display: flex;
     margin-top: 30px;
     flex-direction: column;
     gap: 10px;
 }
 
-.bd-title {
+.a-bd-title {
     margin-top: 40px;
     margin-left: 40px;
 }
 
-.bd-cover {
+.a-bd-cover {
     width: 200px;
     height: 280px;
     border-radius: 20px;
     margin-right: 20px;
 }
 
-.bd-right {
+.a-bd-right {
     width:30%;
 }
 
-.class-list {
+.a-class-list {
     font-weight: bold;
     font-size: 20px;
 
 }
 
-.bd-class-list {
+.a-bd-class-list {
     margin-top: 15px;
     display: flex;
     flex-direction: column;
@@ -65,25 +65,15 @@
     margin-bottom: 30px;
 }
 
-.bd-class-list select {
+.a-bd-class-list select {
     border: none;
     border-radius: 5px;
     background-color: #d9d9d9;
     height: 30px;
 }
 
-.bd-history {
-    border: none;
-    border-radius: 5px;
-    background-color: #d9d9d9;
-    height: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px;
-}
 
-.bd-class-list label {
+.a-bd-class-list label {
     font-weight: bold;
     font-size: 16px;
 }
@@ -91,7 +81,7 @@
 
 
 
-.highlighted-textarea {
+.a-highlighted-textarea {
     margin-top: 10px;
     white-space: pre-wrap;
     padding: 1rem;
@@ -100,14 +90,6 @@
     min-height: 150px;
     border: 1px solid #ccc;
     height: 100%;
-}
-
-.highlight {
-    background-color: yellow;
-    font-weight: bold;
-}
-
-.highlighted-textarea {
     overflow-y: auto;
     max-height: 300px;
 }

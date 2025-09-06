@@ -3,6 +3,7 @@ import './DashboardHeader.css';
 import DropDownMenu from './DropDownMenu';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Loading from './Loading.js';
 
 export default function DashboardHeader() {
 
@@ -17,16 +18,20 @@ export default function DashboardHeader() {
     const [showDropdown, setShowDropdown] = useState(false);
     const [users, setUsers] = useState([])
     const [book, setAllBooks] = useState([])
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true)
         axios.get('https://brailliantweb.onrender.com/api/allbooks')
             .then((response) => {
+                setLoading(false)
                 setAllBooks(response.data)
             })
             .catch((error) => {
                 console.log("eto ang error mo " + error)
             })
         setUsers(JSON.parse(localStorage.getItem('users')))
+
     }, [])
 
 
@@ -37,6 +42,10 @@ export default function DashboardHeader() {
 
     return (
         <>
+            {loading && (
+                <Loading />
+            )}
+
             <div className="dashboardheader-container">
                 <div className="dashboardheader-navigation">
                     <div className='dashboardheader-title-cont'>

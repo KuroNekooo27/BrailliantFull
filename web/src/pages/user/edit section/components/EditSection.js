@@ -6,24 +6,20 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DeleteConfirmationModal from '../../../../global/components/user/DeleteConfirmationModal';
 import Header from '../../../../global/components/user/Header';
-
+import Loading from '../../../../global/components/user/Loading';
 
 export default function EditSection() {
 
     const navigate = new useNavigate()
 
     const [showDropdown, setShowDropdown] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
-
     const [users, setUsers] = useState([])
-
     const [section, setSection] = useState([])
     const [students, setStudents] = useState([])
-
     const [selectedRowId, setSelectedRowId] = useState(null);
-
     const [searchQuery, setSearchQuery] = useState('');
-
 
     const location = useLocation();
     const selectedSection = location.state?.section;
@@ -34,12 +30,13 @@ export default function EditSection() {
     }
 
     useEffect(() => {
+        setLoading(true)
         if (selectedSection) {
             axios
                 .get(`https://brailliantweb.onrender.com/api/section/${selectedSection}`)
                 .then((response) => {
-                    console.log("Full section data:", response.data);
                     setSection(response.data.section);
+                    setLoading(false)
                 })
                 .catch((error) => {
                     console.log("Section fetch error: ", error);
@@ -53,15 +50,12 @@ export default function EditSection() {
         setUsers(JSON.parse(localStorage.getItem('users')));
     }, []);
 
-    const toggleDropdown = () => {
-        setShowDropdown((prev) => !prev);
-    };
     const toggleConfirmation = () => {
         setShowConfirmation((prev) => !prev);
     };
 
     const handleDelete = async () => {
-        
+
         const newAudit = {
             at_user: users.user_email,
             at_date: new Date(),
@@ -100,6 +94,9 @@ export default function EditSection() {
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )}
                 <SideNavigation />
             </div>
             <div className='es-container'>

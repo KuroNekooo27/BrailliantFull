@@ -5,7 +5,6 @@ import DashboardHeader from '../../../../global/components/user/DashboardHeader'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 
-
 export default function Home() {
     const navigate = useNavigate()
 

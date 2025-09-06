@@ -57,7 +57,6 @@ export default function UploadBooks() {
         const updatedData = { user_recent_act: 'Requested Upload Material' };
         axios.put(`https://brailliantweb.onrender.com/api/update/user/${user._id}`, updatedData)
             .then(() => {
-                console.log(updatedData, "this after update");
             })
             .catch((error) => {
                 console.log(error);
@@ -72,7 +71,6 @@ export default function UploadBooks() {
             const response = await axios.post('https://brailliantweb.onrender.com/api/newrequestbook', updatedBook);
             const createdBook = response.data.book;
 
-            console.log("Book created:", createdBook);
             alert("Book uploaded for request successfully!");
             navigate('/library')
 
@@ -105,7 +103,6 @@ export default function UploadBooks() {
             }
 
             const result = await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', auditData);
-            console.log(result);
 
         } catch (error) {
             console.error(error);
@@ -116,6 +113,9 @@ export default function UploadBooks() {
     const handleUploadBook = () => {
         if (!image) {
             toggleConfirmationModal()
+        }
+        else {
+            uploadBook()
         }
     };
 
@@ -134,8 +134,7 @@ export default function UploadBooks() {
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
-            console.log("File uploaded:", result.data);
-            console.log("File uploaded:", result.data.fileUrl);
+
             return result.data.fileUrl
         } catch (error) {
             console.error("File upload error:", error);
@@ -154,7 +153,6 @@ export default function UploadBooks() {
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
-            console.log("Image uploaded:", result.data);
             return result.data.imageUrl
         }
 
@@ -162,7 +160,6 @@ export default function UploadBooks() {
 
 
     const onInputChange = (e) => {
-        console.log('this is png', e.target.files[0])
         setImage(e.target.files[0])
         const file = e.target.files?.[0]
         setSelectedImage(
@@ -226,10 +223,6 @@ export default function UploadBooks() {
                                         onChange={onInputChange}
                                     />
                                 </div>
-
-
-
-
                                 <div className='lower-left-container'>
 
                                     <label for="file-upload" class="custom-file-upload">

@@ -108,6 +108,8 @@
     border-radius: 30px;
     padding: 20px;
     background-color: #fefefe;
+    height: 70%;
+    max-height: 70%;
 }
 
 .top-books-list {

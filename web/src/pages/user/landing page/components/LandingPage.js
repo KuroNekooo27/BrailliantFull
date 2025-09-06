@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from 'axios'
-
+import Loading from "../../../../global/components/user/Loading";
 import './LandingPage.css'
 import './OTPModal.css'
 import './SuccessfulModal.css'
@@ -16,7 +16,7 @@ import SlidesData from './slides/SlidesData'
 export default function LandingPage() {
     const navigate = useNavigate()
     localStorage.removeItem('users')
-    
+
     const [modal, setModal] = useState(false)
     const [OTPModal, setOTPModal] = useState(false)
     const [loginSuccessfulModal, setLoginSuccessfulModal] = useState(false)
@@ -35,6 +35,9 @@ export default function LandingPage() {
 
     const [otp, setOtp] = useState('');
     const [inputOtp, setInputOtp] = useState('');
+
+    const [loading, setLoading] = useState(false);
+
 
     //switch login forgot pass
 
@@ -153,11 +156,14 @@ export default function LandingPage() {
 
 
     const handleLogin = async () => {
+        setLoading(true)
         try {
+
             const response = await axios.post("https://brailliantweb.onrender.com/api/handle-credentials", {
                 email,
                 password
             })
+
             const { requiresOtp } = response.data;
 
             if (requiresOtp) {
@@ -168,13 +174,14 @@ export default function LandingPage() {
                 setOtp(newOtp);
                 sendEmail(newOtp);
             } else {
-                toggleSuccessfulModal() // skip OTP
+                toggleSuccessfulModal()
             }
 
         } catch (error) {
             alert("Invalid email or password. Please try again.");
             clearForm();
         }
+        setLoading(false)
     };
     const handleSuccess = async () => {
         try {
@@ -207,7 +214,7 @@ export default function LandingPage() {
                         Authorization: `Bearer ${token}`
                     }
                 })
-                .then((res)=>console.log(res));
+                    .then((res) => console.log(res));
                 navigate('/home')
             }
 
@@ -269,6 +276,10 @@ export default function LandingPage() {
 
     return (
         <div className='landing-page-container' >
+            {loading && (
+                <Loading />
+            )
+            }
             {modal && (
                 <div className='modal'>
                     <div className='overlay' onClick={toggleModal} ></div>

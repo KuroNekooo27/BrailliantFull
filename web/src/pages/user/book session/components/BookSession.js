@@ -5,7 +5,7 @@ import './BookSession.css'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./SummaryModal.css"
-
+import Loading from '../../../../global/components/user/Loading';
 import './TextToBraille.css'
 import convertTextToBrailleDots from "../components/api/translate";
 import BrailleLetter from "./index";
@@ -84,6 +84,7 @@ export default function BookSession() {
     ////////////////////////////////////////////
 
     useEffect(() => {
+        setLoading(true)
         if (!selectedBook?.book_file) return;
 
         fetch('https://brailliantweb.onrender.com/extract-text', {
@@ -101,7 +102,7 @@ export default function BookSession() {
                 const initialChunk = trimmedText.slice(0, 8);
                 const result = convertTextToBrailleDots(initialChunk);
                 setBrailleDots(result);
-
+                setLoading(false)
             })
             .catch(err => console.error('Error extracting text:', err));
         axios.get(`https://brailliantweb.onrender.com/api/student/${studentId}`)
@@ -153,7 +154,9 @@ export default function BookSession() {
 
     return (
         <div className='container'>
-
+            {loading && (
+                <Loading />
+            )}
             {confirmationModal && (
                 <div className='modal'>
                     <div className='confirm-overlay' onClick={togggleConfirmationModal}>

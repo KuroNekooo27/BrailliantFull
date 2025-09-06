@@ -6,7 +6,7 @@ import Header from '../../../../global/components/user/Header';
 import convertTextToBrailleDots from "../components/api/translate";
 import axios from "axios"
 import SideNavigation from '../../../../global/components/user/SideNavigation'
-
+import Loading from '../../../../global/components/user/Loading';
 export default function TextToBraille() {
     const page = "Text-to-Braille"
     const searchBar = false
@@ -41,10 +41,8 @@ export default function TextToBraille() {
 
     const handleTranslate = (text) => {
         setText(text)
-        setLoading(true);
         const result = convertTextToBrailleDots(text);
         setBrailleDots(result);
-        setLoading(false);
     }
 
 
@@ -62,6 +60,7 @@ export default function TextToBraille() {
     ///////////////
 
     const handleConvertToBrf = async () => {
+        setLoading(true)
         if (!file) {
             alert('Please attach a PDF file first.');
             return;
@@ -79,7 +78,10 @@ export default function TextToBraille() {
                         'Content-Type': 'multipart/form-data',
                     },
                 }
-            );
+            )
+                .then(
+                    setLoading(false)
+                );
 
             const originalName = file.name.replace(/\.pdf$/i, "");
             const brfFileName = `${originalName}.brf`;
@@ -102,72 +104,73 @@ export default function TextToBraille() {
     };
 
     return (
-        <>
-            <div className='container'>
-                {uploadModal && (
-                    <div className='modal'>
-                        <div className='overlay' onClick={toggleUploadModal} ></div>
-                        <div className='upload-modal-content'>
-                            <button className='close-modal' onClick={toggleUploadModal}>x</button>
-                            <div className='upload-modal'>
-                                <label htmlFor="file-upload" className="brf-file-upload">
-                                    {file.name ? file.name : "Attach file here"}
-                                </label>
-                                <input
-                                    id="file-upload"
-                                    type="file"
-                                    accept='application/pdf'
-                                    required
-                                    onChange={(e) => setFile(e.target.files[0])}
-                                />
-                                <button className='convert-btn' onClick={handleConvertToBrf}>Convert to BRF</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                <div>
-                    <SideNavigation />
-                </div>
-                <div className='ttb-container'>
-                    <div className='ttb-header'>
-                        <Header page={page} searchBar={searchBar} />
-                    </div>
-                    <div className='ttb-body'>
-                        <div className='ttb-top'>
-                            <div className='ttb-text'>
-                                <label>Text-to-Braille</label>
-                                <p>Type and sync in simple Braille sentences with the Brailliant RBD!</p>
-                            </div>
-                            <div>
-                                <button className='brf-btn' onClick={toggleUploadModal}><img src={require('../assets/upload.png')} />PDF to BRF</button>
-                            </div>
-                        </div>
-                        <div className='ttb-translate'>
-                            <textarea
-                                placeholder='Input text here'
-                                className='custom'
-                                value={text}
-                                onChange={(e) => {
-                                    if (e.target.value.length <= 8) {
-                                        handleTranslate(e.target.value)
-                                    }
-                                }}
-                                type="text"
-                                id="text"
-                                name="text"
+        <div className='container'>
+            {loading && (
+                <Loading />
+            )}
+            {uploadModal && (
+                <div className='modal'>
+                    <div className='overlay' onClick={toggleUploadModal} ></div>
+                    <div className='upload-modal-content'>
+                        <button className='close-modal' onClick={toggleUploadModal}>x</button>
+                        <div className='upload-modal'>
+                            <label htmlFor="file-upload" className="brf-file-upload">
+                                {file.name ? file.name : "Attach file here"}
+                            </label>
+                            <input
+                                id="file-upload"
+                                type="file"
+                                accept='application/pdf'
+                                required
+                                onChange={(e) => setFile(e.target.files[0])}
                             />
-                            <div className='ttb-preview'>
-                                {brailleDots.split(" ").map((word, index) => (
-                                    <BrailleLetter key={index} dots={word} />
-                                ))}
-                            </div>
+                            <button className='convert-btn' onClick={handleConvertToBrf}>Convert to BRF</button>
                         </div>
-                        <label className='char-limit'>{text.length} / 8 characters</label>
-                        <button className='ttb-syc' onClick={() => toArduino()}><img src={require('../assets/sync.png')} />Sync Text</button>
                     </div>
+                </div>
+            )}
+            <div>
+                <SideNavigation />
+            </div>
+            <div className='ttb-container'>
+                <div className='ttb-header'>
+                    <Header page={page} searchBar={searchBar} />
+                </div>
+                <div className='ttb-body'>
+                    <div className='ttb-top'>
+                        <div className='ttb-text'>
+                            <label>Text-to-Braille</label>
+                            <p>Type and sync in simple Braille sentences with the Brailliant RBD!</p>
+                        </div>
+                        <div>
+                            <button className='brf-btn' onClick={toggleUploadModal}><img src={require('../assets/upload.png')} />PDF to BRF</button>
+                        </div>
+                    </div>
+                    <div className='ttb-translate'>
+                        <textarea
+                            placeholder='Input text here'
+                            className='custom'
+                            value={text}
+                            onChange={(e) => {
+                                if (e.target.value.length <= 8) {
+                                    handleTranslate(e.target.value)
+                                }
+                            }}
+                            type="text"
+                            id="text"
+                            name="text"
+                        />
+                        <div className='ttb-preview'>
+                            {brailleDots.split(" ").map((word, index) => (
+                                <BrailleLetter key={index} dots={word} />
+                            ))}
+                        </div>
+                    </div>
+                    <label className='char-limit'>{text.length} / 8 characters</label>
+                    <button className='ttb-syc' onClick={() => toArduino()}><img src={require('../assets/sync.png')} />Sync Text</button>
                 </div>
             </div>
-        </>
+        </div>
 
     )
 }

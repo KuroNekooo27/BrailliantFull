@@ -3,8 +3,8 @@ import './Library.css'
 import SideNavigation from '../../../../global/components/user/SideNavigation'
 import Header from '../../../../global/components/user/Header'
 import { useNavigate } from 'react-router-dom';
+import Loading from "../../../../global/components/user/Loading";
 import axios from 'axios'
-
 
 
 export default function Library() {
@@ -14,11 +14,13 @@ export default function Library() {
 
     const [book, setAllBooks] = useState([])
     const [searchQuery, setSearchQuery] = useState('')
-
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
+        setLoading(true)
         axios.get('https://brailliantweb.onrender.com/api/allbooks')
             .then((response) => {
+                setLoading(false)
                 setAllBooks(response.data)
             })
             .catch((error) => {
@@ -32,6 +34,9 @@ export default function Library() {
 
     return (
         <div className='container'>
+            {loading && (
+                <Loading />
+            )}
             <SideNavigation />
             <div className='library-container'>
                 <div className='library-header'>

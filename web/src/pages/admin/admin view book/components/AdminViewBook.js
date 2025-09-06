@@ -67,31 +67,31 @@ export default function AdminViewBook() {
             <div>
                 <AdminSideNavigation />
             </div>
-            <div className='bd-container'>
-                <div className='bd-header'>
+            <div className='a-crbd-container'>
+                <div className='a-crbd-header'>
                     <AdminHeader page={"Book Details"} />
 
                 </div>
-                <div className='bd-body'>
-                    <div className='book-details'>
+                <div className='a-crbd-body'>
+                    <div className='a-crbook-details'>
                         <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
 
-                        <label className='bd-title'>{selectedBook.request_book_title}</label>
-                        <div className='bd-details'>
-                            <div className='bd-left'>
+                        <label className='a-crbd-title'>{selectedBook.request_book_title}</label>
+                        <div className='a-crbd-details'>
+                            <div className='a-crbd-left'>
                                 {selectedBook.request_book_img ? (
                                     <img
-                                        className='bd-cover'
+                                        className='a-crbd-cover'
                                         src={selectedBook.request_book_img}
                                     />
                                 ) : (
                                     <img
-                                        className='bd-cover'
+                                        className='a-crbd-cover'
                                         src={require('../assets/noimg.png')}
                                     />
                                 )
                                 }
-                                <div className='bd-info'>
+                                <div className='a-crbd-info'>
                                     <label>Title: {selectedBook.request_book_title}</label>
                                     <label>Author: {selectedBook.request_book_author}</label>
                                     <label>Genre: {selectedBook.request_book_genre}</label>
@@ -101,19 +101,17 @@ export default function AdminViewBook() {
                                 </div>
 
                             </div>
-                            <div className='bd-right'>
-                                <label className='class-list'>File Preview</label>
-                                <div className='highlighted-textarea'>
+                            <div className='a-crbd-right'>
+                                <label className='a-crclass-list'>File Preview</label>
+                                <div className='a-crhighlighted-textarea'>
                                     <span>{resultText}</span>
                                 </div>
                             </div>
 
                         </div>
-                        <button className='avb-btn' onClick={handleApprove}>Approve Material</button>
-                        <button className='avb-btn' onClick={handleDecline}>Decline Material</button>
-
+                        <button className='a-cravb-btn' onClick={handleApprove}>Approve Material</button>
+                        <button className='a-cravb-btn' onClick={handleDecline}>Decline Material</button>
                     </div>
-
                 </div>
             </div>
         </div >

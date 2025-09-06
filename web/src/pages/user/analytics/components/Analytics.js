@@ -5,12 +5,12 @@ import SideNavigation from '../../../../global/components/user/SideNavigation'
 import Header from '../../../../global/components/user/Header';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import Loading from '../../../../global/components/user/Loading';
 
 export default function Analytics() {
-    const page="Analytics"
+    const page = "Analytics"
     const searchBar = false
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [users, setUsers] = useState([])
 
     const [studentcount, setStudentCount] = useState(0)
@@ -26,6 +26,7 @@ export default function Analytics() {
     }
 
     useEffect(() => {
+        setLoading(true)
         setUsers(JSON.parse(localStorage.getItem('users')))
 
         axios.get('https://brailliantweb.onrender.com/api/students/count')
@@ -39,6 +40,7 @@ export default function Analytics() {
         axios.get('https://brailliantweb.onrender.com/api/books/count')
             .then((response) => {
                 setBooksCount(response.data.count);
+                
             })
             .catch((error) => {
                 console.error('Error fetching student count:', error);
@@ -46,7 +48,7 @@ export default function Analytics() {
         axios.get('https://brailliantweb.onrender.com/api/books/ranked')
             .then((response) => {
                 setTopBooks(response.data);
-                console.log(response.data)
+                setLoading(false)
             })
             .catch((error) => {
                 console.error('Error fetching books:', error);
@@ -54,13 +56,12 @@ export default function Analytics() {
 
 
     }, [])
-
-    const toggleDropdown = () => {
-        setShowDropdown((prev) => !prev);
-    };
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )}
                 <SideNavigation />
             </div>
             <div className='analytics-container'>
@@ -68,7 +69,6 @@ export default function Analytics() {
                     <Header page={page} searchBar={searchBar} />
 
                 </div>
-                {showDropdown && <DropDownMenu />}
                 <div className='analytics-body'>
                     <div className='analytics'>
                         <div className='analytics-details'>
