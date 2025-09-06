@@ -4,19 +4,20 @@ import AdminSideNavigation from '../../../../global/components/admin/AdminSideNa
 import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import Loading from '../../../../global/components/user/Loading';
 export default function AdminViewBook() {
 
     const navigate = new useNavigate()
 
     const [resultText, setResultText] = useState('')
-
+    const [loading, setLoading] = useState(false)
 
     const location = useLocation();
     const selectedBook = location.state.book;
 
 
     useEffect(() => {
+        setLoading(true)
         if (!selectedBook?.request_book_file) return;
 
         fetch('https://brailliantweb.onrender.com/extract-text', {
@@ -28,6 +29,7 @@ export default function AdminViewBook() {
         })
             .then(res => res.text())
             .then(text => {
+                setLoading(false)
                 const trimmedText = text.trim();
                 setResultText(trimmedText);
             })
@@ -35,6 +37,7 @@ export default function AdminViewBook() {
     }, []);
 
     const handleApprove = async () => {
+        setLoading(true)
         axios.put(`https://brailliantweb.onrender.com/api/update/requestbook/${selectedBook._id}`, {
             request_book_status: 'Approved'
         })
@@ -50,21 +53,27 @@ export default function AdminViewBook() {
             book_last_modified: new Date(),
         };
         await axios.post('https://brailliantweb.onrender.com/api/newbook', approvedBook);
+        setLoading(false)
         navigate('/admin/content-request')
     }
 
     const handleDecline = async () => {
+        setLoading(true)
         try {
             await axios.delete(`https://brailliantweb.onrender.com/api/delete/requestbook/${selectedBook._id}`);
             navigate('/admin/content-request');
         } catch (err) {
             console.error("Error deleting book:", err);
         }
+        setLoading(false)
     };
 
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )}
                 <AdminSideNavigation />
             </div>
             <div className='a-crbd-container'>

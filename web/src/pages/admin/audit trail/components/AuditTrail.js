@@ -4,6 +4,7 @@ import AdminSideNavigation from '../../../../global/components/admin/AdminSideNa
 import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Loading from '../../../../global/components/user/Loading';
 import AT_EditProfile from './AT_EditProfile';
 import AT_RequestBookUpload from './AT_RequestBookUpload';
 import AT_ActivateAccount from './AT_ActivateAccount';
@@ -25,14 +26,17 @@ export default function AuditTrail() {
     const [isShortened, setIsShortened] = useState(false);
     const [actions, setAction] = useState("");
     const [audit, setAudit] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const [selectedActionFilter, setSelectedActionFilter] = useState("");
     const [page, setPage] = useState(1);
     const itemsPerPage = 50;
 
     useEffect(() => {
+        setLoading(true)
         axios.get('https://brailliantweb.onrender.com/api/allaudittrail')
             .then((response) => {
+                setLoading(false)
                 setAllAudits(response.data)
                 console.log('this books', response.data)
 
@@ -68,6 +72,9 @@ export default function AuditTrail() {
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )}
                 <AdminSideNavigation />
             </div>
             <div className='admin-cr-container'>

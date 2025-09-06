@@ -4,7 +4,7 @@ import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import './AdminHome.css'
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
-
+import Loading from '../../../../global/components/user/Loading';
 
 
 export default function AdminHome() {
@@ -20,13 +20,14 @@ export default function AdminHome() {
     const [bookCount, setBookCount] = useState(0)
     const [allUsers, setAllUsers] = useState(0)
     const [activatedUsers, setActivatedUsers] = useState(0);
-
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-
+        setLoading(true)
 
         axios.get('https://brailliantweb.onrender.com/api/books/count')
             .then((response) => {
+                setLoading(false)
                 setBookCount(response.data.count);
             })
             .catch((error) => {
@@ -40,7 +41,6 @@ export default function AdminHome() {
     useEffect(() => {
         axios.get('https://brailliantweb.onrender.com/api/allusers')
             .then((response) => {
-                console.log(response.data)
                 setAllUsers(response.data);
                 const activated = response.data.users?.filter(user => user.user_status === "Activated").length || 0;
                 setActivatedUsers(activated);
@@ -53,6 +53,9 @@ export default function AdminHome() {
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )}
                 <AdminSideNavigation />
             </div>
             <div className='admin-home-container'>

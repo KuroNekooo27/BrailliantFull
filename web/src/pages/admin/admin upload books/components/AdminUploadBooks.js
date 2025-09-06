@@ -4,7 +4,7 @@ import './AdminUploadBooks.css'
 import axios from 'axios'
 import AdminSideNavigation from '../../../../global/components/admin/AdminSideNavigation'
 import AdminHeader from '../../../../global/components/admin/AdminHeader'
-
+import Loading from '../../../../global/components/user/Loading';
 
 export default function AdminUploadBooks() {
 
@@ -25,7 +25,7 @@ export default function AdminUploadBooks() {
     const [file, setFile] = useState('')
     const [user, setUser] = useState([])
     const [selectedImage, setSelectedImage] = useState('')
-
+    const [loading, setLoading] = useState(false)
     const clearForm = () => {
         setNewBook({
             book_title: '',
@@ -40,6 +40,7 @@ export default function AdminUploadBooks() {
     };
 
     const handleUploadBook = async () => {
+        setLoading(true)
         try {
 
             const updatedBook = {
@@ -50,15 +51,14 @@ export default function AdminUploadBooks() {
             const response = await axios.post('https://brailliantweb.onrender.com/api/newbook', updatedBook);
             const createdBook = response.data.book;
 
-            console.log("Book created:", createdBook);
-            alert("Book created successfully!");
 
             if (file) {
                 await submitImage(createdBook._id);
                 await submitimage(createdBook._id);
             }
-
-
+            
+            alert("Book created successfully!");
+            setLoading(false)
             clearForm();
             navigate(-1)
 
@@ -123,6 +123,9 @@ export default function AdminUploadBooks() {
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )}
                 <AdminSideNavigation />
             </div>
             <div className='upload-container'>
@@ -137,8 +140,6 @@ export default function AdminUploadBooks() {
                         <form className="uploadmaterial-container" onSubmit={(e) => {
                             e.preventDefault()
                             handleUploadBook()
-
-
                         }}>
                             <div className='left-container'>
 

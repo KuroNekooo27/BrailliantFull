@@ -4,7 +4,7 @@ import AdminSideNavigation from '../../../../global/components/admin/AdminSideNa
 import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
-
+import Loading from '../../../../global/components/user/Loading';
 export default function ContentRequest() {
 
     const navigate = new useNavigate()
@@ -14,11 +14,13 @@ export default function ContentRequest() {
     const [allBooks, setAllBooks] = useState([]);
     const pendingBooks = allBooks.books?.filter(book => !book.request_book_status) || [];
     const [searchQuery, setSearchQuery] = useState('');
-
+    const [loading,setLoading] = useState(false)
 
     useEffect(() => {
+        setLoading(true)
         axios.get('https://brailliantweb.onrender.com/api/allrequestbooks')
             .then((response) => {
+                setLoading(false)
                 setAllBooks(response.data)
             })
             .catch((error) => {
@@ -29,6 +31,9 @@ export default function ContentRequest() {
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )}
                 <AdminSideNavigation />
             </div>
             <div className='admin-cr-container'>

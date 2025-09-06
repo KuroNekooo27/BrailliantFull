@@ -5,6 +5,7 @@ import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DeleteConfirmationModal from '../../../../global/components/user/DeleteConfirmationModal';
+import Loading from '../../../../global/components/user/Loading';
 
 export default function ManageLibrary() {
 
@@ -13,12 +14,15 @@ export default function ManageLibrary() {
     const [allBooks, setAllBooks] = useState([])
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [loading, setLoading] = useState(false);
 
 
     useEffect(() => {
+        setLoading(true)
         axios.get('https://brailliantweb.onrender.com/api/allbooks')
             .then((response) => {
                 setAllBooks(response.data)
+                setLoading(false)
             })
             .catch((error) => {
                 console.log("eto ang error mo " + error)
@@ -30,9 +34,11 @@ export default function ManageLibrary() {
     };
 
     const handleRemove = () => {
+        setLoading(true)
         axios.delete(`https://brailliantweb.onrender.com/api/delete/book/${selectedRowId}`)
             .then((response) => {
                 window.location.reload();
+                setLoading(false)
             })
             .catch((error) => {
                 console.log("eto ang error mo " + error)
@@ -42,6 +48,9 @@ export default function ManageLibrary() {
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )}
                 <AdminSideNavigation />
             </div>
             <div className='admin-ml-container'>

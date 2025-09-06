@@ -4,13 +4,13 @@ import AdminSideNavigation from '../../../../global/components/admin/AdminSideNa
 import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import Loading from '../../../../global/components/user/Loading';
 export default function AdminViewReal() {
     const navigate = new useNavigate()
 
     const [resultText, setResultText] = useState('')
     const [book, setBook] = useState([])
-
+    const [loading, setLoading] = useState(false)
 
     const location = useLocation();
     const selectedBook = location.state.book;
@@ -18,8 +18,7 @@ export default function AdminViewReal() {
 
 
     useEffect(() => {
-        axios
-            .get(`https://brailliantweb.onrender.com/api/book/${selectedBook}`)
+        axios.get(`https://brailliantweb.onrender.com/api/book/${selectedBook}`)
             .then((response) => {
                 setBook(response.data.book);
             })
@@ -30,6 +29,7 @@ export default function AdminViewReal() {
     }, [selectedBook]);
 
     useEffect(() => {
+        setLoading(true)
         if (!book?.book_file) return;
 
         fetch('https://brailliantweb.onrender.com/extract-text', {
@@ -41,6 +41,7 @@ export default function AdminViewReal() {
         })
             .then(res => res.text())
             .then(text => {
+                setLoading(false)
                 const trimmedText = text.trim();
                 setResultText(trimmedText);
             })
@@ -52,6 +53,9 @@ export default function AdminViewReal() {
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )}
                 <AdminSideNavigation />
             </div>
             <div className='a-bd-container'>

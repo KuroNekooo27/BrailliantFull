@@ -5,7 +5,7 @@ import './ManageAccounts.css'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ConfirmationModal.css'
-
+import Loading from '../../../../global/components/user/Loading';
 
 export default function ManageAccounts() {
 
@@ -16,7 +16,7 @@ export default function ManageAccounts() {
     const [selectedUser, setSelectedUser] = useState([]);
     const activatedCount = allUsers.users?.filter(user => user.user_status === "Activated").length || 0;
     const [confirmationModal, setConfirmationModal] = useState(false)
-
+    const [loading, setLoading] = useState(false)
     const [searchQuery, setSearchQuery] = useState('');
 
     const toggleConfirmationModal = () => {
@@ -24,9 +24,11 @@ export default function ManageAccounts() {
     }
 
     const fetchUsers = () => {
+        setLoading(true)
         axios.get('https://brailliantweb.onrender.com/api/allusers')
             .then((response) => {
                 setAllUsers(response.data);
+                setLoading(false)
             })
             .catch((error) => {
                 console.log("eto ang error mo " + error);
@@ -34,8 +36,10 @@ export default function ManageAccounts() {
     };
 
     const handleRemoveAccount = () => {
+        setLoading(true)
         axios.delete(`https://brailliantweb.onrender.com/api/delete/user/${selectedRowId}`)
             .then(() => {
+                setLoading(false)
                 fetchUsers();
                 setConfirmationModal(false);
                 alert("User successfully removed!")
@@ -52,6 +56,9 @@ export default function ManageAccounts() {
 
     return (
         <div className='container'>
+            {loading && (
+                <Loading />
+            )}
             {confirmationModal && (
                 <div className='modal'>
                     <div className='overlay'></div>
