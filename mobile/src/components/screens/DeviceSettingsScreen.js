@@ -182,7 +182,7 @@ const DeviceSettingsScreen = () => {
           <>
             <View style={styles.deviceImageWrapper}>
               <Image
-                source={require('../../../assets/icon.png')}
+                source={require('../../../assets/brailliant_icon.png')}
                 style={styles.deviceImage}
                 resizeMode="contain"
               />

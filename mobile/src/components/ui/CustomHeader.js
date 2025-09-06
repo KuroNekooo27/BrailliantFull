@@ -94,7 +94,7 @@ const CustomHeader = ({ title = '', subtitle = '', onBack }) => {
         <View style={styles.rightIcons}>
           <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
             <Image
-              source={state.user.user_img ? { uri: state.user.user_img } : require('../../../assets/adaptive-icon.png')}
+              source={state.user.user_img ? { uri: state.user.user_img } : require('../../../assets/defaultAvatar.png')}
               style={styles.avatar}
             />
           </TouchableOpacity>

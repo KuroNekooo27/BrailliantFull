@@ -4,11 +4,11 @@
     "slug": "Brailliant",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/brailliant_icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/brailliant_splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,16 +16,16 @@
       "supportsTablet": true
     },
     "android": {
-      "icon":"./assets/icon.png",
+      "icon":"./assets/brailliant_icon.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/brailliant_adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.mavyorbit.brailliant"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/brailliant_icon.png"
     },
     "extra": {
       "eas": {

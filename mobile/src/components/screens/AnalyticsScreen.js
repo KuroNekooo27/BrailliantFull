@@ -37,6 +37,7 @@ const AnalyticsScreen = () => {
   const [BOOKS_DATA, setBooks] = useState([])
   const chartRef = useRef();
   const { state, setState } = useContext(AuthContext);
+  const COLORS = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#1A73E8', '#9C27B0'];
 
 
   useEffect(() => {
@@ -60,21 +61,21 @@ const AnalyticsScreen = () => {
     const othersCount = sorted.slice(5).reduce((sum, b) => sum + b.book_count, 0);
 
     const pieTopFive = [
-      ...topFive.map(book => ({
+      ...topFive.map((book, index) => ({
         name: book.book_title,
         population: book.book_count,
-        color: book.color,
+        color: COLORS[index % COLORS.length],
         legendFontColor: '#000',
         legendFontSize: 12,
       })),
-      ...(othersCount > 0
+      ...(sorted.length > 5
         ? [{
-          name: 'Others',
-          population: othersCount,
-          color: '#CCCCCC',
-          legendFontColor: '#000',
-          legendFontSize: 12,
-        }]
+            name: `Others (${sorted.length - 5} books)`,
+            population: othersCount,
+            color: '#CCCCCC',
+            legendFontColor: '#000',
+            legendFontSize: 12,
+          }]
         : []),
     ];
 
@@ -121,14 +122,18 @@ const AnalyticsScreen = () => {
         <View style={styles.contentWrapper}>
 
           {/* Top Books */}
-          <Text style={styles.sectionTitle}>Top Books</Text>
+        <Text style={styles.sectionTitle}>Top Books</Text>
           {topBooks.map((book, index) => (
             <View key={book.book_title} style={styles.topBookCard}>
               <Text style={styles.rank}>#{index + 1}</Text>
-              <Image source={item.book_img 
-                      ? { uri: item.book_img } 
-                      : require('../../../assets/noimg.png')
-                    } style={styles.bookImage} />
+              <Image
+                source={
+                  book.book_img
+                    ? { uri: book.book_img }
+                    : require('../../../assets/noimg.png')
+                }
+                style={styles.bookImage}
+              />
               <View style={{ flex: 1 }}>
                 <Text style={styles.bookTitle}>{book.book_title}</Text>
                 <Text style={styles.accessCount}>Access Count: {book.book_count}</Text>
