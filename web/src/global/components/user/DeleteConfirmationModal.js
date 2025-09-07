@@ -6,13 +6,11 @@ export default function DeleteConfirmationModal({ onDelete, onCancel }) {
         <div className='modal'>
             <div className='confirm-overlay'></div>
             <div className='confirm-modal-content'>
-                <div className='confirm-loginmodal'>
-                    <label className='confirm-head'>Are you sure you want to delete?</label>
+                <label className='confirm-head'>Are you sure you want to delete?</label>
 
-                    <div className='confirm-modal-btns'>
-                        <button className='confirm-delete' onClick={onDelete}>Delete</button>
-                        <button className='confirm-cancel' onClick={onCancel}>Cancel</button>
-                    </div>
+                <div className='confirm-modal-btns'>
+                    <button className='confirm-delete' onClick={onDelete}>Delete</button>
+                    <button className='confirm-cancel' onClick={onCancel}>Cancel</button>
                 </div>
             </div>
         </div>

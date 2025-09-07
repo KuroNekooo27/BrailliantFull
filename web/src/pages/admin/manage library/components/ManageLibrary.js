@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DeleteConfirmationModal from '../../../../global/components/user/DeleteConfirmationModal';
 import Loading from '../../../../global/components/user/Loading';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
 export default function ManageLibrary() {
 
@@ -15,7 +16,8 @@ export default function ManageLibrary() {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(false);
-
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         setLoading(true)
@@ -45,12 +47,20 @@ export default function ManageLibrary() {
             })
     }
 
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
+
     return (
         <div className='container'>
             <div>
                 {loading && (
                     <Loading />
                 )}
+                {errorHandler && (
+                    <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+                )
+                }
                 <AdminSideNavigation />
             </div>
             <div className='admin-ml-container'>
@@ -84,7 +94,8 @@ export default function ManageLibrary() {
                                 <div className='admin-ml-buttons'>
                                     <button onClick={() => {
                                         if (!selectedRowId) {
-                                            alert("Please select a book.");
+                                            setMessage("Please select a book.");
+                                            setErrorHandler(true)
                                             return;
                                         }
                                         navigate('/admin/view/book', { state: { book: selectedRowId } })
@@ -93,7 +104,8 @@ export default function ManageLibrary() {
                                     }}>View Details <img src={require('../assets/edit.png')} /></button>
                                     <button onClick={() => {
                                         if (!selectedRowId) {
-                                            alert("Please select a book.");
+                                            setMessage("Please select a book.");
+                                            setErrorHandler(true)
                                             return;
                                         }
                                         toggleConfirmation()

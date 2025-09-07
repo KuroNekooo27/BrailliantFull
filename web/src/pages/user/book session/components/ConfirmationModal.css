@@ -3,8 +3,8 @@ body.active-modal {
 }
 
 
-.modal,
-.confirm-overlay {
+.bs-modal,
+.bs-confirm-overlay {
     width: 100vw;
     height: 100vh;
     top: 0;
@@ -12,13 +12,14 @@ body.active-modal {
     right: 0;
     bottom: 0;
     position: fixed;
+    z-index: 999;
 }
 
-.confirm-overlay {
+.bs-confirm-overlay {
     background: rgba(49, 49, 49, 0.8);
 }
 
-.confirm-modal-content {
+.bs-confirm-modal-content {
     position: absolute;
     top: 40%;
     left: 50%;
@@ -26,19 +27,17 @@ body.active-modal {
     line-height: 1.4;
     background: #f1f1f1;
     border-radius: 30px;
+    width: 400px;
+    height: 150px;
     display: flex;
-    flex-direction: column;
-    padding: 30px;
-    justify-content: center;
-    align-items: center;
 }
 
-.confirm-head {
-    font-weight: bold;
+.bs-confirm-head {
+    font-weight: 500;
     font-size: 19px;
 }
 
-.confirm-text {
+.bs-confirm-text {
     font-size: 15px;
     text-align: center;
     line-height: 15px;
@@ -46,7 +45,7 @@ body.active-modal {
 }
 
 
-.close-modal {
+.bs-close-modal {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -59,23 +58,25 @@ body.active-modal {
 }
 
 
-.confirm-loginmodal {
+.bs-confirm-loginmodal {
     width: 100%;
     padding: 50px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-align: center;
+    gap: 20px;
 }
 
-.confirm-modal-btns {
+.bs-confirm-modal-btns {
     display: flex;
     gap: 20px;
     width: 100%;
 }
 
 
-.confirm-cancel {
+.bs-confirm-cancel {
     width: 100%;
     height: 2.5rem;
     border-radius: 5px;
@@ -84,17 +85,16 @@ body.active-modal {
     cursor: pointer;
     color: black;
     font-size: 16px;
-    margin-top: 30px;
-    font-weight: bold;
+    font-weight: 600;
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
-.confirm-cancel:hover {
+.bs-confirm-cancel:hover {
     background-color: #ff8b47;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.confirm-delete {
+.bs-confirm-delete {
     width: 100%;
     height: 2.5rem;
     border-radius: 5px;
@@ -103,12 +103,11 @@ body.active-modal {
     cursor: pointer;
     color: white;
     font-size: 16px;
-    margin-top: 30px;
-    font-weight: bold;
+    font-weight: 600;
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
-.confirm-delete:hover {
+.bs-confirm-delete:hover {
     background-color: #f95368;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }

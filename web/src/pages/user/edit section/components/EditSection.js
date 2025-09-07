@@ -7,12 +7,12 @@ import axios from 'axios';
 import DeleteConfirmationModal from '../../../../global/components/user/DeleteConfirmationModal';
 import Header from '../../../../global/components/user/Header';
 import Loading from '../../../../global/components/user/Loading';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
 export default function EditSection() {
 
     const navigate = new useNavigate()
 
-    const [showDropdown, setShowDropdown] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [users, setUsers] = useState([])
@@ -20,6 +20,8 @@ export default function EditSection() {
     const [students, setStudents] = useState([])
     const [selectedRowId, setSelectedRowId] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     const location = useLocation();
     const selectedSection = location.state?.section;
@@ -38,14 +40,11 @@ export default function EditSection() {
                     setSection(response.data.section);
                     setLoading(false)
                 })
-                .catch((error) => {
-                    console.log("Section fetch error: ", error);
-                });
+
         }
 
         axios.get('https://brailliantweb.onrender.com/api/allstudents')
             .then((response) => setStudents(response.data))
-            .catch((error) => console.log("Student fetch error: " + error));
 
         setUsers(JSON.parse(localStorage.getItem('users')));
     }, []);
@@ -55,7 +54,6 @@ export default function EditSection() {
     };
 
     const handleDelete = async () => {
-
         const newAudit = {
             at_user: users.user_email,
             at_date: new Date(),
@@ -68,42 +66,32 @@ export default function EditSection() {
             }
         };
         await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
-
-        axios
-            .delete(`https://brailliantweb.onrender.com/api/delete/student/section/${section._id}`)
-            .then((response) => {
-                console.log("Full section data:", response.data);
-            })
-            .catch((error) => {
-                console.log("Section fetch error: ", error);
-            });
-        axios
-            .delete(`https://brailliantweb.onrender.com/api/delete/section/${section._id}`)
-            .then((response) => {
-                console.log("Full section data:", response.data);
-
-            })
-            .catch((error) => {
-                console.log("Section fetch error: ", error);
-            });
-        navigate('/class')
-
-
-
+        axios.delete(`https://brailliantweb.onrender.com/api/delete/student/section/${section._id}`)
+        axios.delete(`https://brailliantweb.onrender.com/api/delete/section/${section._id}`)
     };
+
+   
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
+
+
     return (
         <div className='container'>
             <div>
                 {loading && (
                     <Loading />
                 )}
+                {errorHandler && (
+                    <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+                )
+                }
                 <SideNavigation />
             </div>
             <div className='es-container'>
                 <div className='es-header'>
                     <Header page={"Edit Section"} searchBar={false} />
                 </div>
-                {showDropdown && <DropDownMenu />}
                 {showConfirmation && (
                     <DeleteConfirmationModal
                         onDelete={handleDelete}
@@ -144,7 +132,8 @@ export default function EditSection() {
                             <div className='es-buttons'>
                                 <button onClick={() => {
                                     if (!selectedRowId) {
-                                        alert("Please select a student.");
+                                        setMessage("Please select a student.");
+                                        setErrorHandler(true)
                                         return;
                                     }
                                     navigate('/student/view', { state: selectedRowId })
@@ -152,7 +141,6 @@ export default function EditSection() {
                                 }}>Edit Student Details  <img src={require('../assets/edit.png')} /></button>
                                 <button
                                     onClick={() => {
-
                                         toggleConfirmation()
                                     }}
 

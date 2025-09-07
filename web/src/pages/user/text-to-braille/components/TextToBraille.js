@@ -7,6 +7,8 @@ import convertTextToBrailleDots from "../components/api/translate";
 import axios from "axios"
 import SideNavigation from '../../../../global/components/user/SideNavigation'
 import Loading from '../../../../global/components/user/Loading';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
+
 export default function TextToBraille() {
     const page = "Text-to-Braille"
     const searchBar = false
@@ -18,7 +20,8 @@ export default function TextToBraille() {
     const [uploadModal, setUploadModal] = useState(false)
     const [file, setFile] = useState(false)
 
-
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     const toArduino = () => {
         const result = convertTextToBrailleDots(text);
@@ -33,9 +36,9 @@ export default function TextToBraille() {
                     message: formatted
                 });
             } catch (error) {
-                alert("Make sure a device is connected")
+                setMessage("Make sure device is connected.");
+                setErrorHandler(true)
             }
-            console.log("hello")
         }
     }
 
@@ -62,7 +65,9 @@ export default function TextToBraille() {
     const handleConvertToBrf = async () => {
         setLoading(true)
         if (!file) {
-            alert('Please attach a PDF file first.');
+            setMessage("Please attach a PDF file first.");
+            setErrorHandler(true)
+            setLoading(false)
             return;
         }
         const formData = new FormData();
@@ -98,16 +103,24 @@ export default function TextToBraille() {
             setFile(false);
 
         } catch (error) {
-            console.error("Error converting file to BRF:", error);
-            alert('Failed to convert the PDF to BRF.');
+            setMessage("Failed to convert PDF to BRF.");
+            setErrorHandler(true)
         }
     };
+
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
 
     return (
         <div className='container'>
             {loading && (
                 <Loading />
             )}
+            {errorHandler && (
+                <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+            )
+            }
             {uploadModal && (
                 <div className='modal'>
                     <div className='overlay' onClick={toggleUploadModal} ></div>
@@ -115,7 +128,7 @@ export default function TextToBraille() {
                         <button className='close-modal' onClick={toggleUploadModal}>x</button>
                         <div className='upload-modal'>
                             <label htmlFor="file-upload" className="brf-file-upload">
-                                {file.name ? file.name : "Attach file here"}
+                                {file ? file.name : "Attach file here"}
                             </label>
                             <input
                                 id="file-upload"

@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ConfirmationModal.css'
 import Loading from '../../../../global/components/user/Loading';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
 export default function ManageAccounts() {
 
@@ -18,6 +19,8 @@ export default function ManageAccounts() {
     const [confirmationModal, setConfirmationModal] = useState(false)
     const [loading, setLoading] = useState(false)
     const [searchQuery, setSearchQuery] = useState('');
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     const toggleConfirmationModal = () => {
         setConfirmationModal(!confirmationModal)
@@ -42,7 +45,8 @@ export default function ManageAccounts() {
                 setLoading(false)
                 fetchUsers();
                 setConfirmationModal(false);
-                alert("User successfully removed!")
+                setMessage("User successfully removed!");
+                setErrorHandler(true)
             })
             .catch((error) => {
                 console.log("Failed to delete user", error);
@@ -53,12 +57,19 @@ export default function ManageAccounts() {
         fetchUsers();
     }, []);
 
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
 
     return (
         <div className='container'>
             {loading && (
                 <Loading />
             )}
+            {errorHandler && (
+                <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+            )
+            }
             {confirmationModal && (
                 <div className='modal'>
                     <div className='overlay'></div>
@@ -106,7 +117,8 @@ export default function ManageAccounts() {
                                     <button onClick={() => { navigate('/admin/create-account') }}>Create Account <img className='add-img' src={require('../assets/add.png')} /></button>
                                     <button onClick={() => {
                                         if (!selectedRowId) {
-                                            alert("Please select a user.");
+                                            setMessage("Please select a user");
+                                            setErrorHandler(true)
                                             return;
                                         }
                                         navigate('/admin/edit-account', { state: { user: selectedUser } })

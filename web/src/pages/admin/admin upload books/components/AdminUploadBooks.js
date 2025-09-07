@@ -5,6 +5,7 @@ import axios from 'axios'
 import AdminSideNavigation from '../../../../global/components/admin/AdminSideNavigation'
 import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import Loading from '../../../../global/components/user/Loading';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
 export default function AdminUploadBooks() {
 
@@ -38,6 +39,8 @@ export default function AdminUploadBooks() {
             book_file: '',
         });
     };
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     const handleUploadBook = async () => {
         setLoading(true)
@@ -56,15 +59,17 @@ export default function AdminUploadBooks() {
                 await submitImage(createdBook._id);
                 await submitimage(createdBook._id);
             }
-            
-            alert("Book created successfully!");
+
+            setMessage("Book uploaded successfully!.");
+            setErrorHandler(true)
             setLoading(false)
             clearForm();
             navigate(-1)
 
         } catch (error) {
             console.error(error);
-            alert("Failed to upload book");
+            setMessage("Failed to upload book!.");
+            setErrorHandler(true)
         }
     };
 
@@ -117,7 +122,9 @@ export default function AdminUploadBooks() {
             file ? URL.createObjectURL(file) : undefined
         )
     }
-
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
 
 
     return (
@@ -126,6 +133,10 @@ export default function AdminUploadBooks() {
                 {loading && (
                     <Loading />
                 )}
+                {errorHandler && (
+                    <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+                )
+                }
                 <AdminSideNavigation />
             </div>
             <div className='upload-container'>
@@ -164,7 +175,7 @@ export default function AdminUploadBooks() {
                                 </div>
                                 <div className='lower-left-container'>
                                     <label for="file-upload" class="custom-file-upload">
-                                        {file.name ? file.name : "Attach file here"}
+                                        {file ? file.name : "Attach file here"}
                                     </label>
                                     <input
                                         id="file-upload"

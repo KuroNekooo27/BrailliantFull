@@ -5,7 +5,7 @@ import Header from '../../../../global/components/user/Header'
 import axios from 'axios'
 import "./confirmationModal.css"
 import { useNavigate } from 'react-router-dom'
-
+import ErrorHandler from '../../../../global/components/user/ErrorHandler'
 
 export default function UploadBooks() {
 
@@ -32,7 +32,8 @@ export default function UploadBooks() {
     const [selectedImage, setSelectedImage] = useState('')
 
     const [image, setImage] = useState(null)
-
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
 
     const clearForm = () => {
@@ -71,8 +72,9 @@ export default function UploadBooks() {
             const response = await axios.post('https://brailliantweb.onrender.com/api/newrequestbook', updatedBook);
             const createdBook = response.data.book;
 
-            alert("Book uploaded for request successfully!");
-            navigate('/library')
+            setMessage("Book request sent for evalution!");
+            setErrorHandler(true)
+
 
             var fileUrl = null
             var imageUrl = null
@@ -105,12 +107,18 @@ export default function UploadBooks() {
             const result = await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', auditData);
 
         } catch (error) {
-            console.error(error);
-            alert("Failed to upload book");
+            setMessage("Failed to upload book");
+            setErrorHandler(true)
         }
     }
 
     const handleUploadBook = () => {
+        if (!file) {
+            setMessage("Please attach a file");
+            setErrorHandler(true)
+            return
+        }
+
         if (!image) {
             toggleConfirmationModal()
         }
@@ -166,10 +174,17 @@ export default function UploadBooks() {
             file ? URL.createObjectURL(file) : undefined
         )
     }
-
+    const toggleErrorHandlerModal = () => {
+        navigate('/library')
+        setErrorHandler(!errorHandler)
+    }
 
     return (
         <div className='container'>
+            {errorHandler && (
+                <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+            )
+            }
             {confirmationModal && (
                 <div className='modal'>
                     <div className='overlay'></div>
@@ -226,20 +241,17 @@ export default function UploadBooks() {
                                 <div className='lower-left-container'>
 
                                     <label for="file-upload" class="custom-file-upload">
-                                        {file.name ? file.name : "Attach file here"}
+                                        {file ? file.name : "Attach file here"}
                                     </label>
                                     <input
                                         id="file-upload"
                                         type="file"
                                         accept='application/pdf'
-                                        required
                                         onChange={(e) => {
                                             setFile(e.target.files[0])
                                         }}
 
                                     />
-
-
                                 </div>
                             </div>
 

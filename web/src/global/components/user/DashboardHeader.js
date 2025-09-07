@@ -68,7 +68,7 @@ export default function DashboardHeader() {
                     </nav>
                 </div>
 
-                {showDropdown && <DropDownMenu />}
+                {showDropdown && <DropDownMenu toggleDropdown={toggleDropdown} />}
 
                 <div className="dashboardheader-navigation">
                     <label className='dashboardheader-library'>Library</label>

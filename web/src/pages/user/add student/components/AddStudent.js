@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './AddStudent.css'
 import SideNavigation from '../../../../global/components/user/SideNavigation'
-import DropDownMenu from '../../../../global/components/user/DropDownMenu';
 import Header from '../../../../global/components/user/Header'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
+import Loading from "../../../../global/components/user/Loading";
 
 
 export default function AddStudent() {
@@ -16,7 +17,6 @@ export default function AddStudent() {
         navigate(-1)
     }
 
-    const [showDropdown, setShowDropdown] = useState(false);
     const [users, setUsers] = useState([])
     const [sections, setSections] = useState([])
     const [students, setStudents] = useState([])
@@ -31,75 +31,86 @@ export default function AddStudent() {
         student_section: '',
         student_section_name: '',
     });
+    const [loading, setLoading] = useState(false);
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         axios.get(`https://brailliantweb.onrender.com/api/allsections/${user._id}`)
             .then((response) => {
                 setSections(response.data)
-                console.log(response.data)
-            })
-            .catch((error) => {
-                console.log("eto ang error mo " + error)
             })
         setUsers(JSON.parse(localStorage.getItem('users')))
-        console.log(user._id + " this id")
     }, [])
 
-    const toggleDropdown = () => {
-        setShowDropdown((prev) => !prev);
-    };
-
     const studentList = (id) => {
+        setLoading(true)
         axios.get(`https://brailliantweb.onrender.com/api/allstudents/section/${id}`)
             .then((response) => {
                 setStudents(response.data)
-                console.log(response.data)
-            })
-            .catch((error) => {
-                console.log("eto ang error mo " + error)
+                setLoading(false)
             })
     };
 
     const handleAddStudent = async (e) => {
+        setLoading(true)
         e.preventDefault();
         ///////////////////////VALIDATIONS
         if (!newStudent.student_lname.trim()) {
-            alert("Last name is required.");
+            setLoading(false)
+            setMessage("Last name is required.");
+            setErrorHandler(true)
             return;
         }
         if (!newStudent.student_fname.trim()) {
-            alert("First name is required.");
-            return;
-        }
-        if (!/^[A-Za-z]+$/.test(newStudent.student_lname)) {
-            alert("Last name must contain only letters.");
+            setLoading(false)
+            setMessage("First name is required.");
+            setErrorHandler(true)
             return;
         }
         if (!/^[A-Za-z]+$/.test(newStudent.student_fname)) {
-            alert("First name must contain only letters.");
+            setLoading(false)
+            setMessage("First name must only contain letters.");
+            setErrorHandler(true)
+            return;
+        }
+        if (!/^[A-Za-z]+$/.test(newStudent.student_lname)) {
+            setLoading(false)
+            setMessage("Last name must only contain letters.");
+            setErrorHandler(true)
             return;
         }
         if (newStudent.student_mi && !/^[A-Za-z]{1}$/.test(newStudent.student_mi)) {
-            alert("Middle initial must be a single letter.");
+            setLoading(false)
+            setMessage("Middle initial must only be a single letter.");
+            setErrorHandler(true)
             return;
         }
         if (!newStudent.student_dob) {
-            alert("Date of Birth is required.");
+            setLoading(false)
+            setMessage("Date of birth is required.");
+            setErrorHandler(true)
             return;
         }
 
         const today = new Date();
         const enteredDate = new Date(newStudent.student_dob);
         if (enteredDate > today) {
-            alert("Date of Birth cannot be in the future.");
+            setLoading(false)
+            setMessage("Date of birth cannot be in the future.");
+            setErrorHandler(true)
             return;
         }
         if (!newStudent.student_gender) {
-            alert("Please select a gender.");
+            setLoading(false)
+            setMessage("Please select a gender.");
+            setErrorHandler(true)
             return;
         }
         if (!newStudent.student_section) {
-            alert("Please select a section.");
+            setLoading(false)
+            setMessage("Please select a section.");
+            setErrorHandler(true)
             return;
         }
         ///////////////////////////////////////////////////////////////////
@@ -110,39 +121,27 @@ export default function AddStudent() {
                 const updatedNewStudent = { ...newStudent, student_section_name: section, student_instructor: user._id }
                 axios.post('https://brailliantweb.onrender.com/api/newstudent', updatedNewStudent)
                     .then((res) => {
-                        console.log("Student added:", res.data);
-                        alert("Student added successfully!");
+                        setLoading(false)
+                        setMessage("Student added successfully!");
+                        setErrorHandler(true)
                         setNewStudent({
                             student_lname: '',
                             student_fname: '',
                             student_mi: '',
                             student_dob: '',
                             student_gender: '',
+                            student_section: selectedSection,
+                            student_section_name: section,
                         });
-                        //navigate('/class')
                         studentList(newStudent.student_section)
                     })
-                    .catch((error) => {
-                        console.error("Failed to add student", error);
-                        alert("Failed to add student. Please try again.");
-                    });
             })
-            .catch((error) => {
-                console.log(error);
-            });
+
+
 
         /////////////////////////////////////////////////////////////////////
         const updatedData = { user_recent_act: 'Added Student' };
         axios.put(`https://brailliantweb.onrender.com/api/update/user/${users._id}`, updatedData)
-            .then(() => {
-                console.log(updatedData, "this after update");
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
-
-
 
         const newAudit = {
             at_user: users.user_email,
@@ -154,7 +153,6 @@ export default function AddStudent() {
                     student_fname: newStudent.student_fname,
                     student_mi: newStudent.student_mi,
                     student_dob: newStudent.student_dob,
-                    //student_age: newStudent.student_age,
                     student_gender: newStudent.student_gender,
                     student_section: newStudent.student_section,
                     student_section_name: section,
@@ -162,21 +160,30 @@ export default function AddStudent() {
                 },
             }
         };
-        const result = await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
-        console.log(result)
+        await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
     };
 
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
 
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )
+                }
+                {errorHandler && (
+                    <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+                )
+                }
                 <SideNavigation />
             </div>
             <div className='as-container'>
                 <div className='as-header'>
                     <Header page={"Add Student"} searchBar={false} />
                 </div>
-                {showDropdown && <DropDownMenu />}
                 <div className='as-body'>
                     <div className='back-container'>
                         <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>

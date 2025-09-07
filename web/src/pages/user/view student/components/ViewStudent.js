@@ -7,6 +7,7 @@ import axios from 'axios';
 import DeleteConfirmationModal from '../../../../global/components/user/DeleteConfirmationModal';
 import Header from '../../../../global/components/user/Header';
 import Loading from '../../../../global/components/user/Loading';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
 export default function ViewStudent() {
     const navigate = useNavigate();
@@ -27,6 +28,8 @@ export default function ViewStudent() {
         student_dob: '',
         student_gender: ''
     });
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         setLoading(true)
@@ -60,14 +63,69 @@ export default function ViewStudent() {
     };
 
     const handleSave = async () => {
+        setLoading(true)
+
+        if (!formData.student_lname.trim()) {
+            setLoading(false)
+            setMessage("Last name is required.");
+            setErrorHandler(true)
+            return;
+        }
+        if (!formData.student_fname.trim()) {
+            setLoading(false)
+            setMessage("First name is required.");
+            setErrorHandler(true)
+            return;
+        }
+        if (!/^[A-Za-z]+$/.test(formData.student_lname)) {
+            setLoading(false)
+            setMessage("Last name must only contain letters.");
+            setErrorHandler(true)
+            return;
+        }
+        if (!/^[A-Za-z]+$/.test(formData.student_fname)) {
+            setLoading(false)
+            setMessage("First name must only contain letters.");
+            setErrorHandler(true)
+            return;
+        }
+        if (formData.student_mi && !/^[A-Za-z]{1}$/.test(formData.student_mi)) {
+            setLoading(false)
+            setMessage("Middle initial must only be a single letter.");
+            setErrorHandler(true)
+            return;
+        }
+        if (!formData.student_dob) {
+            setLoading(false)
+            setMessage("Date of birth is required.");
+            setErrorHandler(true)
+            return;
+        }
+
+        const today = new Date();
+        const enteredDate = new Date(formData.student_dob);
+        if (enteredDate > today) {
+            setLoading(false)
+            setMessage("Date of birth cannot be in the future.");
+            setErrorHandler(true)
+            return;
+        }
+        if (!formData.student_gender) {
+            setLoading(false)
+            setMessage("Please select a gender.");
+            setErrorHandler(true)
+            return;
+        }
+
         axios
             .put(`https://brailliantweb.onrender.com/api/update/student/${selectedStudent._id}`, formData)
             .then((result) => {
                 setIsEditing(false);
+                setLoading(false)
+                setMessage("Student edit successful.");
+                setErrorHandler(true)
             })
-            .catch((error) => {
-                console.error("Update failed:", error);
-            });
+
 
         const newAudit = {
             at_user: users.user_email,
@@ -96,7 +154,6 @@ export default function ViewStudent() {
             }
         };
         const result = await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
-        console.log(result.data)
     };
 
     const handleCancel = () => {
@@ -116,9 +173,7 @@ export default function ViewStudent() {
             .then(() => {
                 navigate('/class');
             })
-            .catch((error) => {
-                console.log("Delete error: ", error);
-            });
+
         const newAudit = {
             at_user: users.user_email,
             at_date: new Date(),
@@ -146,11 +201,19 @@ export default function ViewStudent() {
         return `${h}:${m}:${s}`;
     };
 
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
+
     return (
         <div className='container'>
             {loading && (
                 <Loading />
             )}
+            {errorHandler && (
+                <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+            )
+            }
             <SideNavigation />
             <div className='vs-container'>
                 <div className='vs-header'>

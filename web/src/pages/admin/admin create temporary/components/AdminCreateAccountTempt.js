@@ -4,6 +4,8 @@ import AdminSideNavigation from '../../../../global/components/admin/AdminSideNa
 import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
+import Loading from "../../../../global/components/user/Loading";
 
 
 export default function AdminCreateAccountTempt() {
@@ -37,17 +39,19 @@ export default function AdminCreateAccountTempt() {
             user_dob: '',
         });
     };
+    const [loading, setLoading] = useState(false);
+
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     const handleCreateUser = async () => {
-
+        setLoading(true)
         try {
             const response = await axios.post('https://brailliantweb.onrender.com/send-email', {
                 context: "create",
                 password: newUser.user_password,
                 email: newUser.user_email
             });
-            console.log(response.data)
-            alert("Email sent!");
         } catch (err) {
             console.error("Failed to send email", err);
             alert("Failed to send email");
@@ -55,9 +59,10 @@ export default function AdminCreateAccountTempt() {
 
         axios.post('https://brailliantweb.onrender.com/api/newuser', newUser)
             .then(() => {
-                alert("User created successfully!");
+                setMessage("User created successfully!.");
+                setErrorHandler(true)
                 clearForm();
-                navigate('/admin/accounts')
+                setLoading(false)
             })
             .catch((error) => {
                 console.log(error);
@@ -73,44 +78,63 @@ export default function AdminCreateAccountTempt() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!nameRegex.test(user_fname)) {
-            alert("First name must contain only letters.");
+            setMessage("First name must only contain letters.");
+            setErrorHandler(true)
             return false;
         }
 
         if (!nameRegex.test(user_lname)) {
-            alert("Last name must contain only letters.");
+            setMessage("Last name must only contain letters.");
+            setErrorHandler(true)
             return false;
         }
 
         if (!emailRegex.test(user_email)) {
-            alert("Please enter a valid email address.");
+            setMessage("Please enter a valid email address.");
+            setErrorHandler(true)
             return false;
         }
 
         if (user_password.length < 6) {
-            alert("Password must be at least 6 characters.");
+            setMessage("Password must be at least 6 characters.");
+            setErrorHandler(true)
             return false;
         }
 
         if (user_password !== user_cpassword) {
-            alert("Passwords do not match.");
+            setMessage("Password does not match.");
+            setErrorHandler(true)
             return false;
         }
 
         const dob = new Date(user_dob);
         const today = new Date();
         if (dob >= today) {
-            alert("Date of birth must be in the past.");
+            setMessage("Date of birth must be in the past.");
+            setErrorHandler(true)
             return false;
         }
 
         return true;
     };
+    const toggleErrorHandlerModal = () => {
+        navigate('/admin/accounts')
 
+        setErrorHandler(!errorHandler)
+    }
     return (
         <div className='container'>
             <div>
+                {loading && (
+                    <Loading />
+                )
+                }
+                {errorHandler && (
+                    <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+                )
+                }
                 <AdminSideNavigation />
+
             </div>
             <div className='admin-cs-container'>
                 <div className='admin-cs-header'>

@@ -6,6 +6,7 @@ import DropDownMenu from '../../../../global/components/user/DropDownMenu';
 import axios from 'axios';
 import Header from '../../../../global/components/user/Header';
 import "./ConfirmationModal.css"
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
 export default function EditProfile() {
     const navigate = useNavigate()
@@ -28,7 +29,8 @@ export default function EditProfile() {
     const [selectedImage, setSelectedImage] = useState('')
     const [image, setImage] = useState(null)
     const [modal, setModal] = useState(false)
-
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('users'));
@@ -65,9 +67,9 @@ export default function EditProfile() {
                 otp: generatedOtp,
                 email: cemail
             });
-            alert("Email sent!");
+            setMessage("Email sent!");
+            setErrorHandler(true)
         } catch (err) {
-            console.error("Failed to send email", err);
             alert("Failed to send email");
         }
     }
@@ -76,44 +78,53 @@ export default function EditProfile() {
         const { user_fname, user_lname, user_email, user_dob, user_password } = editUser;
 
         if (!user_fname.trim()) {
-            alert("First name is required.");
+            setMessage("First name is required");
+            setErrorHandler(true)
             return;
         }
         if (!/^[A-Za-z]+$/.test(user_fname)) {
-            alert("First name must contain only letters.");
+            setMessage("First name must only contain letters.");
+            setErrorHandler(true)
             return;
         }
 
         if (!user_lname.trim()) {
-            alert("Last name is required.");
+            setMessage("Last name is required.");
+            setErrorHandler(true)
             return;
         }
         if (!/^[A-Za-z]+$/.test(user_lname)) {
-            alert("Last name must contain only letters.");
+            setMessage("Last name must only contain letters.");
+            setErrorHandler(true)
             return;
         }
 
         if (!user_email.trim()) {
-            alert("Email is required.");
+            setMessage("Email is required");
+            setErrorHandler(true)
             return;
         }
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user_email)) {
-            alert("Invalid email format.");
+            setMessage("Invalid email format.");
+            setErrorHandler(true)
             return;
         }
 
         if (!user_dob) {
-            alert("Date of Birth is required.");
+            setMessage("Date of birth is required");
+            setErrorHandler(true)
             return;
         }
         const today = new Date();
         const enteredDate = new Date(user_dob);
         if (enteredDate > today) {
-            alert("Date of Birth cannot be in the future.");
+            setMessage("Date of birth cannot be in the future");
+            setErrorHandler(true)
             return;
         }
         handleProfileUpdate(editUser._id);
-        alert("Update Successful!");
+        setMessage("Update succeful!");
+        setErrorHandler(true)
     };
 
 
@@ -189,7 +200,8 @@ export default function EditProfile() {
                 email: editUser.user_email
             });
 
-            alert('Password updated successfully!');
+            setMessage("Password updated successfully");
+            setErrorHandler(true)
             setActiveForm('profile');
             setEditUser({ ...editUser, user_password: '' });
             setCpassword('');
@@ -214,15 +226,18 @@ export default function EditProfile() {
         setOtp(newOtp)
 
         if (!cemail) {
-            alert("Enter new email.");
+            setMessage("Enter new email.");
+            setErrorHandler(true)
             return;
         }
         if (editUser.user_password !== cpassword) {
-            alert("Passwords do not match.");
+            setMessage("Passwords do not match.");
+            setErrorHandler(true)
             return;
         }
         if (!editUser.user_password || !cpassword) {
-            alert("Enter password.");
+            setMessage("Enter password.");
+            setErrorHandler(true)
             return;
         }
         try {
@@ -239,7 +254,8 @@ export default function EditProfile() {
     }
     const handleInputOTP = () => {
         if (!inputOtp) {
-            alert("OTP is required")
+            setMessage("OTP is required.");
+            setErrorHandler(true)
             return
         }
         if (inputOtp == otp) {
@@ -256,8 +272,8 @@ export default function EditProfile() {
 
             const result = await axios.put(`https://brailliantweb.onrender.com/api/update/user/${editUser._id}`, updatedData);
 
-            alert("Email successfully changed!");
-            console.log(result);
+            setMessage("Email successfully changed!");
+            setErrorHandler(true)
 
             const updatedUser = { ...editUser, ...updatedData };
             localStorage.setItem('users', JSON.stringify(updatedUser));
@@ -290,16 +306,22 @@ export default function EditProfile() {
             await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
 
         } catch (error) {
-            console.error(error);
-            alert("Incorrect Password.");
+            setMessage("Incorrect password!");
+            setErrorHandler(true)
         }
     };
 
-
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
 
 
     return (
         <div className='container'>
+            {errorHandler && (
+                <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+            )
+            }
             {modal && (
                 <div className='modal'>
                     <div className='overlay' onClick={toggleModal} ></div>
@@ -325,7 +347,6 @@ export default function EditProfile() {
                 <div className='ep-header'>
                     <Header page={"Edit Profile"} searchBar={false} />
                 </div>
-                {showDropdown && <DropDownMenu />}
                 <div className='ep-body'>
                     <div className="profile-page">
                         <main className="profile-container">

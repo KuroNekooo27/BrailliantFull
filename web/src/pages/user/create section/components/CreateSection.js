@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import './CreateSection.css'
 import SideNavigation from '../../../../global/components/user/SideNavigation'
-import DropDownMenu from '../../../../global/components/user/DropDownMenu';
 import Header from '../../../../global/components/user/Header';
 import axios from 'axios'
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
 
 export default function CreateSection() {
@@ -15,7 +15,6 @@ export default function CreateSection() {
         navigate(-1)
     }
 
-    const [showDropdown, setShowDropdown] = useState(false);
     const [users, setUsers] = useState([])
     const [sectionId, setSectionId] = useState('')
     const [students, setStudents] = useState([])
@@ -40,20 +39,32 @@ export default function CreateSection() {
     });
 
     const [isStudentFormEnabled, setIsStudentFormEnabled] = useState(false);
+    const [isSectionFormEnabled, setIsSectionFormEnabled] = useState(true);
+
     const [isCreateButtonDisabled, setIsCreateButtonDisabled] = useState(false);
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
-
-    const clearForm = () => {
-        setNewSection({
-            section_name: '',
-            section_level: '',
+    const clearStudentForm = () => {
+        setNewStudent({
+            student_lname: '',
+            student_fname: '',
+            student_mi: '',
+            student_dob: '',
+            student_gender: '',
         });
     };
 
     const handleAddStudent = (e) => {
         e.preventDefault();
-        console.log('this the id', sectionId);
-        console.log('this the instructor id', users._id);
+
+        const dob = new Date(newStudent.student_dob);
+        const today = new Date();
+        if (dob >= today) {
+            setMessage("Date of birth must be in the past");
+            setErrorHandler(true)
+            return false;
+        }
         axios.put(`https://brailliantweb.onrender.com/api/update/user/${users._id}`, { user_recent_act: 'Added Student' })
 
         const updatedData = {
@@ -65,8 +76,8 @@ export default function CreateSection() {
 
         axios.post('https://brailliantweb.onrender.com/api/newstudent', updatedData)
             .then((res) => {
-                console.log("Student added:", res.data);
-                alert("Student added successfully!");
+                setMessage("Student added successfully!.");
+                setErrorHandler(true)
                 setNewStudent({
                     student_lname: '',
                     student_fname: '',
@@ -77,23 +88,28 @@ export default function CreateSection() {
                 studentList()
             })
             .catch((error) => {
-                console.error("Failed to add student", error);
-                alert("Failed to add student. Please try again.");
+                setMessage("Failed to add student. Please try again");
+                setErrorHandler(true)
             });
 
     };
 
     const handleCreateSection = async (e) => {
         e.preventDefault();
-        if (!newSection.section_level) {
-            alert("Please select a section level.");
+        if (!newSection.section_name) {
+            setMessage("Please enter a section name.");
+            setErrorHandler(true)
             return;
         }
-        if (!newSection.section_name) {
-            alert("Please enter section name.");
+        if (!newSection.section_level) {
+            setMessage("Please select a section level.");
+            setErrorHandler(true)
             return;
         }
 
+        setMessage("Section created successfully!.");
+        setErrorHandler(true)
+        setIsSectionFormEnabled(false)
         setIsStudentFormEnabled(true);
         setIsCreateButtonDisabled(true);
 
@@ -105,23 +121,18 @@ export default function CreateSection() {
             section_instructor: users._id
         })
             .then(async (response) => {
-                alert("Section created successfully!");
+
                 //clearForm();
                 const newId = response.data.section._id;
                 setSectionId(newId);
-                console.log('ETO YUNG SECTION:', newSection.section_name);
 
                 try {
                     const result = await axios.get(`https://brailliantweb.onrender.com/api/section/${newId}`);
                     setSection(result.data);
-                    console.log('newly created:', result.data.section.section_name);
                 } catch (fetchError) {
                     console.error("Error fetching newly created section:", fetchError);
                 }
             })
-            .catch((error) => {
-                console.error("Error creating section:", error);
-            });
 
 
 
@@ -150,27 +161,27 @@ export default function CreateSection() {
         axios.get('https://brailliantweb.onrender.com/api/allstudents')
             .then((response) => {
                 setStudents(response.data)
-                console.log(students)
             })
-            .catch((error) => {
-                console.log("eto ang error mo " + error)
-            })
+
     };
 
-    const toggleDropdown = () => {
-        setShowDropdown((prev) => !prev);
-    };
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
 
     return (
         <div className='container'>
             <div>
+                {errorHandler && (
+                    <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+                )
+                }
                 <SideNavigation />
             </div>
             <div className='createsection-container'>
                 <div className='createsection-header'>
                     <Header page={"Create Section"} searchBar={false} />
                 </div>
-                {showDropdown && <DropDownMenu />}
                 <div className='createsection-body'>
                     <div className='cre-s'>
 
@@ -187,20 +198,20 @@ export default function CreateSection() {
                                             className='section-name'
                                             value={newSection.section_name}
                                             onChange={(e) => setNewSection({ ...newSection, section_name: e.target.value })}
+                                            readOnly={!isSectionFormEnabled}
+
                                         />
                                     </div>
                                     <div className='c2'>
                                         <label>Grade Level</label>
-                                        <select
+                                        <input
                                             required
                                             className='grade-level'
                                             value={newSection.section_level}
                                             onChange={(e) => setNewSection({ ...newSection, section_level: e.target.value })}
-                                        >
-                                            <option value="">Select Grade</option>
-                                            <option value="Grade - 1">Grade - 1</option>
-                                            <option value="Grade - 2">Grade - 2</option>
-                                        </select>
+                                            readOnly={!isSectionFormEnabled}
+                                        />
+
                                     </div>
                                 </div>
                                 <div>
@@ -266,6 +277,7 @@ export default function CreateSection() {
                                         <div className='c2'>
                                             <label>Gender</label>
                                             <select
+                                                required
                                                 value={newStudent.student_gender}
                                                 onChange={(e) => setNewStudent({ ...newStudent, student_gender: e.target.value })}
                                                 disabled={!isStudentFormEnabled}
@@ -286,6 +298,7 @@ export default function CreateSection() {
                                         <button
                                             type='reset'
                                             className='clear-form'
+                                            onClick={clearStudentForm}
                                             disabled={!isStudentFormEnabled}
                                         >Clear</button>
                                     </div>
@@ -294,7 +307,7 @@ export default function CreateSection() {
                                 <div className='section-student-list'>
                                     <div className='section-student-list-top'>
                                         <label>Student List</label>
-                                        <button className='section-import'><img src={require('../assets/upload.png')} />Import List</button>
+                                        {/* <div></div><button className='section-import'><img src={require('../assets/upload.png')} />Import List</button> */}
                                     </div>
                                     <div className='create-section-students'>
                                         <table>

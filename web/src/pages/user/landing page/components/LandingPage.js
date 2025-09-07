@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from 'axios'
 import Loading from "../../../../global/components/user/Loading";
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 import './LandingPage.css'
 import './OTPModal.css'
 import './SuccessfulModal.css'
@@ -37,6 +38,8 @@ export default function LandingPage() {
     const [inputOtp, setInputOtp] = useState('');
 
     const [loading, setLoading] = useState(false);
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
 
     //switch login forgot pass
@@ -67,11 +70,12 @@ export default function LandingPage() {
                 otp: generatedOtp,
                 email: email
             });
-            console.log(response)
-            alert("Email sent!");
+            setMessage("Email sent!.");
+            setErrorHandler(true)
         } catch (err) {
             console.error("Failed to send email", err);
-            alert("Failed to send email");
+            setMessage("Failed to send email.");
+            setErrorHandler(true)
         }
     };
     const sendEmailForgotpassword = async (generatedOtp) => {
@@ -81,10 +85,11 @@ export default function LandingPage() {
                 otp: generatedOtp,
                 email: email
             });
-            alert("Email sent!");
+            setMessage("Email sent!");
+            setErrorHandler(true)
         } catch (err) {
-            console.error("Failed to send email", err);
-            alert("Failed to send email");
+            setMessage("Failed to send email.");
+            setErrorHandler(true)
         }
     };
 
@@ -96,14 +101,17 @@ export default function LandingPage() {
             });
             if (response) {
                 toggleEmailModal()
+                
                 toggleForgotPassModal()
 
                 const newOtp = generateOTP();
                 setOtp(newOtp);
                 sendEmailForgotpassword(newOtp);
+
             }
         } catch (error) {
-            alert("Invalid email. Please try again.");
+            setMessage("Invalid email. Please try again.");
+            setErrorHandler(true)
             clearForm();
         }
     };
@@ -115,7 +123,8 @@ export default function LandingPage() {
 
         }
         else {
-            alert("Invalid OTP.");
+            setMessage("Invalid OTP");
+            setErrorHandler(true)
         }
     };
 
@@ -126,17 +135,19 @@ export default function LandingPage() {
                 const response = await axios.put("https://brailliantweb.onrender.com/api/update-password", {
                     password, email
                 });
-                alert("Password renew successfull!.");
+                setMessage("Password renewal successful.");
+                setErrorHandler(true)
                 clearForm()
                 togglePasswordModal()
 
             } catch (error) {
-                console.log(error)
-                alert("Something went wrong in updating.");
+                setMessage("Something went wrong with udpating");
+                setErrorHandler(true)
             }
         }
         else {
-            alert("Password does not match.");
+            setMessage("Password does not match");
+            setErrorHandler(true)
         }
     };
 
@@ -147,10 +158,12 @@ export default function LandingPage() {
                 toggleOTPModal();
                 toggleSuccessfulModal();
             } catch (err) {
-                alert("Failed to mark OTP verified.");
+                setMessage("Failed to mark OTP verified.");
+                setErrorHandler(true)
             }
         } else {
-            alert("Invalid OTP.");
+            setMessage("Invalid OTP.");
+            setErrorHandler(true)
         }
     };
 
@@ -178,7 +191,8 @@ export default function LandingPage() {
             }
 
         } catch (error) {
-            alert("Invalid email or password. Please try again.");
+            setMessage("Invalid email or password. Please try again.");
+            setErrorHandler(true)
             clearForm();
         }
         setLoading(false)
@@ -214,12 +228,12 @@ export default function LandingPage() {
                         Authorization: `Bearer ${token}`
                     }
                 })
-                    .then((res) => console.log(res));
                 navigate('/home')
             }
 
         } catch (error) {
-            alert("Invalid email or password. Please try again.");
+            setMessage("Invalid email or password. Please try again.");
+            setErrorHandler(true)
             clearForm();
         }
     };
@@ -264,7 +278,9 @@ export default function LandingPage() {
     const togglePasswordModal = () => {
         setPasswordModal(!passwordModal)
     }
-
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
 
 
     if (modal) {
@@ -280,6 +296,11 @@ export default function LandingPage() {
                 <Loading />
             )
             }
+            {errorHandler && (
+                <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+            )
+            }
+
             {modal && (
                 <div className='modal'>
                     <div className='overlay' onClick={toggleModal} ></div>

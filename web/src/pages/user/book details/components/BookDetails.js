@@ -5,7 +5,7 @@ import './BookDetails.css'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../../../../global/components/user/Loading';
-
+import ErrorHandler from '../../../../global/components/user/ErrorHandler';
 export default function BookDetails() {
 
     const navigate = new useNavigate()
@@ -20,8 +20,8 @@ export default function BookDetails() {
     const [book, setBook] = useState('')
     const [resultText, setResultText] = useState('')
     const [loading, setLoading] = useState(false)
-
-
+    const [errorHandler, setErrorHandler] = useState(false)
+    const [message, setMessage] = useState('');
 
     const user = JSON.parse(localStorage.getItem('users'));
     if (!user) {
@@ -35,16 +35,12 @@ export default function BookDetails() {
             .then((response) => {
                 setSections(response.data)
             })
-            .catch((error) => {
-                console.log("eto ang error mo " + error)
-            })
+
         axios.get('https://brailliantweb.onrender.com/api/allstudents')
             .then((response) => {
                 setStudents(response.data)
             })
-            .catch((error) => {
-                console.log("eto ang error mo " + error)
-            })
+
 
         axios.post('https://brailliantweb.onrender.com/extract-text', {
             pdfUrl: selectedBook.book.book_file
@@ -53,9 +49,6 @@ export default function BookDetails() {
                 setLoading(false)
                 setResultText(response.data.trim());
             })
-            .catch((error) => {
-                console.error("Error extracting text:", error);
-            });
 
     }, [])
 
@@ -65,12 +58,9 @@ export default function BookDetails() {
                 .then((response) => {
                     setBook(response.data.book.book_title)
                 })
-                .catch((error) => {
-                    console.log("eto ang error mo " + error)
-                });
         }
         else {
-            setBook("N/A")
+            setBook("")
         }
     }, [selectedStudent]);
 
@@ -78,7 +68,9 @@ export default function BookDetails() {
     const startSession = async () => {
         setLoading(true)
         if (!selectedSection || !selectedStudent) {
-            alert("Select student")
+            setLoading(false)
+            setMessage("Select a student");
+            setErrorHandler(true)
             return
         }
         await axios.put(`https://brailliantweb.onrender.com/increment/${selectedBook.book._id}`);
@@ -91,13 +83,19 @@ export default function BookDetails() {
         });
         setLoading(false)
     };
-
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
 
     return (
         <div className='container'>
             {loading && (
                 <Loading />
             )}
+            {errorHandler && (
+                <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+            )
+            }
             <div>
                 <SideNavigation />
             </div>
@@ -144,7 +142,10 @@ export default function BookDetails() {
 
                                     <select
                                         value={selectedSection.student_section}
-                                        onChange={(e) => setSelectedSection(e.target.value)}
+                                        onChange={(e) => {
+                                            setSelectedSection(e.target.value)
+                                            setBook('')
+                                        }}
                                     >
                                         <option value="">Select Section</option>
                                         {sections.sections?.map((section) => (
@@ -157,9 +158,11 @@ export default function BookDetails() {
                                     <label>Student</label>
 
                                     <select
-                                        value={selectedStudent ? JSON.stringify(selectedStudent) : ''}
+                                        value={selectedStudent?._id || ""}
                                         onChange={(e) => {
-                                            setSelectedStudent(JSON.parse(e.target.value));
+                                            const student = students.students?.find(s => s._id === e.target.value);
+                                            setSelectedStudent(student || "");
+                                            setBook('');
                                         }}
                                     >
                                         <option value="">Select Student</option>
@@ -167,11 +170,12 @@ export default function BookDetails() {
                                             students.students
                                                 ?.filter((student) => student.student_section === selectedSection)
                                                 .map((student) => (
-                                                    <option key={student._id} value={JSON.stringify(student)}>
+                                                    <option key={student._id} value={student._id}>
                                                         {student.student_fname} {student.student_lname}
                                                     </option>
                                                 ))}
                                     </select>
+
                                     <label>Last Viewed:</label>
                                     <div className='bd-history'>
                                         <p>{book}</p>

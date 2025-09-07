@@ -4,6 +4,7 @@ import AdminSideNavigation from '../../../../global/components/admin/AdminSideNa
 import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
 
 export default function AdminEditUser() {
@@ -12,7 +13,8 @@ export default function AdminEditUser() {
     const selectedUser = location.state.user;
 
     const navigate = new useNavigate()
-    console.log(selectedUser, 'eto yung id')
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     const validateForm = () => {
         const nameRegex = /^[A-Za-z\s]+$/;
@@ -34,15 +36,15 @@ export default function AdminEditUser() {
         if (!editUser.user_dob || new Date(editUser.user_dob) >= new Date()) {
             errors.push("Date of birth must be a past date.");
         }
-/**
-        if (editUser.user_password.length < 6) {
-            errors.push("Password must be at least 6 characters.");
-        }
-
-        if (editUser.user_password !== cpassword) {
-            errors.push("Passwords do not match.");
-        }
- */
+        /**
+                if (editUser.user_password.length < 6) {
+                    errors.push("Password must be at least 6 characters.");
+                }
+        
+                if (editUser.user_password !== cpassword) {
+                    errors.push("Passwords do not match.");
+                }
+         */
         return errors;
     };
 
@@ -70,13 +72,14 @@ export default function AdminEditUser() {
         const errors = validateForm();
 
         if (errors.length > 0) {
-            alert(errors.join("\n"));
+            setMessage(errors.join("\n"));
+            setErrorHandler(true)
             return;
         }
 
         handleUpdateUser(editUser._id);
-        alert("Update Successful!");
-        navigate('/admin/accounts');
+        setMessage("Update successful!");
+        setErrorHandler(true)
     };
 
     const handleUpdateUser = (id) => {
@@ -95,10 +98,19 @@ export default function AdminEditUser() {
 
     //////////////////
 
+    const toggleErrorHandlerModal = () => {
+        navigate('/admin/accounts');
+
+        setErrorHandler(!errorHandler)
+    }
 
     return (
         <div className='container'>
             <div>
+                {errorHandler && (
+                    <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+                )
+                }
                 <AdminSideNavigation />
             </div>
             <div className='admin-ed-container'>

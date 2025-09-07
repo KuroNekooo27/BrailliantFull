@@ -120,7 +120,7 @@ export default function AccountActivation() {
                 {showDropdown && <DropDownMenu />}
                 <div className='aa-body'>
                     <div className='account-activation'>
-                        <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} /></button>
+                        <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
 
                         <label className='aa-title'>Account Activation</label>
                         <div className='aa'>

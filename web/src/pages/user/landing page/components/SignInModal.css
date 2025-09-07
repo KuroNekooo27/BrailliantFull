@@ -102,14 +102,10 @@ body.active-modal {
 }
 
 .forgot-pass {
+    cursor: pointer;
     text-decoration: none;
     float: right;
     color: #6c737f;
     font-size: 14px;
 }
 
-.pass-input {
-    background: url("../assets/passvisible.png") no-repeat right;
-    background-size: 20px;
-    background-position-x: 97%;
-}

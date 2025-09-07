@@ -7,6 +7,8 @@ import axios from 'axios';
 import "./SummaryModal.css"
 import Loading from '../../../../global/components/user/Loading';
 import './TextToBraille.css'
+import './ConfirmationModal.css'
+
 import convertTextToBrailleDots from "../components/api/translate";
 import BrailleLetter from "./index";
 
@@ -158,15 +160,15 @@ export default function BookSession() {
                 <Loading />
             )}
             {confirmationModal && (
-                <div className='modal'>
-                    <div className='confirm-overlay' onClick={togggleConfirmationModal}>
-                        <div className='confirm-modal-content'>
-                            <div className='confirm-loginmodal'>
-                                <label className='confirm-head'>Are you sure you want to delete?</label>
+                <div className='bs-modal'>
+                    <div className='bs-confirm-overlay' onClick={togggleConfirmationModal}>
+                        <div className='bs-confirm-modal-content'>
+                            <div className='bs-confirm-loginmodal'>
+                                <label className='bs-confirm-head'>Are you sure you want to end session?</label>
 
-                                <div className='confirm-modal-btns'>
-                                    <button className='confirm-cancel' onClick={togggleConfirmationModal}>Continue Reading</button>
-                                    <button className='confirm-delete' onClick={() => {
+                                <div className='bs-confirm-modal-btns'>
+                                    <button className='bs-confirm-cancel' onClick={togggleConfirmationModal}>Continue Reading</button>
+                                    <button className='bs-confirm-delete' onClick={() => {
                                         endSession()
                                         togggleSummaryModal()
                                     }
@@ -180,9 +182,7 @@ export default function BookSession() {
 
             {summaryModal && (
                 <div className='summary-modal'>
-                    <div className='summary-overlay' onClick={() => {
-                        navigate(-1)
-                    }}></div>
+                    <div className='summary-overlay' ></div>
                     <div className='summary-modal-content'>
                         <div className='summary'>
 

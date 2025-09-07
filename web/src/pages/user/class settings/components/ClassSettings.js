@@ -6,6 +6,8 @@ import SideNavigation from '../../../../global/components/user/SideNavigation'
 import Header from '../../../../global/components/user/Header'
 import axios from 'axios'
 import Loading from '../../../../global/components/user/Loading';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
+
 export default function ClassSettings() {
 
     const navigate = useNavigate()
@@ -22,7 +24,8 @@ export default function ClassSettings() {
     const [searchQuery, setSearchQuery] = useState('');
 
     const user = JSON.parse(localStorage.getItem('users'));
-
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         setLoading(true)
@@ -46,23 +49,26 @@ export default function ClassSettings() {
         setUsers(JSON.parse(localStorage.getItem('users')))
     }, [])
 
-    const toggleDropdown = () => {
-        setShowDropdown((prev) => !prev);
-        console.log(sections)
-    };
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
+
     return (
         <div className='container'>
             <div>
                 {loading && (
                     <Loading />
                 )}
+                {errorHandler && (
+                    <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+                )
+                }
                 <SideNavigation />
             </div>
             <div className='cs-container'>
                 <div className='cs-header'>
                     <Header page={"Class Settings"} searchBar={false} />
                 </div>
-                {showDropdown && <DropDownMenu />}
                 <div className='cs-body'>
                     <div className='cs-action'>
                         <div className='cs-buttons'>
@@ -115,7 +121,8 @@ export default function ClassSettings() {
                                     className='edit-section'
                                     onClick={() => {
                                         if (!selectedSection) {
-                                            alert("Please select a section.");
+                                            setMessage("Please select a section.");
+                                            setErrorHandler(true)
                                             return;
                                         }
                                         navigate('/section/edit', { state: { section: selectedSection } });
