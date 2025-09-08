@@ -1,7 +1,6 @@
 .cs-body {
-    width: 100%;
     padding: 40px;
-    height: 100%;
+    box-sizing: border-box;
 }
 
 .cs-container {
@@ -35,7 +34,6 @@
 
 .cs-num {
     display: flex;
-    margin-right: 80px;
     gap: 15px;
 }
 
@@ -95,16 +93,14 @@
 .cs-table {
     margin-top: 10px;
     background-color: #ecf0ff;
-    width: 93%;
+    width: 100%;
     border-radius: 20px;
     padding: 20px;
-    height: 55%;
+    box-sizing: border-box;
+    max-height: 500px;
+    height: 500px;
 }
 
-.cs-list {
-    
-    height: 100%;
-}
 
 .cs-table-navigation {
     display: flex;
@@ -144,7 +140,7 @@
 
 
 .cs-tbl-cont {
-    max-height: 450px;
+    max-height: 400px;
     overflow-y: auto;
 }
 

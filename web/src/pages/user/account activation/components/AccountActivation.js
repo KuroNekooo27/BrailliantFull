@@ -4,8 +4,10 @@ import './AccountActivation.css'
 import SideNavigation from '../../../../global/components/user/SideNavigation'
 import DropDownMenu from '../../../../global/components/user/DropDownMenu';
 import axios from 'axios';
-import './SignInModal.css'
+import './ConfirmationModal.css'
 import Header from '../../../../global/components/user/Header';
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
+import Loading from "../../../../global/components/user/Loading";
 
 export default function AccountActivation() {
     const navigate = new useNavigate()
@@ -15,18 +17,16 @@ export default function AccountActivation() {
     const [hasSentEmail, setHasSentEmail] = useState(true)
     const [otp, setOtp] = useState('');
     const [inputOtp, setInputOtp] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
 
     const user = JSON.parse(localStorage.getItem('users'));
     if (!user) {
         navigate(-1)
     }
 
-
-
-
-    const toggleDropdown = () => {
-        setShowDropdown((prev) => !prev);
-    };
 
     const sendEmail = async (generatedOtp) => {
         try {
@@ -35,9 +35,9 @@ export default function AccountActivation() {
                 otp: generatedOtp,
                 email: user.user_email
             });
-            alert("Email sent!");
+            setMessage("Email sent!.");
+            setErrorHandler(true)
         } catch (err) {
-            console.error("Failed to send email", err);
             alert("Failed to send email");
         }
     };
@@ -59,6 +59,7 @@ export default function AccountActivation() {
     }
 
     const handleVerify = async () => {
+        setLoading(true)
         const updatedData = { ...user, isActivated: true };
 
         if (inputOtp === otp) {
@@ -66,10 +67,8 @@ export default function AccountActivation() {
                 .then(() => {
                     localStorage.setItem('users', JSON.stringify(updatedData));
                     toggleModal()
+                    setLoading(false)
                 })
-                .catch((error) => {
-                    console.log(error);
-                });
 
             const newAudit = {
                 at_user: user.user_email,
@@ -79,7 +78,9 @@ export default function AccountActivation() {
             await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
         }
         else {
-            alert("Invalid OTP.");
+            setLoading(false)
+            setMessage("Invalid OTP");
+            setErrorHandler(true)
         }
     };
 
@@ -93,14 +94,19 @@ export default function AccountActivation() {
         document.body.classList.remove('active-modal')
     }
 
+    const toggleErrorHandlerModal = () => {
+        setErrorHandler(!errorHandler)
+    }
+
     return (
         <div className='container'>
+
             {modal && (
                 <div className='modal'>
-                    <div className='overlay' onClick={toggleModal} ></div>
+                    <div className='overlay' onClick={() => navigate('/profile')} ></div>
                     <div className='otp-modal-content'>
                         <div className='otp-loginmodal'>
-                            <button className='close-modal' onClick={toggleModal}>x </button>
+                            <button className='close-modal' onClick={() => navigate('/profile')}>x </button>
                             <label className='otp-head'>Verification Successful</label>
                             <label className='otp-text'>Explore more of Brailliant features for activated users!</label>
                             <img src={require('../assets/check.png')} />
@@ -110,6 +116,14 @@ export default function AccountActivation() {
                     </div>
                 </div>
             )}
+            {errorHandler && (
+                <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+            )
+            }
+            {loading && (
+                <Loading />
+            )
+            }
             <div>
                 <SideNavigation />
             </div>

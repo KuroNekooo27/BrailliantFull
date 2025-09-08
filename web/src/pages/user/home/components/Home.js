@@ -32,13 +32,13 @@ export default function Home() {
         labels: topBooks.slice(0, 5).map(book => book.book_title),
         datasets: [
             {
-                data: topBooks.slice(0, 5).map(book => book.book_count), 
+                data: topBooks.slice(0, 5).map(book => book.book_count),
                 backgroundColor: [
-                    '#FFD700', 
-                    '#FF7F50', 
-                    '#9370DB', 
-                    '#1E90FF', 
-                    '#32CD32'  
+                    '#FFD700',
+                    '#FF7F50',
+                    '#9370DB',
+                    '#1E90FF',
+                    '#32CD32'
                 ],
                 borderWidth: 1,
             },
@@ -56,13 +56,9 @@ export default function Home() {
 
     return (
         <div className='container'>
-            <div>
-                <SideNavigation />
-            </div>
+            <SideNavigation />
             <div className='home-container'>
-                <div className='home-header'>
-                    <DashboardHeader />
-                </div>
+                <DashboardHeader />
                 <div className='home-body'>
                     <div className='home-braille-char'>
                         <label className='braillechar'>Braille Characters</label>

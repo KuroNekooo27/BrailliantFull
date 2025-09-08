@@ -32,7 +32,7 @@ export default function Grade1() {
                                 <label className='g1-title-main'>Braille Characters</label>
 
                             </div>
-                            <label className='g1-title-sub'>Click a character to sync it to the display!</label>
+                            {/* <label className='g1-title-sub'>Click a character to sync it to the display!</label> */}
                         </div>
                         <div className='g1-detail-container'>
                             <div className='g1-braille-container'>

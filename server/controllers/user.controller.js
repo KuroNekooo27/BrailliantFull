@@ -112,18 +112,33 @@ const createUser = async (req, res) => {
     }
 };
 
-const updateUser = (req, res) => {
-    User.findByIdAndUpdate(
-        { _id: req.params.id },
-        req.body,
-        { new: true, runValidators: true })
-        .then((updatedUser) => {
-            res.json({ user: updatedUser, status: 'Updated Successfuly' })
-        })
-        .catch((err) => {
-            res.json({ message: 'Something went wrong with creating', err })
-        })
-}
+const updateUser = async (req, res) => {
+    try {
+        const updateData = { ...req.body };
+
+        if (updateData.user_password) {
+            const salt = await bcrypt.genSalt(10);
+            updateData.user_password = await bcrypt.hash(updateData.user_password, salt);
+        } else {
+            delete updateData.user_password; 
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({ user: updatedUser, status: "Updated Successfully" });
+    } catch (err) {
+        res.status(400).json({ message: "Something went wrong with updating", err });
+    }
+};
+
 
 const deleteUser = (req, res) => {
     User.findByIdAndDelete({ _id: req.params.id })

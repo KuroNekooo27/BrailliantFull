@@ -2,14 +2,16 @@
 
 
 .sidenav-container {
-  /* width: 16%; */
-  width: 300px;
-  height: 100vh;
+  top: 0;
+  left: 0;
+  height: 100vh;        
   padding: 50px 40px 0;
+  box-sizing: border-box;
   box-shadow: 5px 5px 4px 8px rgba(136, 136, 136, 0.3);
   color: #8f8f8f;
   font-weight: bold;
 }
+
 
 .sidenav-logo {
   width: 250px;
@@ -27,7 +29,6 @@
   margin: 18px;
   display: flex;
   align-items: center;
-
 }
 
 .sidenav-container a:hover {

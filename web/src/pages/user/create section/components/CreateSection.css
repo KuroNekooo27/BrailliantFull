@@ -8,6 +8,8 @@
 
 .cre-try {
     padding: 40px;
+    box-sizing: border-box;
+
 }
 
 .back-btn {
@@ -51,8 +53,6 @@
 
 
 .section-form {
-    width: 50%;
-    display: flex;
     flex-direction: column;
 }
 
@@ -67,6 +67,7 @@
     border-radius: 10px;
     background-color: #d9d9d9;
     height: 40px;
+    width: 100%;
 }
 
 .section-form select {
@@ -78,17 +79,21 @@
 
 .cr-frm {
     display: flex;
+    justify-content: space-between;
 }
 
 .c1 {
     display: flex;
-
     gap: 20px;
 }
 
 .c2 {
     display: flex;
     flex-direction: column;
+}
+
+.c2 select {
+    width: 250px;
 }
 
 .section-name {
@@ -101,6 +106,14 @@
 
 .student-id {
     width: 150px;
+}
+
+.first-name {
+    width: 200px;
+}
+
+.middle-initial {
+    width: 50px;
 }
 
 .last-name {
@@ -139,6 +152,7 @@
 
 .section-student-list {
     width: 40%;
+    margin-right: 100px;
 }
 
 .sect-save {

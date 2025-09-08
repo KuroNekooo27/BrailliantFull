@@ -68,9 +68,10 @@ export default function EditSection() {
         await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
         axios.delete(`https://brailliantweb.onrender.com/api/delete/student/section/${section._id}`)
         axios.delete(`https://brailliantweb.onrender.com/api/delete/section/${section._id}`)
+        navigate(-1)
     };
 
-   
+
     const toggleErrorHandlerModal = () => {
         setErrorHandler(!errorHandler)
     }

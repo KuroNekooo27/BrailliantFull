@@ -115,12 +115,10 @@ export default function Analytics() {
 
     return (
         <div className='container'>
-            <div>
-                {loading && (
-                    <Loading />
-                )}
-                <SideNavigation />
-            </div>
+            {loading && (
+                <Loading />
+            )}
+            <SideNavigation />
             <div className='analytics-container'>
                 <div className='analytics-header'>
                     <Header page={page} searchBar={searchBar} />

@@ -30,9 +30,8 @@ export default function Grade1() {
                             <div>
                                 <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
                                 <label className='g2-title-main'>Braille Characters</label>
-
                             </div>
-                            <label className='g2-title-sub'>Click a character to sync it to the display!</label>
+                            {/* <label className='g2-title-sub'>Click a character to sync it to the display!</label> */}
                         </div>
                         <div className='g2-detail-container'>
                             <div className='g2-braille-container'>

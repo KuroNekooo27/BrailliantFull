@@ -58,9 +58,7 @@ export default function AdminHome() {
                 <AdminSideNavigation />
             </div>
             <div className='admin-home-container'>
-                <div className='admin-home-header'>
-                    <AdminHeader page={"Dashboard"} />
-                </div>
+                <AdminHeader page={"Dashboard"} />
                 <div className='admin-home-body'>
                     <div className='admin-home'>
                         <div className='admin-home-summary'>

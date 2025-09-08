@@ -39,9 +39,7 @@ export default function Library() {
             )}
             <SideNavigation />
             <div className='library-container'>
-                <div className='library-header'>
-                    <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} searchBar={searchBar} />
-                </div>
+                <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} searchBar={searchBar} />
                 <div className='library-body'>
                     <div className='library'>
                         <label className='library-title'>Library</label>

@@ -118,8 +118,6 @@ export default function AdminCreateAccountTempt() {
         return true;
     };
     const toggleErrorHandlerModal = () => {
-        navigate('/admin/accounts')
-
         setErrorHandler(!errorHandler)
     }
     return (

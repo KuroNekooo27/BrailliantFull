@@ -2,9 +2,6 @@
     width: 100%;
 }
 
-.analytics-body {
-    height: 100%;
-}
 
 .analytics {
     padding: 40px;
@@ -13,7 +10,7 @@
 .analytics-performance {
     display: flex;
     margin-top: 80px;
-    gap: 10px;
+    gap: 60px;
 }
 
 .analytics-cp {

@@ -222,10 +222,7 @@ export default function CreateSection() {
                                     >
                                         Create
                                     </button>
-
                                 </div>
-
-
                             </form>
                             <div className='cr-frm'>
                                 <form className='section-form' onSubmit={handleAddStudent}>

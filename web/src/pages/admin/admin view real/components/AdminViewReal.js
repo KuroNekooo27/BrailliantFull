@@ -68,18 +68,23 @@ export default function AdminViewReal() {
                         <label className='a-bd-title'>{book.book_title}</label>
                         <div className='a-bd-details'>
                             <div className='a-bd-left'>
-                                {book.book_img ? (
-                                    <img
-                                        className='a-bd-cover'
-                                        src={book.book_img}
-                                    />
-                                ) : (
-                                    <img
-                                        className='a-bd-cover'
-                                        src={require('../assets/noimg.png')}
-                                    />
-                                )
-                                }
+                                <div className='a-bd-left-img'>
+                                    {book.book_img ? (
+                                        <img
+                                            className='a-bd-cover'
+                                            src={book.book_img}
+                                        />
+                                    ) : (
+                                        <img
+                                            className='a-bd-cover'
+                                            src={require('../assets/noimg.png')}
+                                        />
+                                    )
+                                    }
+                                    <button className='a-bd-edit-btn' onClick={() => navigate('/admin/edit-book', { state: book })}>Edit Book</button>
+
+                                </div>
+
                                 <div className='a-bd-info'>
                                     <label><strong>Title: </strong>{book.book_title}</label>
                                     <label><strong>Author: </strong> {book.book_author}</label>
@@ -96,7 +101,6 @@ export default function AdminViewReal() {
                                 </div>
                             </div>
                         </div>
-                        <button className='a-bd-edit-btn' onClick={()=>navigate('/admin/edit-book', { state: book })}>Edit Book</button>
 
                     </div>
 

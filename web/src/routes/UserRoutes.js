@@ -20,6 +20,8 @@ import AccountActivation from '../pages/user/account activation/components/Accou
 import EditStudent from '../pages/user/edit student/components/EditStudent';
 import Grade1 from '../pages/user/braille/grade 1/Grade1';
 import Grade2 from '../pages/user/braille/grade 2/Grade2';
+import TEST from "../pages/user/test1";
+
 export const UserRoutes = (
     <>
         <Route path="/" element={<LandingPage />} />
@@ -42,5 +44,7 @@ export const UserRoutes = (
         <Route path='/braille/2' element={<Grade2 />}></Route>
         <Route path='/student/edit' element={<EditStudent />}></Route>
         <Route path='/account-activation' element={<AccountActivation />}></Route>
+        <Route path='/test' element={<TEST />}></Route>
+
     </>
 );

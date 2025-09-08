@@ -16,8 +16,8 @@
 
 .as select {
     border: none;
-    border-radius: 20px;
-    width: 250px;
+    border-radius: 10px;
+    width: 170px;
     height: 35px;
     background-color: #d9d9d9;
 }

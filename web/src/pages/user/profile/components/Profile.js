@@ -112,7 +112,7 @@ export default function Profile() {
                         </div>
                         <div className='profile-activate'>
                             <label>Account Status: {users.isActivated ? "Activated" : "Not Activated"}</label>
-                            <button onClick={() => users.user_status ? toggleModal() : navigate('/account-activation')}>Activate Account<img src={require('../assets/edit.png')} /></button>
+                            <button onClick={() => users.isActivated ? toggleModal() : navigate('/account-activation')}>Activate Account<img src={require('../assets/edit.png')} /></button>
                         </div>
                     </div>
                 </div>

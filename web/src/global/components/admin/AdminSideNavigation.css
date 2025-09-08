@@ -2,13 +2,13 @@
 
 
 .admin-sidenav-container {
-    /*width: 16%;*/
-    width: 300px;
+    width: 380px;
     height: 100vh;
     padding: 50px 40px 0;
     box-shadow: 5px 5px 4px 8px rgba(136, 136, 136, 0.3);
     color: #8f8f8f;
     font-weight: bold;
+    box-sizing: border-box;
 }
 
 .admin-sidenav-logo {
@@ -27,7 +27,7 @@
     margin: 18px;
     display: flex;
     align-items: center;
-    
+
 }
 
 .admin-sidenav-container a:hover {

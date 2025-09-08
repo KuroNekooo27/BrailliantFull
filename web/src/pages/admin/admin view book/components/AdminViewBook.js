@@ -88,18 +88,27 @@ export default function AdminViewBook() {
                         <label className='a-crbd-title'>{selectedBook.request_book_title}</label>
                         <div className='a-crbd-details'>
                             <div className='a-crbd-left'>
-                                {selectedBook.request_book_img ? (
-                                    <img
-                                        className='a-crbd-cover'
-                                        src={selectedBook.request_book_img}
-                                    />
-                                ) : (
-                                    <img
-                                        className='a-crbd-cover'
-                                        src={require('../assets/noimg.png')}
-                                    />
-                                )
-                                }
+                                <div className='a-crbd-left-cont'>
+
+                                    {selectedBook.request_book_img ? (
+                                        <img
+                                            className='a-crbd-cover'
+                                            src={selectedBook.request_book_img}
+                                        />
+                                    ) : (
+                                        <img
+                                            className='a-crbd-cover'
+                                            src={require('../assets/noimg.png')}
+                                        />
+                                    )
+                                    }
+                                    <div className='a-cr-btns'>
+                                        <button className='a-cravb-btn' onClick={handleApprove}>Approve Material</button>
+                                        <button className='a-cravb-btn' onClick={handleDecline}>Decline Material</button>
+                                    </div>
+
+                                </div>
+
                                 <div className='a-crbd-info'>
                                     <label><strong>Title: </strong>{selectedBook.request_book_title}</label>
                                     <label><strong>Author: </strong>{selectedBook.request_book_author}</label>
@@ -118,8 +127,7 @@ export default function AdminViewBook() {
                             </div>
 
                         </div>
-                        <button className='a-cravb-btn' onClick={handleApprove}>Approve Material</button>
-                        <button className='a-cravb-btn' onClick={handleDecline}>Decline Material</button>
+
                     </div>
                 </div>
             </div>

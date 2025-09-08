@@ -266,6 +266,7 @@ export default function ViewStudent() {
                                     <div className='vs2'>
                                         <label>Date of Birth:</label>
                                         <input
+                                            className='student_dob'
                                             name='student_dob'
                                             type='date'
                                             value={formData.student_dob.slice(0, 10)}
@@ -276,6 +277,7 @@ export default function ViewStudent() {
                                     <div className='vs2'>
                                         <label>Gender:</label>
                                         <select
+                                            className='student_gender'
                                             name='student_gender'
                                             value={formData.student_gender}
                                             onChange={handleChange}

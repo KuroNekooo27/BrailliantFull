@@ -191,10 +191,9 @@ export default function AddStudent() {
                     <div className='as-body-cont'>
                         <form className='as'>
                             <div className='as1'>
-
                                 <div className='as2'>
                                     <label>Section:</label>
-                                    <select
+                                    <select 
                                         value={newStudent.student_section}
                                         onChange={(e) => {
                                             setSelectedSection(e.target.value)

@@ -2,34 +2,29 @@ html,
 body {
     margin: 0;
     height: 100%;
-
     overflow: hidden;
 }
 
+
+
 .container {
     display: flex;
-    height: 100vh;
-    width: 100vw;
     box-sizing: border-box;
+
 }
 
 .home-container {
-    flex: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 100%;
 }
 
-.home-header {
-    height: 65%;
-    /* Half of screen height */
-    min-height: 0;
-    /* Prevent stretching */
-}
 
 .home-body {
     height: 35%;
     padding: 50px;
+    box-sizing: border-box;
     display: flex;
     justify-content: space-between;
 }
@@ -145,6 +140,8 @@ body {
 
 .home-top-books-list li {
     padding: 5px 10px;
+    box-sizing: border-box;
+
     font-size: 16px;
     display: flex;
     justify-content: space-between;

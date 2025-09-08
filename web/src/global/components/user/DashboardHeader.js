@@ -45,7 +45,6 @@ export default function DashboardHeader() {
             {loading && (
                 <Loading />
             )}
-
             <div className="dashboardheader-container">
                 <div className="dashboardheader-navigation">
                     <div className='dashboardheader-title-cont'>
@@ -72,9 +71,7 @@ export default function DashboardHeader() {
 
                 <div className="dashboardheader-navigation">
                     <label className='dashboardheader-library'>Library</label>
-                    <nav>
-                        <a href="/library">All Books</a>
-                    </nav>
+                    <a href="/library">All Books</a>
                 </div>
 
                 <div className="dashboardheader-books">

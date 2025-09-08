@@ -35,13 +35,13 @@ export default function ClassSettings() {
                 setSections(response.data)
                 setLoading(false)
             })
-          
+
         axios.get(`https://brailliantweb.onrender.com/api/allstudents/${user?._id}`)
             .then((response) => {
                 setStudentCount(response.data.students.length)
                 setStudents(response.data)
             })
-            
+
         setUsers(JSON.parse(localStorage.getItem('users')))
     }, [])
 
@@ -51,17 +51,17 @@ export default function ClassSettings() {
 
     return (
         <div className='container'>
-            <div>
-                {loading && (
-                    <Loading />
-                )}
-                {errorHandler && (
-                    <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
-                )
-                }
-                <SideNavigation />
-            </div>
+            {loading && (
+                <Loading />
+            )}
+            {errorHandler && (
+                <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+            )
+            }
+            <SideNavigation />
             <div className='cs-container'>
+                
+                
                 <div className='cs-header'>
                     <Header page={"Class Settings"} searchBar={false} />
                 </div>

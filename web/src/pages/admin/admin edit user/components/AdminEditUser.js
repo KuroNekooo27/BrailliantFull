@@ -36,17 +36,19 @@ export default function AdminEditUser() {
         if (!editUser.user_dob || new Date(editUser.user_dob) >= new Date()) {
             errors.push("Date of birth must be a past date.");
         }
-        /**
-                if (editUser.user_password.length < 6) {
-                    errors.push("Password must be at least 6 characters.");
-                }
-        
-                if (editUser.user_password !== cpassword) {
-                    errors.push("Passwords do not match.");
-                }
-         */
+
+        if (editUser.user_password || cpassword) {
+            if (editUser.user_password !== cpassword) {
+                errors.push("Passwords do not match.");
+            }
+            if (editUser.user_password.length > 0 && editUser.user_password.length < 6) {
+                errors.push("Password must be at least 6 characters.");
+            }
+        }
+
         return errors;
     };
+
 
     //////////////////
 
@@ -68,28 +70,27 @@ export default function AdminEditUser() {
         }
     }, []);
 
-    const confirmPassword = () => {
+    const confirmPassword = async () => {
         const errors = validateForm();
 
         if (errors.length > 0) {
             setMessage(errors.join("\n"));
-            setErrorHandler(true)
+            setErrorHandler(true);
             return;
         }
 
         handleUpdateUser(editUser._id);
-        setMessage("Update successful!");
-        setErrorHandler(true)
     };
+
 
     const handleUpdateUser = (id) => {
 
         axios.put(`https://brailliantweb.onrender.com/api/update/user/${id}`, editUser)
             .then(() => {
-                console.log(editUser, "this after update");
                 setEditUser({ ...editUser, user_password: '' });
                 setCpassword('');
                 setUsers(editUser);
+                navigate('/admin/accounts');
             })
             .catch((error) => {
                 console.log(error);
@@ -99,7 +100,6 @@ export default function AdminEditUser() {
     //////////////////
 
     const toggleErrorHandlerModal = () => {
-        navigate('/admin/accounts');
 
         setErrorHandler(!errorHandler)
     }
@@ -184,7 +184,6 @@ export default function AdminEditUser() {
                                                 value={editUser.user_dob}
                                                 onChange={(e) => setEditUser({ ...editUser, user_dob: e.target.value })}
                                             />
-                                            {/**                                           
                                             <p>Password</p>
                                             <input
                                                 type="password"
@@ -201,7 +200,6 @@ export default function AdminEditUser() {
                                                 onChange={(e) => setCpassword(e.target.value)}
                                             />
 
- */}
                                             <div className="form-actions">
                                                 <button onClick={confirmPassword} className="editsave-btn">Save</button>
                                                 <button onClick={() => { navigate('/admin/accounts') }} type="button" className="cancel-btn">Back</button>
