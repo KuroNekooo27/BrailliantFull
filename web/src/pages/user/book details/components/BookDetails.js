@@ -31,7 +31,7 @@ export default function BookDetails() {
 
     useEffect(() => {
         setLoading(true)
-        axios.get('https://brailliantweb.onrender.com/api/allsections')
+        axios.get(`https://brailliantweb.onrender.com/api/allsections/${user?._id}`)
             .then((response) => {
                 setSections(response.data)
             })
@@ -122,11 +122,11 @@ export default function BookDetails() {
                                     )
                                     }
                                     <div className='bd-info'>
-                                        <label>Title: {selectedBook.book.book_title}</label>
-                                        <label>Author: {selectedBook.book.book_author}</label>
-                                        <label>Genre: {selectedBook.book.book_genre}</label>
-                                        <label>Date Published: {new Date(selectedBook.book.book_date_published).toLocaleDateString().split("T")[0]}</label>
-                                        <label>Description: {selectedBook.book.book_description}</label>
+                                        <label><strong>Title:</strong> {selectedBook.book.book_title}</label>
+                                        <label><strong>Author:</strong> {selectedBook.book.book_author}</label>
+                                        <label><strong>Genre:</strong> {selectedBook.book.book_genre}</label>
+                                        {/* <label><strong>Title:</strong> {new Date(selectedBook.book.book_date_published).toLocaleDateString().split("T")[0]}</label> */}
+                                        <label><strong>Book Description:</strong> {selectedBook.book.book_description}</label>
                                     </div>
                                 </div>
                                 <label className='bd-file-preview'>Book Preview</label>

@@ -7,7 +7,6 @@ import axios from 'axios';
 import Loading from '../../../../global/components/user/Loading';
 export default function AdminViewReal() {
     const navigate = new useNavigate()
-
     const [resultText, setResultText] = useState('')
     const [book, setBook] = useState([])
     const [loading, setLoading] = useState(false)
@@ -82,11 +81,11 @@ export default function AdminViewReal() {
                                 )
                                 }
                                 <div className='a-bd-info'>
-                                    <label>Title: {book.book_title}</label>
-                                    <label>Author: {book.book_author}</label>
-                                    <label>Genre: {book.book_genre}</label>
-                                    <label>Description: {book.book_description}</label>
-                                    <label>Level: {book.book_level}</label>
+                                    <label><strong>Title: </strong>{book.book_title}</label>
+                                    <label><strong>Author: </strong> {book.book_author}</label>
+                                    <label><strong>Genre: </strong>: {book.book_genre}</label>
+                                    <label><strong>Description: </strong> {book.book_description}</label>
+                                    {/* <label>Level: {book.book_level}</label> */}
                                 </div>
 
                             </div>
@@ -96,8 +95,8 @@ export default function AdminViewReal() {
                                     <span>{resultText}</span>
                                 </div>
                             </div>
-
                         </div>
+                        <button className='a-bd-edit-btn' onClick={()=>navigate('/admin/edit-book', { state: book })}>Edit Book</button>
 
                     </div>
 

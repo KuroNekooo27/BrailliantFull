@@ -4,9 +4,55 @@ import SideNavigation from '../../../../global/components/user/SideNavigation'
 import DashboardHeader from '../../../../global/components/user/DashboardHeader'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import {
+    Chart as ChartJS,
+    ArcElement,
+    Tooltip,
+    Legend
+} from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 
 export default function Home() {
     const navigate = useNavigate()
+
+    const [topBooks, setTopBooks] = useState([]);
+
+    useEffect(() => {
+        axios.get('https://brailliantweb.onrender.com/api/books/ranked')
+            .then((response) => {
+                setTopBooks(response.data);
+                console.log(response.data)
+            })
+    }, [])
+
+    const chartData = {
+        labels: topBooks.slice(0, 5).map(book => book.book_title),
+        datasets: [
+            {
+                data: topBooks.slice(0, 5).map(book => book.book_count), 
+                backgroundColor: [
+                    '#FFD700', 
+                    '#FF7F50', 
+                    '#9370DB', 
+                    '#1E90FF', 
+                    '#32CD32'  
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const chartOptions = {
+        plugins: {
+            legend: {
+                display: false,
+            },
+        },
+    };
+
 
     return (
         <div className='container'>
@@ -42,7 +88,59 @@ export default function Home() {
                         </div>
                     </div>
                     <div className='home-braille-books'>
-                        <img src={require('../assets/Group 7.png')} />
+                        <label className='braillechar'>Books</label>
+                        <div className='home-top-books'>
+                            <div>
+                                <label>Top Books</label>
+                                <div className='home-books'>
+                                    {topBooks.length > 0 && (
+                                        <img
+                                            src={topBooks[0].book_img}
+                                            alt={topBooks[0].book_title}
+                                            className="top-book-image"
+                                        />
+                                    )}
+                                    <div>
+                                        <ul className="home-top-books-list">
+                                            {topBooks.length > 0 ? (
+                                                topBooks.map((book, index) => (
+                                                    <li
+                                                        key={book._id}
+                                                        onClick={() => {
+                                                            navigate('/book/detail', { state: { book: book } });
+                                                        }}>
+                                                        <span>{index + 1}. {book.book_title}</span>
+                                                    </li>
+                                                ))
+                                            ) : (
+                                                <li>No data available</li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label>Categories</label>
+                                <div className='home-categories'>
+                                    <ul className="chart-legend">
+                                        {topBooks.slice(0, 5).map((book, index) => (
+                                            <li key={book._id}>
+                                                <span
+                                                    className="legend-color"
+                                                    style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
+                                                ></span>
+                                                {book.book_title}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <div className="chart-container">
+                                        <Doughnut data={chartData} options={chartOptions} />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -46,7 +46,7 @@ export default function AdminViewBook() {
             book_author: selectedBook.request_book_title,
             book_genre: selectedBook.request_book_genre,
             book_date_published: selectedBook.request_book_date_published,
-            book_level: selectedBook.request_book_level,
+            //book_level: selectedBook.request_book_level,
             book_description: selectedBook.request_book_description,
             book_img: selectedBook.request_book_img,
             book_file: selectedBook.request_book_file,
@@ -101,12 +101,12 @@ export default function AdminViewBook() {
                                 )
                                 }
                                 <div className='a-crbd-info'>
-                                    <label>Title: {selectedBook.request_book_title}</label>
-                                    <label>Author: {selectedBook.request_book_author}</label>
-                                    <label>Genre: {selectedBook.request_book_genre}</label>
-                                    <label>Description: {selectedBook.request_book_description}</label>
-                                    <label>Level: {selectedBook.request_book_level}</label>
-                                    <label>Request By: {selectedBook.request_by}</label>
+                                    <label><strong>Title: </strong>{selectedBook.request_book_title}</label>
+                                    <label><strong>Author: </strong>{selectedBook.request_book_author}</label>
+                                    <label><strong>Genre: </strong>{selectedBook.request_book_genre}</label>
+                                    <label><strong>Description: </strong>{selectedBook.request_book_description}</label>
+                                    {/* <label>Level: {selectedBook.request_book_level}</label> */}
+                                    <label><strong>Requested By: </strong>{selectedBook.request_by}</label>
                                 </div>
 
                             </div>

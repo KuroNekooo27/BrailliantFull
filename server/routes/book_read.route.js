@@ -4,4 +4,6 @@ module.exports = app => {
     app.post('/api/create/bookread', BookReadController.createBookRead);
     app.post('/api/bookread/:id', BookReadController.findBookReadById);
     app.get('/api/bookread/:namex', BookReadController.findBookReadByName);
+    app.get('/api/allbookread', BookReadController.findAllBookRead);
+
 };

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
-import './AdminUploadBooks.css'
+import './AdminEditBooks.css'
+
 import axios from 'axios'
 import AdminSideNavigation from '../../../../global/components/admin/AdminSideNavigation'
 import AdminHeader from '../../../../global/components/admin/AdminHeader'
 import Loading from '../../../../global/components/user/Loading';
 import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
-export default function AdminUploadBooks() {
+export default function AdminEditBooks() {
 
     const navigate = new useNavigate()
+    const location = useLocation();
+    const selectedBook = location.state;
 
     const [newBook, setNewBook] = useState({
         book_title: '',
@@ -27,18 +30,8 @@ export default function AdminUploadBooks() {
     const [user, setUser] = useState([])
     const [selectedImage, setSelectedImage] = useState('')
     const [loading, setLoading] = useState(false)
-    const clearForm = () => {
-        setNewBook({
-            book_title: '',
-            book_author: '',
-            book_genre: '',
-            book_date_published: '',
-            book_level: '',
-            book_description: '',
-            book_img: '',
-            book_file: '',
-        });
-    };
+
+
     const [errorHandler, setErrorHandler] = useState(false);
     const [message, setMessage] = useState('');
 
@@ -51,7 +44,7 @@ export default function AdminUploadBooks() {
                 book_last_modified: new Date(),
             };
 
-            const response = await axios.post('https://brailliantweb.onrender.com/api/newbook', updatedBook);
+            const response = await axios.put(`https://brailliantweb.onrender.com/api/update/book/${selectedBook._id}`, updatedBook);
             const createdBook = response.data.book;
 
 
@@ -63,7 +56,6 @@ export default function AdminUploadBooks() {
             setMessage("Book uploaded successfully!.");
             setErrorHandler(true)
             setLoading(false)
-            clearForm();
             navigate(-1)
 
         } catch (error) {
@@ -76,6 +68,7 @@ export default function AdminUploadBooks() {
 
     useEffect(() => {
         setUser(JSON.parse(localStorage.getItem('admin')))
+        setNewBook(selectedBook)
     }, [])
 
     const submitImage = async (bookId) => {
@@ -115,7 +108,6 @@ export default function AdminUploadBooks() {
     }
 
     const onInputChange = (e) => {
-        console.log(e.target.files[0])
         setImage(e.target.files[0])
         const file = e.target.files?.[0]
         setSelectedImage(
@@ -139,29 +131,27 @@ export default function AdminUploadBooks() {
                 }
                 <AdminSideNavigation />
             </div>
-            <div className='upload-container'>
-                <div className='upload-header'>
-                    <AdminHeader page={"Upload Books"} />
+            <div className='aeb-container'>
+                <div className='aeb-header'>
+                    <AdminHeader page={"Edit Book"} />
                 </div>
-                <div className='upload-body'>
-                    <div className='upload-body-container'>
+                <div className='aeb-body'>
+                    <div className='aeb-body-container'>
                         <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../../../../global/asset/back.png')} />Back</button>
-                        <label className='up'>Upload Books</label>
+                        <label className='aeb'>Edit Book</label>
 
-                        <form className="uploadmaterial-container" onSubmit={(e) => {
+                        <form className="editbook-container" onSubmit={(e) => {
                             e.preventDefault()
                             handleUploadBook()
                         }}>
-                            <div className='left-container'>
+                            <div className='aeb-left-container'>
 
                                 <img
-                                    className='upload-image-container'
-                                    src={selectedImage}
+                                    className='aeb-upload-image-container'
+                                    src={selectedImage ? selectedImage : selectedBook.book_img}
                                 />
-
                                 <div>
-
-                                    <label for="image-upload" className='upload-image'>
+                                    <label for="image-upload" className='aeb-upload-image'>
                                         Upload Book Cover
                                     </label>
 
@@ -173,9 +163,11 @@ export default function AdminUploadBooks() {
                                         required
                                     />
                                 </div>
-                                <div className='lower-left-container'>
+                                <div className='aeb-lower-left-container'>
                                     <label for="file-upload" class="custom-file-upload">
-                                        {file ? file.name : "Attach file here"}
+                                        {file
+                                            ? file.name
+                                            : selectedBook.book_file.slice(-8)}
                                     </label>
                                     <input
                                         id="file-upload"
@@ -189,7 +181,7 @@ export default function AdminUploadBooks() {
                                 </div>
                             </div>
 
-                            <div className='right-container'>
+                            <div className='aeb-right-container'>
                                 <label>Title</label>
                                 <input
                                     required
@@ -238,10 +230,9 @@ export default function AdminUploadBooks() {
                                     value={newBook.book_date_published}
                                     onChange={(e) => setNewBook({ ...newBook, book_date_published: e.target.value })}
                                 /> */}
-                                <button type='submit'><img src={require('../assets/upload.png')} /> Upload Book</button>
+                                <button type='submit'><img src={require('../assets/upload.png')} /> Edit Book</button>
                             </div>
                         </form>
-
                     </div>
                 </div>
             </div>

@@ -11,6 +11,16 @@ const findBookReadById = (req, res) => {
         });
 };
 
+const findAllBookRead = (req, res) => {
+    BookRead.find()
+        .then((theBook) => {
+            res.json({ book: theBook })
+        })
+        .catch((err) => {
+            res.json({ message: 'Something went wrong', err })
+        })
+}
+
 const findBookReadByName = (req, res) => {
     BookRead.find({ book_read_student_id: req.params.namex })
         .then((theBook) => {
@@ -43,4 +53,5 @@ module.exports = {
     findBookReadById,
     findBookReadByName,
     createBookRead,
+    findAllBookRead
 };

@@ -35,17 +35,13 @@ export default function ClassSettings() {
                 setSections(response.data)
                 setLoading(false)
             })
-            .catch((error) => {
-                console.log("eto ang error mo " + error)
-            })
+          
         axios.get(`https://brailliantweb.onrender.com/api/allstudents/${user?._id}`)
             .then((response) => {
                 setStudentCount(response.data.students.length)
                 setStudents(response.data)
             })
-            .catch((error) => {
-                console.log("eto ang error mo " + error)
-            })
+            
         setUsers(JSON.parse(localStorage.getItem('users')))
     }, [])
 

@@ -11,6 +11,7 @@ import AdminViewReal from '../pages/admin/admin view real/components/AdminViewRe
 import AdminCreateAccountTempt from '../pages/admin/admin create temporary/components/AdminCreateAccountTempt';
 import AdminEditUser from '../pages/admin/admin edit user/components/AdminEditUser';
 import AuditTrail from '../pages/admin/audit trail/components/AuditTrail';
+import AdminEditBooks from "../pages/admin/admin edit book/components/AdminEditBooks";
 
 export const AdminRoutes = (
     <>
@@ -25,5 +26,7 @@ export const AdminRoutes = (
         <Route path='/admin/edit-account' element={<AdminEditUser />}></Route>
         <Route path='/admin/audit-trail' element={<AuditTrail />}></Route>
         <Route path='/admin/create/account' element={<AdminCreateAccount />}></Route>
+        <Route path='/admin/edit-book' element={<AdminEditBooks />}></Route>
+
     </>
 );

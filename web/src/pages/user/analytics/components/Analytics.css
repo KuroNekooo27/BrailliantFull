@@ -1,4 +1,4 @@
-.analytics-container{
+.analytics-container {
     width: 100%;
 }
 
@@ -13,11 +13,11 @@
 .analytics-performance {
     display: flex;
     margin-top: 80px;
+    gap: 10px;
 }
 
 .analytics-cp {
-    width: 60%;
-
+    margin-bottom: 10px;
 }
 
 .analytics-cp label {
@@ -25,6 +25,8 @@
     font-size: 30px;
 
 }
+
+
 
 .analytics-tb {
     width: 30%;
@@ -36,16 +38,6 @@
     font-size: 30px;
 
 }
-
-.cp {
-    margin-top: 10px;
-    width: 90%;
-    height: 100%;
-    border: 2px solid gray;
-    border-radius: 30px;
-    height: 250px;
-}
-
 
 
 
@@ -98,18 +90,25 @@
 }
 
 
+.cp {
+    margin-top: 10px;
+    border: 2px solid gray;
+    border-radius: 30px;
+    height: 230px;
+    width: 400px;
+}
 
+.cp canvas {
+    height: 100% !important;
+}
 
 
 .tb {
     margin-top: 10px;
-    width: 90%;
     border: 2px solid gray;
     border-radius: 30px;
     padding: 20px;
     background-color: #fefefe;
-    height: 70%;
-    max-height: 70%;
 }
 
 .top-books-list {
@@ -119,7 +118,57 @@
 }
 
 .top-books-list li {
-    padding: 8px 0;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.top-books-list li:hover {
+    background-color: #f5f5f5;
+    transform: translateX(4px);
+}
+
+
+.top-books-list li:last-child {
+    border-bottom: none;
+}
+
+.top-books-list li span {
+    font-weight: 200;
+}
+
+
+
+
+
+
+.tba {
+    margin-top: 10px;
+    width: 100%;
+    border: 2px solid gray;
+    border-radius: 30px;
+    padding: 20px;
+    background-color: #fefefe;
+}
+
+.analytics-tba label {
+    font-weight: bold;
+    font-size: 30px;
+}
+
+.top-books-average-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.top-books-average-list li {
+    padding: 8px 12px;
     border-bottom: 1px solid #e0e0e0;
     font-size: 16px;
     display: flex;
@@ -127,10 +176,13 @@
     align-items: center;
 }
 
-.top-books-list li:last-child {
+
+
+
+.top-books-average-list li:last-child {
     border-bottom: none;
 }
 
-.top-books-list li span {
+.top-books-average-list li span {
     font-weight: 200;
 }

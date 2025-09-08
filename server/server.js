@@ -33,6 +33,7 @@ require("./routes/login.route")(app);
 require("./routes/arduino.route")(app);
 require("./routes/email.route")(app);
 require("./routes/book_read.route")(app);
+require('./routes/analytics.route')(app);
 
 const userRoutes = require('./routes/userRoutes');
 app.use("/api/v1/auth", userRoutes);
