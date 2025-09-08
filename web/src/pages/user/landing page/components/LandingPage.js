@@ -141,7 +141,7 @@ export default function LandingPage() {
                 togglePasswordModal()
 
             } catch (error) {
-                setMessage("Something went wrong with udpating");
+                setMessage("Something went wrong with updating");
                 setErrorHandler(true)
             }
         }
@@ -206,7 +206,6 @@ export default function LandingPage() {
 
             const { user, role, token } = response.data;
 
-            // Save token to localStorage
             localStorage.setItem("token", token);
 
             if (role === "admin") {

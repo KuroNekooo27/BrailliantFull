@@ -290,7 +290,7 @@ export default function UploadBooks() {
                                     value={newBook.request_book_description}
                                     onChange={(e) => setNewBook({ ...newBook, request_book_description: e.target.value })}
                                 />
-                                <label>Level</label>
+                                {/* <label>Level</label>
                                 <input
                                     required
                                     type='text'
@@ -305,7 +305,7 @@ export default function UploadBooks() {
                                     placeholder='MM/DD/YYYY'
                                     value={newBook.request_book_date_published}
                                     onChange={(e) => setNewBook({ ...newBook, request_book_date_published: e.target.value })}
-                                />
+                                /> */}
                                 <button type='submit'>Submit Upload Request</button>
                             </div>
                         </form>

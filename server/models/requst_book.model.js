@@ -32,7 +32,7 @@ const RequestBookSchema = new Schema({
     request_by: {
         type: String
     }
-})
+}, { timestamps: true }) 
 
 const RequestBook = model('RequestBook', RequestBookSchema)
 
