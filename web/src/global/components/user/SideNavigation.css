@@ -4,7 +4,7 @@
 .sidenav-container {
   top: 0;
   left: 0;
-  height: 100vh;        
+  height: 100vh;
   padding: 50px 40px 0;
   box-sizing: border-box;
   box-shadow: 5px 5px 4px 8px rgba(136, 136, 136, 0.3);
@@ -12,6 +12,17 @@
   font-weight: bold;
 }
 
+.disabled-link {
+  display: flex;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 25px;
+  margin: 18px;
+  color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+  text-decoration: none;
+}
 
 .sidenav-logo {
   width: 250px;

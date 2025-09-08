@@ -4,6 +4,7 @@
 .profile-body {
     padding: 40px;
     display: flex;
+    align-items: center;
 }
 
 .profile-image {

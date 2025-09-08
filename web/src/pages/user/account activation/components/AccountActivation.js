@@ -103,7 +103,7 @@ export default function AccountActivation() {
 
             {modal && (
                 <div className='modal'>
-                    <div className='overlay' onClick={() => navigate('/profile')} ></div>
+                    <div className='aa-overlay' onClick={() => navigate('/profile')} ></div>
                     <div className='otp-modal-content'>
                         <div className='otp-loginmodal'>
                             <button className='close-modal' onClick={() => navigate('/profile')}>x </button>

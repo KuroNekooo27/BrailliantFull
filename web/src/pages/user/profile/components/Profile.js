@@ -13,7 +13,6 @@ export default function Profile() {
     const navigate = useNavigate()
 
     const [modal, setModal] = useState(false)
-    const [showDropdown, setShowDropdown] = useState(false);
     const [users, setUsers] = useState([])
 
     useEffect(() => {
@@ -58,7 +57,6 @@ export default function Profile() {
                 <div className='profile-header'>
                     <Header page={page} searchBar={searchBar} />
                 </div>
-                {showDropdown && <DropDownMenu />}
                 <div className='profile-body'>
                     <div className='profile-image'>
 

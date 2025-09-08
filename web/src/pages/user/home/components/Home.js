@@ -17,6 +17,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function Home() {
     const navigate = useNavigate()
+    const user = JSON.parse(localStorage.getItem("users"));
 
     const [topBooks, setTopBooks] = useState([]);
 
@@ -93,7 +94,12 @@ export default function Home() {
                                         <img
                                             src={topBooks[0].book_img}
                                             alt={topBooks[0].book_title}
-                                            className="top-book-image"
+                                            className={`top-book-image ${!user.isActivated ? "disabled-book" : ""}`}
+                                            onClick={() => {
+                                                if (user.isActivated) {
+                                                    navigate('/book/detail', { state: { book: topBooks[0] } });
+                                                }
+                                            }}
                                         />
                                     )}
                                     <div>
@@ -102,9 +108,13 @@ export default function Home() {
                                                 topBooks.map((book, index) => (
                                                     <li
                                                         key={book._id}
+                                                        className={!user.isActivated ? "disabled-book" : ""}
                                                         onClick={() => {
-                                                            navigate('/book/detail', { state: { book: book } });
-                                                        }}>
+                                                            if (user.isActivated) {
+                                                                navigate('/book/detail', { state: { book } });
+                                                            }
+                                                        }}
+                                                    >
                                                         <span>{index + 1}. {book.book_title}</span>
                                                     </li>
                                                 ))
@@ -115,6 +125,7 @@ export default function Home() {
                                     </div>
                                 </div>
                             </div>
+
                             <div>
                                 <label>Categories</label>
                                 <div className='home-categories'>
@@ -134,12 +145,11 @@ export default function Home() {
                                         <Doughnut data={chartData} options={chartOptions} />
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

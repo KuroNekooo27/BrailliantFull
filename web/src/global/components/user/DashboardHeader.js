@@ -71,30 +71,44 @@ export default function DashboardHeader() {
 
                 <div className="dashboardheader-navigation">
                     <label className='dashboardheader-library'>Library</label>
-                    <a href="/library">All Books</a>
+                    {users.isActivated ? (
+                        <a href="/library">All Books</a>
+                    ) : (
+                        ""
+                    )}
                 </div>
 
                 <div className="dashboardheader-books">
-                    {book.books?.slice(0, 5).map((book) => (
-                        book.book_img ? (
+                    {book.books?.slice(0, 5).map((book) => {
+                        const isClickable = users.isActivated; // only if activated
+
+                        return book.book_img ? (
                             <img
+                                key={book._id}
                                 src={book.book_img}
-                                className='dashboardheader-book'
-                                onClick={() => { navigate('/book/detail', { state: { book: book } }); }}
+                                className={`dashboardheader-book ${!isClickable ? "disabled-book" : ""}`}
+                                onClick={() => {
+                                    if (isClickable) {
+                                        navigate('/book/detail', { state: { book } });
+                                    }
+                                }}
                             />
                         ) : (
                             <div
                                 key={book._id}
-                                className="dashboardheader-book"
-                                onClick={() => { navigate('/book/detail', { state: { book: book } }); }}
+                                className={`dashboardheader-book ${!isClickable ? "disabled-book" : ""}`}
+                                onClick={() => {
+                                    if (isClickable) {
+                                        navigate('/book/detail', { state: { book } });
+                                    }
+                                }}
                             >
                                 <label>{book.book_title}</label>
                             </div>
-                        )
-                    ))}
-
-
+                        );
+                    })}
                 </div>
+
             </div>
         </>
     );

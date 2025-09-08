@@ -7,6 +7,7 @@ import axios from 'axios';
 import Header from '../../../../global/components/user/Header';
 import "./ConfirmationModal.css"
 import ErrorHandler from "../../../../global/components/user/ErrorHandler";
+import Loading from '../../../../global/components/user/Loading';
 
 export default function EditProfile() {
     const navigate = useNavigate()
@@ -31,6 +32,7 @@ export default function EditProfile() {
     const [modal, setModal] = useState(false)
     const [errorHandler, setErrorHandler] = useState(false);
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('users'));
@@ -123,19 +125,20 @@ export default function EditProfile() {
             return;
         }
         handleProfileUpdate(editUser._id);
-        setMessage("Update succeful!");
+        setMessage("Update successful!");
         setErrorHandler(true)
     };
 
 
     const handleProfileUpdate = async (id) => {
+        setLoading(true)
         try {
             let updatedImage = null;
             if (image) {
                 const formData = new FormData();
                 formData.append('image', image);
                 const result = await axios.put(
-                    `http://brailliantweb.onrender.com/upload-profile-icon/${id}`,
+                    `https://brailliantweb.onrender.com/upload-profile-icon/${id}`,
                     formData,
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );
@@ -180,7 +183,7 @@ export default function EditProfile() {
 
             console.log('Profile updated:', updatedData);
 
-
+            setLoading(false)
             localStorage.setItem('users', JSON.stringify(updatedData));
             setEditUser(prev => ({ ...prev, user_password: '' }));
             setCpassword('');
@@ -318,6 +321,9 @@ export default function EditProfile() {
 
     return (
         <div className='container'>
+            {loading && (
+                <Loading />
+            )}
             {errorHandler && (
                 <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
             )

@@ -6,7 +6,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 50px ;
+    padding: 50px;
     box-sizing: border-box;
     height: 50%;
     width: 100%;
@@ -129,4 +129,9 @@
 
 .dashboardheader-book:hover {
     transform: scale(1.05);
+}
+
+.disabled-book {
+    pointer-events: none;
+    cursor: not-allowed;
 }
