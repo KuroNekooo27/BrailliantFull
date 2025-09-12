@@ -42,7 +42,18 @@ export default function AdminUploadBooks() {
     const [errorHandler, setErrorHandler] = useState(false);
     const [message, setMessage] = useState('');
 
-    const handleUploadBook = async () => {
+    const handleUploadBook = () => {
+        if (!file) {
+            setMessage("Please attach a file");
+            setErrorHandler(true)
+            return
+        }
+        else {
+            uploadBook()
+        }
+    };
+
+    const uploadBook = async () => {
         setLoading(true)
         try {
 
@@ -99,18 +110,17 @@ export default function AdminUploadBooks() {
 
     const submitimage = async (bookId) => {
 
-        const formData = new FormData()
-        formData.append('bookImage', image);
+        if (image) {
+            const formData = new FormData();
+            formData.append('bookImage', image);
 
-        const result = await axios.put(
-            `https://brailliantweb.onrender.com/upload-image/${bookId}`,
-            formData,
-            {
-                headers: { "Content-Type": "multipart/form-data" }
-            }
-
-        )
-        console.log("File uploaded:", result.data);
+            const result = await axios.put(
+                `https://brailliantweb.onrender.com/upload-image/${bookId}`,
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+            return result.data.imageUrl
+        }
 
     }
 
@@ -170,7 +180,6 @@ export default function AdminUploadBooks() {
                                         type='file'
                                         accept='image/*'
                                         onChange={onInputChange}
-                                        required
                                     />
                                 </div>
                                 <div className='lower-left-container'>
@@ -181,7 +190,7 @@ export default function AdminUploadBooks() {
                                         id="file-upload"
                                         type="file"
                                         accept='application/pdf'
-                                        required
+
                                         onChange={(e) => {
                                             setFile(e.target.files[0])
                                         }}

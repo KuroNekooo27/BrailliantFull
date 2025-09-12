@@ -105,6 +105,7 @@ export default function UploadBooks() {
             }
 
             const result = await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', auditData);
+            navigate('/library')
 
         } catch (error) {
             setMessage("Failed to upload book");
@@ -175,7 +176,6 @@ export default function UploadBooks() {
         )
     }
     const toggleErrorHandlerModal = () => {
-        navigate('/library')
         setErrorHandler(!errorHandler)
     }
 
@@ -250,7 +250,6 @@ export default function UploadBooks() {
                                         onChange={(e) => {
                                             setFile(e.target.files[0])
                                         }}
-
                                     />
                                 </div>
                             </div>

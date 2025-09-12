@@ -38,7 +38,6 @@ export default function AdminEditBooks() {
     const handleUploadBook = async () => {
         setLoading(true)
         try {
-
             const updatedBook = {
                 ...newBook,
                 book_last_modified: new Date(),
@@ -50,8 +49,8 @@ export default function AdminEditBooks() {
 
             if (file) {
                 await submitImage(createdBook._id);
-                await submitimage(createdBook._id);
             }
+            await submitimage(createdBook._id);
 
             setMessage("Book uploaded successfully!.");
             setErrorHandler(true)
@@ -72,48 +71,43 @@ export default function AdminEditBooks() {
     }, [])
 
     const submitImage = async (bookId) => {
-        try {
-            const formData = new FormData();
-            formData.append('bookFile', file);
-
-            const result = await axios.put(`https://brailliantweb.onrender.com/upload-files/${bookId}`,
-                formData,
-                {
-                    headers: { "Content-Type": "multipart/form-data" },
-                }
-            );
-            console.log("File uploaded:", result.data);
-        } catch (error) {
-            console.error("File upload error:", error);
+        if (file) {
+            try {
+                const formData = new FormData();
+                formData.append('bookFile', file);
+                const result = await axios.put(`https://brailliantweb.onrender.com/upload-files/${bookId}`,
+                    formData,
+                    {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    }
+                );
+                console.log("File uploaded:", result.data);
+            } catch (error) {
+                console.error("File upload error:", error);
+            }
         }
+
     };
 
     const [image, setImage] = useState(null)
 
     const submitimage = async (bookId) => {
+        if (image) {
+            const formData = new FormData();
+            formData.append('bookImage', image);
 
-        const formData = new FormData()
-        formData.append('bookImage', image);
-
-        const result = await axios.put(
-            `https://brailliantweb.onrender.com/upload-image/${bookId}`,
-            formData,
-            {
-                headers: { "Content-Type": "multipart/form-data" }
-            }
-
-        )
-        console.log("File uploaded:", result.data);
+            const result = await axios.put(
+                `https://brailliantweb.onrender.com/upload-image/${bookId}`,
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+            return result.data.imageUrl
+        }
 
     }
 
-    const onInputChange = (e) => {
-        setImage(e.target.files[0])
-        const file = e.target.files?.[0]
-        setSelectedImage(
-            file ? URL.createObjectURL(file) : undefined
-        )
-    }
+
+
     const toggleErrorHandlerModal = () => {
         setErrorHandler(!errorHandler)
     }
@@ -159,8 +153,14 @@ export default function AdminEditBooks() {
                                         id='image-upload'
                                         type='file'
                                         accept='image/*'
-                                        onChange={onInputChange}
-                                        required
+                                        onChange={(e) => {
+                                            setImage(e.target.files[0])
+                                            const file = e.target.files?.[0]
+                                            setSelectedImage(
+                                                file ? URL.createObjectURL(file) : undefined
+                                            )
+
+                                        }}
                                     />
                                 </div>
                                 <div className='aeb-lower-left-container'>
@@ -173,7 +173,6 @@ export default function AdminEditBooks() {
                                         id="file-upload"
                                         type="file"
                                         accept='application/pdf'
-                                        required
                                         onChange={(e) => {
                                             setFile(e.target.files[0])
                                         }}
