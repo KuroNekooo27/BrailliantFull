@@ -96,21 +96,36 @@ const createUser = async (req, res) => {
     try {
         const { user_password, ...rest } = req.body;
 
+        let user_id;
+        let isUnique = false;
+        const currentYear = new Date().getFullYear();
+
+        while (!isUnique) {
+            const randomDigits = Math.floor(100000 + Math.random() * 900000); // 6 digits
+            user_id = `${currentYear}-${randomDigits}`;
+
+            const existingUser = await User.findOne({ user_id });
+            if (!existingUser) {
+                isUnique = true; 
+            }
+        }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(user_password, salt);
 
-
         const newUser = await User.create({
             ...rest,
+            user_id, // include the generated ID
             user_password: hashedPassword
         });
 
         res.json({ user: newUser, status: 'Okay' });
     } catch (err) {
-        res.json({ message: 'Something went wrong with creating', err });
+        console.error("Error creating user:", err);
+        res.status(500).json({ message: 'Something went wrong with creating', err });
     }
 };
+
 
 const updateUser = async (req, res) => {
     try {
@@ -120,7 +135,7 @@ const updateUser = async (req, res) => {
             const salt = await bcrypt.genSalt(10);
             updateData.user_password = await bcrypt.hash(updateData.user_password, salt);
         } else {
-            delete updateData.user_password; 
+            delete updateData.user_password;
         }
 
         const updatedUser = await User.findByIdAndUpdate(

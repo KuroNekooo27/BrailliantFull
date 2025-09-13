@@ -131,7 +131,7 @@ export default function ClassSettings() {
                             <div className='cs-tbl-cont'>
                                 <table >
                                     <tr>
-                                        <th>ID</th>
+                                        <th>Student ID</th>
                                         <th>Last Name</th>
                                         <th>First Name</th>
                                         <th>Middle Initial</th>
@@ -155,7 +155,7 @@ export default function ClassSettings() {
                                                 style={{ cursor: 'pointer' }}
                                                 onClick={() => navigate('/student/view', { state: student })}
                                             >
-                                                <td>{student._id}</td>
+                                                <td>{student.student_id}</td>
                                                 <td>{student.student_lname}</td>
                                                 <td>{student.student_fname}</td>
                                                 <td>{student.student_mi}</td>

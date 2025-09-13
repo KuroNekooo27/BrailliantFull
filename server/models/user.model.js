@@ -37,6 +37,12 @@ const UserSchema = new Schema({
         type: Date,
         default: null
     },
+    user_id: {
+        type: String,
+        unique: true,
+        required: true
+    },
+
     isActivated: {
         type: Boolean,
         default: false,

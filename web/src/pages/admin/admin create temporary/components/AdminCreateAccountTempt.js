@@ -52,6 +52,7 @@ export default function AdminCreateAccountTempt() {
                 password: newUser.user_password,
                 email: newUser.user_email
             });
+            console.log(response)
         } catch (err) {
             console.error("Failed to send email", err);
             alert("Failed to send email");

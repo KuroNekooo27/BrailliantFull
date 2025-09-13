@@ -69,31 +69,43 @@ const calculateAge = (dob) => {
     return age;
 };
 
-const createStudent = (req, res) => {
+const generateUniqueStudentId = async () => {
+    const year = new Date().getFullYear();
+    let studentId;
+    let exists = true;
+
+    while (exists) {
+        const randomDigits = Math.floor(100000 + Math.random() * 900000); // 6 digits
+        studentId = `${year}-${randomDigits}`;
+        const existingStudent = await Student.findOne({ student_id: studentId });
+        exists = !!existingStudent;
+    }
+
+    return studentId;
+};
+
+const createStudent = async (req, res) => {
     try {
         const studentDob = new Date(req.body.student_dob);
         const studentAge = calculateAge(studentDob);
 
+        const studentId = await generateUniqueStudentId(); 
+
         const studentData = {
             ...req.body,
+            student_id: studentId, 
             student_dob: studentDob,
             student_age: studentAge,
             student_section: new mongoose.Types.ObjectId(req.body.student_section),
             student_instructor: new mongoose.Types.ObjectId(req.body.student_instructor)
         };
 
-        Student.create(studentData)
-            .then((newStudent) => {
-                res.json({ student: newStudent, status: 'Okay' });
-            })
-            .catch((err) => {
-                console.log("Error creating student:", err);
-                res.status(500).json({ message: 'Something went wrong with creating ', err });
-            });
+        const newStudent = await Student.create(studentData);
+        res.json({ student: newStudent, status: 'Okay' });
 
     } catch (error) {
-        console.error("Error processing student DOB or age:", error);
-        res.status(400).json({ message: 'Invalid input', error });
+        console.error("Error creating student:", error);
+        res.status(500).json({ message: 'Something went wrong with creating student', error });
     }
 };
 
@@ -140,4 +152,4 @@ const getStudentCount = async (req, res) => {
     }
 };
 
-module.exports = { findAllStudent, testconnection, createStudent, updateStudent, deleteStudent, findStudentByName, getStudentCount, deleteStudentBySection, findStudentByTeacher, findStudentsBySection, findStudentById}
+module.exports = { findAllStudent, testconnection, createStudent, updateStudent, deleteStudent, findStudentByName, getStudentCount, deleteStudentBySection, findStudentByTeacher, findStudentsBySection, findStudentById }

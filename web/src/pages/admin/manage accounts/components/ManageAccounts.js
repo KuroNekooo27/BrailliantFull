@@ -130,7 +130,7 @@ export default function ManageAccounts() {
                             <div className='ma-table'>
                                 <table className='admin-ma-table'>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>User ID</th>
                                         <th>Last Name</th>
                                         <th>First Name</th>
                                         <th>Email</th>
@@ -155,7 +155,7 @@ export default function ManageAccounts() {
                                                 }}
                                                 className={selectedRowId === user._id ? "highlighted" : ""}
                                             >
-                                                <td>{user._id}</td>
+                                                <td>{user.user_id}</td>
                                                 <td>{user.user_lname}</td>
                                                 <td>{user.user_fname}</td>
                                                 <td>{user.user_email}</td>
