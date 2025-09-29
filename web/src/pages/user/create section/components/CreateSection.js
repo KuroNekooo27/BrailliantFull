@@ -38,6 +38,14 @@ export default function CreateSection() {
         at_user: '',
     });
 
+    const [errors, setErrors] = useState({
+        student_lname: "",
+        student_fname: "",
+        student_mi: "",
+        student_dob: "",
+        student_gender: "",
+    });
+
     const [isStudentFormEnabled, setIsStudentFormEnabled] = useState(false);
     const [isSectionFormEnabled, setIsSectionFormEnabled] = useState(true);
 
@@ -54,6 +62,69 @@ export default function CreateSection() {
             student_gender: '',
         });
     };
+
+    const validateField = (name, value) => {
+        let error = "";
+
+        switch (name) {
+            case "student_lname":
+                if (!value.trim()) {
+                    error = "Last name is required";
+                } else if (!/^[A-Za-z\s]+$/.test(value)) {
+                    error = "Only letters and spaces are allowed";
+                }
+                break;
+
+            case "student_fname":
+                if (!value.trim()) {
+                    error = "First name is required";
+                } else if (!/^[A-Za-z\s]+$/.test(value)) {
+                    error = "Only letters and spaces are allowed";
+                }
+                break;
+
+            case "student_mi":
+                if (!value.trim()) {
+                    error = "Middle initial is required";
+                } else if (!/^[A-Za-z\s]+$/.test(value)) {
+                    error = "Must be a single letter (A–Z)";
+                }
+                break;
+
+            case "student_dob":
+                if (!value) {
+                    error = "Date of birth is required";
+                } else {
+                    const dob = new Date(value);
+                    const today = new Date();
+                    if (dob >= today) {
+                        error = "Date of birth must be in the past";
+                    }
+                }
+                break;
+
+            case "student_gender":
+                if (!value) {
+                    error = "Please select gender";
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        setErrors((prev) => ({ ...prev, [name]: error }));
+    };
+
+    const handleStudentChange = (e) => {
+        const { name, value } = e.target;
+        setNewStudent({ ...newStudent, [name]: value });
+        validateField(name, value);
+    };
+
+    const isFormValid =
+        Object.values(errors).every((err) => err === "") &&
+        Object.values(newStudent).every((val) => val !== "");
 
     const handleAddStudent = (e) => {
         e.preventDefault();
@@ -230,33 +301,38 @@ export default function CreateSection() {
                                     <label>Last Name</label>
                                     <input
                                         className='last-name'
-                                        required
+                                        name="student_lname"
                                         value={newStudent.student_lname}
-                                        onChange={(e) => setNewStudent({ ...newStudent, student_lname: e.target.value })}
+                                        onChange={handleStudentChange}
                                         disabled={!isStudentFormEnabled}
-
                                     />
+                                    {errors.student_lname && <span className="error">{errors.student_lname}</span>}
+
                                     <div className='c1'>
                                         <div className='c2'>
                                             <label>First Name</label>
                                             <input
                                                 className='first-name'
-                                                required
+                                                name="student_fname"
                                                 value={newStudent.student_fname}
-                                                onChange={(e) => setNewStudent({ ...newStudent, student_fname: e.target.value })}
+                                                onChange={handleStudentChange}
                                                 disabled={!isStudentFormEnabled}
                                             />
+                                            {errors.student_fname && <span className="error">{errors.student_fname}</span>}
+
                                         </div>
                                         <div className='c2'>
                                             <label>Middle Initial</label>
                                             <input
                                                 className='middle-initial'
-                                                required
-                                                type='text'
+                                                name="student_mi"
                                                 value={newStudent.student_mi}
-                                                onChange={(e) => setNewStudent({ ...newStudent, student_mi: e.target.value })}
+                                                onChange={handleStudentChange}
                                                 disabled={!isStudentFormEnabled}
+                                                maxLength={1}
                                             />
+                                            {errors.student_mi && <span className="error">{errors.student_mi}</span>}
+
                                         </div>
                                     </div>
                                     <div className='c1'>
@@ -264,25 +340,28 @@ export default function CreateSection() {
                                             <label>Date of Birth</label>
                                             <input
                                                 className='dob'
-                                                required
                                                 type='date'
+                                                name="student_dob"
                                                 value={newStudent.student_dob}
-                                                onChange={(e) => setNewStudent({ ...newStudent, student_dob: e.target.value })}
+                                                onChange={handleStudentChange}
                                                 disabled={!isStudentFormEnabled}
                                             />
+                                            {errors.student_dob && <span className="error">{errors.student_dob}</span>}
+
                                         </div>
                                         <div className='c2'>
                                             <label>Gender</label>
                                             <select
-                                                required
+                                                name="student_gender"
                                                 value={newStudent.student_gender}
-                                                onChange={(e) => setNewStudent({ ...newStudent, student_gender: e.target.value })}
+                                                onChange={handleStudentChange}
                                                 disabled={!isStudentFormEnabled}
                                             >
                                                 <option value="">Select Gender</option>
                                                 <option value="Male">Male</option>
                                                 <option value="Female">Female</option>
                                             </select>
+                                            {errors.student_gender && <span className="error">{errors.student_gender}</span>}
 
                                         </div>
                                     </div>
@@ -290,8 +369,10 @@ export default function CreateSection() {
                                         <button
                                             type='submit'
                                             className='add-section'
-                                            disabled={!isStudentFormEnabled}
-                                        >Add</button>
+                                            disabled={!isStudentFormEnabled || !isFormValid}
+                                        >
+                                            Add
+                                        </button>
                                         <button
                                             type='reset'
                                             className='clear-form'

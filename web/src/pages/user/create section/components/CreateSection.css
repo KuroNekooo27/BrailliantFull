@@ -9,7 +9,6 @@
 .cre-try {
     padding: 40px;
     box-sizing: border-box;
-
 }
 
 .back-btn {
@@ -206,14 +205,18 @@
     margin-top: 20px;
     background-color: #d5ddff;
     width: 100%;
-    height: 100%;
     border-radius: 20px;
     padding: 20px;
+
+    height: 250px;
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .create-section-students table {
     width: 100%;
-    text-align: left;
+    text-align: center;
     table-layout: fixed;
 
 }
@@ -228,4 +231,10 @@ select:disabled,
 button:disabled {
     background-color: #f0f0f0;
     opacity: 0.6;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
 }

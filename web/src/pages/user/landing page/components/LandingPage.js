@@ -42,9 +42,11 @@ export default function LandingPage() {
     const [message, setMessage] = useState('');
 
 
-    //switch login forgot pass
+
 
     useEffect(() => {
+
+
         const interval = setInterval(() => {
             setCurrentIndex((prevIndex) =>
                 prevIndex === SlidesData.length - 1 ? 0 : prevIndex + 1
@@ -79,12 +81,14 @@ export default function LandingPage() {
         }
     };
     const sendEmailForgotpassword = async (generatedOtp) => {
+        
         try {
             const response = await axios.post('https://brailliantweb.onrender.com/send-email', {
                 context: "forgotPassword",
                 otp: generatedOtp,
                 email: email
             });
+            setLoading(false)
             setMessage("Email sent!");
             setErrorHandler(true)
         } catch (err) {
@@ -94,14 +98,16 @@ export default function LandingPage() {
     };
 
     const verifyEmail = async () => {
+        setLoading(true)
         setPassword('')
         try {
             const response = await axios.post("https://brailliantweb.onrender.com/api/verify-email", {
                 email,
             });
             if (response) {
+                setLoading(false)
                 toggleEmailModal()
-                
+
                 toggleForgotPassModal()
 
                 const newOtp = generateOTP();

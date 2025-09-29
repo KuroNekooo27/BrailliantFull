@@ -6,9 +6,10 @@ import axios from 'axios'
 import "./confirmationModal.css"
 import { useNavigate } from 'react-router-dom'
 import ErrorHandler from '../../../../global/components/user/ErrorHandler'
+import Loading from '../../../../global/components/user/Loading';
+
 
 export default function UploadBooks() {
-
     const navigate = new useNavigate()
     const page = "Upload Books"
     const searchBar = false
@@ -24,17 +25,23 @@ export default function UploadBooks() {
         request_book_description: '',
         request_by: ''
     });
-    const [confirmationModal, setConfirmationModal] = useState(false)
 
+    const [confirmationModal, setConfirmationModal] = useState(false)
     const [file, setFile] = useState('')
     const [user, setUser] = useState([])
-
     const [selectedImage, setSelectedImage] = useState('')
-
     const [image, setImage] = useState(null)
     const [errorHandler, setErrorHandler] = useState(false);
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false)
 
+    const [errors, setErrors] = useState({
+        request_book_title: '',
+        request_book_author: '',
+        request_book_genre: '',
+        request_book_description: ''
+    });
+    const [submitted, setSubmitted] = useState(false);
 
     const clearForm = () => {
         setNewBook({
@@ -48,20 +55,87 @@ export default function UploadBooks() {
             request_book_description: '',
             request_by: '',
         });
+        setFile('');
+        setImage(null);
+        setSelectedImage('');
+        setSubmitted(false);
+        setErrors({
+            request_book_title: '',
+            request_book_author: '',
+            request_book_genre: '',
+            request_book_description: ''
+        });
+    };
+
+    const validateField = (name, value) => {
+        let error = '';
+        if (!value.trim()) {
+            switch (name) {
+                case 'request_book_title':
+                    error = 'Title is required';
+                    break;
+                case 'request_book_author':
+                    error = 'Author is required';
+                    break;
+                case 'request_book_genre':
+                    error = 'Genre is required';
+                    break;
+                case 'request_book_description':
+                    error = 'Description is required';
+                    break;
+                default:
+                    break;
+            }
+        }
+        setErrors((prev) => ({ ...prev, [name]: error }));
+        return error;
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setNewBook({ ...newBook, [name]: value });
+        validateField(name, value);
+    };
+
+    const handleUploadBook = () => {
+        setSubmitted(true);
+
+        const newErrors = {
+            request_book_title: validateField('request_book_title', newBook.request_book_title),
+            request_book_author: validateField('request_book_author', newBook.request_book_author),
+            request_book_genre: validateField('request_book_genre', newBook.request_book_genre),
+            request_book_description: validateField('request_book_description', newBook.request_book_description),
+        };
+
+        setErrors(newErrors);
+
+        if (Object.values(newErrors).some((err) => err)) {
+            return; // stop if errors
+        }
+
+        if (!file) {
+            setMessage("Please attach a file");
+            setErrorHandler(true);
+            return;
+        }
+
+        if (!image) {
+            toggleConfirmationModal();
+        } else {
+            uploadBook();
+        }
     };
 
     const toggleConfirmationModal = () => {
-        setConfirmationModal(!confirmationModal)
-    }
+        setConfirmationModal(!confirmationModal);
+    };
 
     const uploadBook = async () => {
+        setLoading(true)
         const updatedData = { user_recent_act: 'Requested Upload Material' };
         axios.put(`https://brailliantweb.onrender.com/api/update/user/${user._id}`, updatedData)
-            .then(() => {
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+            .catch((error) => console.log(error));
+
         try {
             const updatedBook = {
                 ...newBook,
@@ -71,13 +145,12 @@ export default function UploadBooks() {
 
             const response = await axios.post('https://brailliantweb.onrender.com/api/newrequestbook', updatedBook);
             const createdBook = response.data.book;
+            setLoading(false)
+            setMessage("Book request sent for evaluation!");
+            setErrorHandler(true);
 
-            setMessage("Book request sent for evalution!");
-            setErrorHandler(true)
-
-
-            var fileUrl = null
-            var imageUrl = null
+            var fileUrl = null;
+            var imageUrl = null;
             if (file) {
                 fileUrl = await submitImage(createdBook._id);
                 imageUrl = await submitimage(createdBook._id);
@@ -102,36 +175,20 @@ export default function UploadBooks() {
                         request_by: user.user_email,
                     }
                 }
-            }
+            };
 
-            const result = await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', auditData);
-            navigate('/library')
+            await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', auditData);
+            navigate('/library');
 
         } catch (error) {
             setMessage("Failed to upload book");
-            setErrorHandler(true)
-        }
-    }
-
-    const handleUploadBook = () => {
-        if (!file) {
-            setMessage("Please attach a file");
-            setErrorHandler(true)
-            return
-        }
-
-        if (!image) {
-            toggleConfirmationModal()
-        }
-        else {
-            uploadBook()
+            setErrorHandler(true);
         }
     };
 
     useEffect(() => {
         setUser(JSON.parse(localStorage.getItem('users')))
-    }, [])
-
+    }, []);
 
     const submitImage = async (bookId) => {
         try {
@@ -144,13 +201,11 @@ export default function UploadBooks() {
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
 
-            return result.data.fileUrl
+            return result.data.fileUrl;
         } catch (error) {
             console.error("File upload error:", error);
         }
     };
-
-
 
     const submitimage = async (bookId) => {
         if (image) {
@@ -162,29 +217,26 @@ export default function UploadBooks() {
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
-            return result.data.imageUrl
+            return result.data.imageUrl;
         }
-
     };
 
-
     const onInputChange = (e) => {
-        setImage(e.target.files[0])
-        const file = e.target.files?.[0]
-        setSelectedImage(
-            file ? URL.createObjectURL(file) : undefined
-        )
-    }
+        setImage(e.target.files[0]);
+        const file = e.target.files?.[0];
+        setSelectedImage(file ? URL.createObjectURL(file) : undefined);
+    };
+
     const toggleErrorHandlerModal = () => {
-        setErrorHandler(!errorHandler)
-    }
+        setErrorHandler(!errorHandler);
+    };
 
     return (
         <div className='container'>
+            {loading && (<Loading />)}
             {errorHandler && (
                 <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
-            )
-            }
+            )}
             {confirmationModal && (
                 <div className='modal'>
                     <div className='overlay'></div>
@@ -195,8 +247,6 @@ export default function UploadBooks() {
                                 <button className='upload-yes' onClick={uploadBook} >Yes</button>
                                 <button className='upload-no' onClick={toggleConfirmationModal} >No</button>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -211,26 +261,22 @@ export default function UploadBooks() {
                 <div className='upload-body'>
                     <div className='upload-body-container'>
                         <label className='up'>
-                            <button className='back-btn' onClick={() => { navigate(-1) }}><img src={require('../assets/back.png')} />Back</button>
-                            Upload Books</label>
+                            <button className='back-btn' onClick={() => { navigate(-1) }}>
+                                <img src={require('../assets/back.png')} />Back
+                            </button>
+                            Upload Books
+                        </label>
                         <form className="uploadmaterial-container" onSubmit={(e) => {
-                            e.preventDefault()
-                            handleUploadBook()
-
+                            e.preventDefault();
+                            handleUploadBook();
                         }}>
                             <div className='left-container'>
-
-                                <img
-                                    className='upload-image-container'
-                                    src={selectedImage}
-                                />
+                                <img className='upload-image-container' src={selectedImage} />
 
                                 <div>
-
-                                    <label for="image-upload" className='upload-image'>
+                                    <label htmlFor="image-upload" className='upload-image'>
                                         Upload Book Cover
                                     </label>
-
                                     <input
                                         id='image-upload'
                                         type='file'
@@ -238,79 +284,77 @@ export default function UploadBooks() {
                                         onChange={onInputChange}
                                     />
                                 </div>
-                                <div className='lower-left-container'>
 
-                                    <label for="file-upload" class="custom-file-upload">
+                                <div className='lower-left-container'>
+                                    <label htmlFor="file-upload" className="custom-file-upload">
                                         {file ? file.name : "Attach file here"}
                                     </label>
                                     <input
                                         id="file-upload"
                                         type="file"
                                         accept='application/pdf'
-                                        onChange={(e) => {
-                                            setFile(e.target.files[0])
-                                        }}
+                                        onChange={(e) => setFile(e.target.files[0])}
                                     />
                                 </div>
                             </div>
 
-
-
                             <div className='right-container'>
-                                <label>Title</label>
-                                <input
-                                    required
-                                    type='text'
-                                    placeholder='Enter book title here'
-                                    value={newBook.request_book_title}
-                                    onChange={(e) => setNewBook({ ...newBook, request_book_title: e.target.value })}
-                                />
-                                <label>Author</label>
-                                <input
-                                    required
-                                    type='text'
-                                    placeholder='Enter author name here'
-                                    value={newBook.request_book_author}
-                                    onChange={(e) => setNewBook({ ...newBook, request_book_author: e.target.value })}
-                                />
-                                <label>Genre</label>
-                                <input
-                                    required
-                                    type='text'
-                                    placeholder=' Enter genre here'
-                                    value={newBook.request_book_genre}
-                                    onChange={(e) => setNewBook({ ...newBook, request_book_genre: e.target.value })}
-                                />
-                                <label>Description</label>
-                                <textarea
-                                    required
-                                    type='text'
-                                    placeholder='Enter description here'
-                                    value={newBook.request_book_description}
-                                    onChange={(e) => setNewBook({ ...newBook, request_book_description: e.target.value })}
-                                />
-                                {/* <label>Level</label>
-                                <input
-                                    required
-                                    type='text'
-                                    placeholder=' Enter book level here'
-                                    value={newBook.request_book_level}
-                                    onChange={(e) => setNewBook({ ...newBook, request_book_level: e.target.value })}
-                                />
-                                <label>Date Published</label>
-                                <input
-                                    required
-                                    type='date'
-                                    placeholder='MM/DD/YYYY'
-                                    value={newBook.request_book_date_published}
-                                    onChange={(e) => setNewBook({ ...newBook, request_book_date_published: e.target.value })}
-                                /> */}
+                                <div className='ub-container'>
+                                    <label>Title</label>
+                                    <input
+                                        type='text'
+                                        name="request_book_title"
+                                        placeholder='Enter book title here'
+                                        value={newBook.request_book_title}
+                                        onChange={handleChange}
+                                    />
+                                    {(submitted || newBook.request_book_title) && errors.request_book_title && (
+                                        <span className="error">{errors.request_book_title}</span>
+                                    )}
+                                </div>
+                                <div className='ub-container'>
+                                    <label>Author</label>
+                                    <input
+                                        type='text'
+                                        name="request_book_author"
+                                        placeholder='Enter author name here'
+                                        value={newBook.request_book_author}
+                                        onChange={handleChange}
+                                    />
+                                    {(submitted || newBook.request_book_author) && errors.request_book_author && (
+                                        <span className="error">{errors.request_book_author}</span>
+                                    )}
+                                </div>
+                                <div className='ub-container'>
+                                    <label>Genre</label>
+                                    <input
+                                        type='text'
+                                        name="request_book_genre"
+                                        placeholder=' Enter genre here'
+                                        value={newBook.request_book_genre}
+                                        onChange={handleChange}
+                                    />
+                                    {(submitted || newBook.request_book_genre) && errors.request_book_genre && (
+                                        <span className="error">{errors.request_book_genre}</span>
+                                    )}
+                                </div>
+                                <div className='ub-container'>
+                                    <label>Description</label>
+                                    <textarea
+                                        type='text'
+                                        name="request_book_description"
+                                        placeholder='Enter description here'
+                                        value={newBook.request_book_description}
+                                        onChange={handleChange}
+                                    />
+                                    {(submitted || newBook.request_book_description) && errors.request_book_description && (
+                                        <span className="error">{errors.request_book_description}</span>
+                                    )}
+                                </div>
                                 <button type='submit'>Submit Upload Request</button>
                             </div>
                         </form>
                     </div>
-
-
                 </div>
             </div>
         </div>

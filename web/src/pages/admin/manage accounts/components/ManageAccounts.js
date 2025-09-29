@@ -15,7 +15,7 @@ export default function ManageAccounts() {
     const [allUsers, setAllUsers] = useState([])
     const [selectedRowId, setSelectedRowId] = useState(null);
     const [selectedUser, setSelectedUser] = useState([]);
-    const activatedCount = allUsers.users?.filter(user => user.user_status === "Activated").length || 0;
+    const activatedCount = allUsers.users?.filter(user => user.isActivated === true).length || 0;
     const [confirmationModal, setConfirmationModal] = useState(false)
     const [loading, setLoading] = useState(false)
     const [searchQuery, setSearchQuery] = useState('');

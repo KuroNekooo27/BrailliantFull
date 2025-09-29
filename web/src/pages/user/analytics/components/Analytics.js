@@ -91,8 +91,7 @@ export default function Analytics() {
             {
                 label: 'Book Sessions',
                 data: sectionReads.map(item => item.totalReads),
-                backgroundColor: 'rgba(249, 173, 129)',
-                borderColor: 'rgba(249, 173, 130)',
+                backgroundColor: 'rgba(16, 23, 52)',
                 borderWidth: 2,
             },
         ],

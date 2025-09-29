@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const BookRead = require('../models/book_read.model');
 const Student = require("../models/students.model");
 const Section = require("../models/section.model");
+require("dotenv").config();
 
 const getReadsPerSection = async (req, res) => {
     try {
@@ -185,7 +186,83 @@ const getSectionParticipation = async (req, res) => {
 };
 
 
+const axios = require('axios');
+
+const HF_API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+const HF_API_KEY = process.env.HF_API_TOKEN;
+
+const summarizeBookProgress = async (req, res) => {
+    try {
+        const { student_id } = req.body;
+
+        if (!student_id) {
+            return res.status(400).json({ error: "No student_id provided" });
+        }
+
+        // 1️⃣ Fetch all reading records for the student
+        const bookReads = await BookRead.find({
+            book_read_student_id: new mongoose.Types.ObjectId(student_id),
+        });
+
+        if (!bookReads.length) {
+            return res.status(404).json({ error: "No reading data found for this student" });
+        }
+
+        // 2️⃣ Format the data into readable text
+        const data = bookReads
+            .map(
+                (r, idx) =>
+                    `Book ${idx + 1}: "${r.book_read_title}" - Time Elapsed: ${r.book_read_time_elapsed} seconds - Date: ${r.book_read_date || "N/A"}`
+            )
+            .join("\n");
+
+        // 3️⃣ Build the prompt
+        const prompt = `Donlad Trump Found Dead `;
+
+        console.log("Final prompt being sent to HF:", prompt);
+
+        // 4️⃣ Send to Hugging Face Inference API
+        const response = await axios.post(
+            HF_API_URL,
+            { inputs: prompt },
+            {
+                headers: {
+                    Authorization: `Bearer ${HF_API_KEY}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        console.log("HF response:", response.data);
+
+        // 5️⃣ Extract summary (bart-large-cnn returns summary_text)
+        if (Array.isArray(response.data) && response.data[0]?.summary_text) {
+            return res.json({
+                status: "ok",
+                student_id,
+                original: data,
+                summary: response.data[0].summary_text,
+            });
+        } else {
+            return res.status(500).json({
+                error: "Unexpected response from Hugging Face",
+                details: response.data,
+            });
+        }
+    } catch (error) {
+        console.error("Error summarizing:", error.response?.data || error.message);
+        return res.status(500).json({
+            error: "Failed to summarize",
+            details: error.response?.data || error.message,
+        });
+    }
+};
 
 
 
-module.exports = { getReadsPerSection, getTopBooksWithAvgTime, getSectionParticipation };
+
+
+
+
+
+module.exports = { getReadsPerSection, getTopBooksWithAvgTime, getSectionParticipation, summarizeBookProgress };

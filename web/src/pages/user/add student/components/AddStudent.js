@@ -35,6 +35,17 @@ export default function AddStudent() {
     const [errorHandler, setErrorHandler] = useState(false);
     const [message, setMessage] = useState('');
 
+    const [errors, setErrors] = useState({
+        student_lname: "",
+        student_fname: "",
+        student_mi: "",
+        student_dob: "",
+        student_gender: "",
+        student_section: "",
+    });
+    const [submitted, setSubmitted] = useState(false);
+
+
     useEffect(() => {
         axios.get(`https://brailliantweb.onrender.com/api/allsections/${user._id}`)
             .then((response) => {
@@ -52,9 +63,79 @@ export default function AddStudent() {
             })
     };
 
+    const validateField = (name, value) => {
+        let error = "";
+
+        switch (name) {
+            case "student_lname":
+            case "student_fname":
+                if (!value.trim()) {
+                    error = `${name === "student_lname" ? "Last" : "First"} name is required`;
+                } else if (!/^[A-Za-z\s]+$/.test(value)) {
+                    error = "Only letters and spaces are allowed";
+                }
+                break;
+
+            case "student_mi":
+                if (!value.trim()) {
+                    error = "Middle initial is required";
+                } else if (!/^[A-Za-z\s]+$/.test(value)) {
+                    error = "Must be a single letter (A–Z)";
+                }
+                break;
+
+            case "student_dob":
+                if (!value) {
+                    error = "Date of birth is required";
+                } else {
+                    const dob = new Date(value);
+                    const today = new Date();
+                    if (dob >= today) {
+                        error = "Date of birth must be in the past";
+                    }
+                }
+                break;
+
+            case "student_gender":
+                if (!value) error = "Please select a gender";
+                break;
+
+            case "student_section":
+                if (!value) error = "Please select a section";
+                break;
+
+            default:
+                break;
+        }
+
+        setErrors((prev) => ({ ...prev, [name]: error }));
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setNewStudent({ ...newStudent, [name]: value });
+        validateField(name, value);
+    };
+
+
     const handleAddStudent = async (e) => {
         setLoading(true)
         e.preventDefault();
+        setSubmitted(true);
+        setLoading(true);
+
+        Object.entries(newStudent).forEach(([name, value]) => {
+            validateField(name, value);
+        });
+
+        const hasErrors = Object.values(errors).some(err => err !== "");
+        if (hasErrors) {
+            setLoading(false);
+            return;
+        }
+
+
+
         ///////////////////////VALIDATIONS
         if (!newStudent.student_lname.trim()) {
             setLoading(false)
@@ -193,14 +274,14 @@ export default function AddStudent() {
                             <div className='as1'>
                                 <div className='as2'>
                                     <label>Section:</label>
-                                    <select 
+                                    <select
+                                        name="student_section"
                                         value={newStudent.student_section}
                                         onChange={(e) => {
-                                            setSelectedSection(e.target.value)
-                                            setNewStudent({ ...newStudent, student_section: e.target.value })
-                                            studentList(e.target.value)
-                                        }
-                                        }
+                                            handleChange(e);
+                                            setSelectedSection(e.target.value);
+                                            studentList(e.target.value);
+                                        }}
                                     >
                                         <option value="">Select Section</option>
                                         {sections.sections?.map((section) => (
@@ -209,6 +290,7 @@ export default function AddStudent() {
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.student_section && <span className="error">{errors.student_section}</span>}
                                 </div>
                             </div>
 
@@ -217,25 +299,34 @@ export default function AddStudent() {
                                     <label>Last Name:</label>
                                     <input
                                         type='text'
+                                        name="student_lname"
                                         value={newStudent.student_lname}
-                                        onChange={(e) => setNewStudent({ ...newStudent, student_lname: e.target.value })}
+                                        onChange={handleChange}
                                     />
+                                    {errors.student_lname && <span className="error">{errors.student_lname}</span>}
                                 </div>
                                 <div className='as2'>
                                     <label>First Name:</label>
                                     <input
                                         type='text'
+                                        name="student_fname"
                                         value={newStudent.student_fname}
-                                        onChange={(e) => setNewStudent({ ...newStudent, student_fname: e.target.value })}
+                                        onChange={handleChange}
                                     />
+                                    {errors.student_fname && <span className="error">{errors.student_fname}</span>}
+
                                 </div>
                                 <div className='as2'>
                                     <label>Middle Initial:</label>
                                     <input
                                         type='text'
+                                        name="student_mi"
                                         value={newStudent.student_mi}
-                                        onChange={(e) => setNewStudent({ ...newStudent, student_mi: e.target.value })}
+                                        onChange={handleChange}
+                                        maxLength={1}
                                     />
+                                    {errors.student_mi && <span className="error">{errors.student_mi}</span>}
+
                                 </div>
                             </div>
 
@@ -244,20 +335,25 @@ export default function AddStudent() {
                                     <label>Date of Birth:</label>
                                     <input
                                         type='date'
+                                        name="student_dob"
                                         value={newStudent.student_dob}
-                                        onChange={(e) => setNewStudent({ ...newStudent, student_dob: e.target.value })}
+                                        onChange={handleChange}
                                     />
+                                    {errors.student_dob && <span className="error">{errors.student_dob}</span>}
+
                                 </div>
                                 <div className='as2'>
                                     <label>Gender:</label>
                                     <select
+                                        name="student_gender"
                                         value={newStudent.student_gender}
-                                        onChange={(e) => setNewStudent({ ...newStudent, student_gender: e.target.value })}
+                                        onChange={handleChange}
                                     >
                                         <option value="">Select Gender</option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
                                     </select>
+                                    {errors.student_gender && <span className="error">{errors.student_gender}</span>}
                                 </div>
                             </div>
                             <button className='as-add' onClick={handleAddStudent} > <img src={require('../assets/add.png')} />Add Student</button>

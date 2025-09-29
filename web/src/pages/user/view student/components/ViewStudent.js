@@ -46,9 +46,7 @@ export default function ViewStudent() {
             .then((response) => {
                 setLoading(false)
                 setBookRead(response.data.book)
-            })
-            .catch((error) => {
-                console.log("eto ang error mo " + error)
+                console.log(response.data.book)
             })
 
     }, [selectedStudent]);
