@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   View,
   TextInput,
-  Button,
   StyleSheet,
   Text,
-  Alert,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 const EditProfileModal = ({ visible, onClose, onSubmit, user }) => {
-  const [firstname, setFirstname] = useState(user.user_fname);
-  const [lastname, setLastname] = useState(user.user_lname);
-  const [email, setEmail] = useState(user.user_email);
+  const [firstname, setFirstname] = useState(user.user_fname || '');
+  const [lastname, setLastname] = useState(user.user_lname || '');
+  const [email, setEmail] = useState(user.user_email || '');
 
   const userID = user._id;
 
@@ -28,28 +27,55 @@ const EditProfileModal = ({ visible, onClose, onSubmit, user }) => {
     confirm: false,
   });
 
+  const [errors, setErrors] = useState({});
+
   const toggleVisibility = (field) => {
     setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  const handleFormSubmit = () => {
+  // Real-time validation
+  useEffect(() => {
+    validateForm();
+  }, [firstname, lastname, email, currentPassword, newPassword, confirmPassword]);
+
+  const validateForm = () => {
+    let newErrors = {};
+
+    if (!firstname.trim() || firstname.length < 2) {
+      newErrors.firstname = 'First name must be at least 2 characters';
+    }
+    if (!lastname.trim() || lastname.length < 2) {
+      newErrors.lastname = 'Last name must be at least 2 characters';
+    }
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      newErrors.email = 'Invalid email address';
+    }
+
     if (newPassword) {
       if (!currentPassword) {
-        return Alert.alert('Validation Error', 'Enter current password to change your password.');
+        newErrors.currentPassword = 'Enter your current password';
       }
       if (newPassword.length < 6) {
-        return Alert.alert('Validation Error', 'New password must be at least 6 characters.');
+        newErrors.newPassword = 'Password must be at least 6 characters';
       }
       if (newPassword !== confirmPassword) {
-        return Alert.alert('Validation Error', 'New password and confirmation do not match.');
+        newErrors.confirmPassword = 'Passwords do not match';
       }
     }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleFormSubmit = () => {
+    if (!validateForm()) return;
 
     const formData = {
       firstname,
       lastname,
       email,
-      userID
+      userID,
     };
 
     if (newPassword) {
@@ -66,70 +92,94 @@ const EditProfileModal = ({ visible, onClose, onSubmit, user }) => {
         <View style={styles.modalContent}>
           <Text style={styles.title}>Edit Profile</Text>
 
-          <TextInput
-            placeholder="First Name"
-            value={firstname}
-            onChangeText={setFirstname}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Last Name"
-            value={lastname}
-            onChangeText={setLastname}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            style={styles.input}
-            keyboardType="email-address"
-          />
-
-          {/* Current Password */}
-          <View style={styles.passwordWrapper}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* First Name */}
             <TextInput
-              placeholder="Current Password"
-              value={currentPassword}
-              onChangeText={setCurrentPassword}
-              style={styles.passwordInput}
-              secureTextEntry={!showPassword.current}
+              placeholder="First Name"
+              value={firstname}
+              onChangeText={setFirstname}
+              style={[styles.input, errors.firstname && styles.errorInput]}
             />
-            <TouchableOpacity onPress={() => toggleVisibility('current')}>
-              <Feather name={showPassword.current ? 'eye' : 'eye-off'} size={20} />
-            </TouchableOpacity>
-          </View>
+            {errors.firstname && <Text style={styles.errorText}>{errors.firstname}</Text>}
 
-          {/* New Password */}
-          <View style={styles.passwordWrapper}>
+            {/* Last Name */}
             <TextInput
-              placeholder="New Password"
-              value={newPassword}
-              onChangeText={setNewPassword}
-              style={styles.passwordInput}
-              secureTextEntry={!showPassword.new}
+              placeholder="Last Name"
+              value={lastname}
+              onChangeText={setLastname}
+              style={[styles.input, errors.lastname && styles.errorInput]}
             />
-            <TouchableOpacity onPress={() => toggleVisibility('new')}>
-              <Feather name={showPassword.new ? 'eye' : 'eye-off'} size={20} />
-            </TouchableOpacity>
-          </View>
+            {errors.lastname && <Text style={styles.errorText}>{errors.lastname}</Text>}
 
-          {/* Confirm New Password */}
-          <View style={styles.passwordWrapper}>
+            {/* Email */}
             <TextInput
-              placeholder="Confirm New Password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              style={styles.passwordInput}
-              secureTextEntry={!showPassword.confirm}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              style={[styles.input, errors.email && styles.errorInput]}
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
-            <TouchableOpacity onPress={() => toggleVisibility('confirm')}>
-              <Feather name={showPassword.confirm ? 'eye' : 'eye-off'} size={20} />
-            </TouchableOpacity>
-          </View>
+            {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-          <Button title="Submit" onPress={handleFormSubmit} />
-          <Button title="Cancel" onPress={onClose} color="red" />
+            {/* Current Password */}
+            <View style={[styles.passwordWrapper, errors.currentPassword && styles.errorInput]}>
+              <TextInput
+                placeholder="Current Password"
+                value={currentPassword}
+                onChangeText={setCurrentPassword}
+                style={styles.passwordInput}
+                secureTextEntry={!showPassword.current}
+              />
+              <TouchableOpacity onPress={() => toggleVisibility('current')}>
+                <Feather name={showPassword.current ? 'eye' : 'eye-off'} size={20} />
+              </TouchableOpacity>
+            </View>
+            {errors.currentPassword && <Text style={styles.errorText}>{errors.currentPassword}</Text>}
+
+            {/* New Password */}
+            <View style={[styles.passwordWrapper, errors.newPassword && styles.errorInput]}>
+              <TextInput
+                placeholder="New Password"
+                value={newPassword}
+                onChangeText={setNewPassword}
+                style={styles.passwordInput}
+                secureTextEntry={!showPassword.new}
+              />
+              <TouchableOpacity onPress={() => toggleVisibility('new')}>
+                <Feather name={showPassword.new ? 'eye' : 'eye-off'} size={20} />
+              </TouchableOpacity>
+            </View>
+            {errors.newPassword && <Text style={styles.errorText}>{errors.newPassword}</Text>}
+
+            {/* Confirm Password */}
+            <View style={[styles.passwordWrapper, errors.confirmPassword && styles.errorInput]}>
+              <TextInput
+                placeholder="Confirm New Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                style={styles.passwordInput}
+                secureTextEntry={!showPassword.confirm}
+              />
+              <TouchableOpacity onPress={() => toggleVisibility('confirm')}>
+                <Feather name={showPassword.confirm ? 'eye' : 'eye-off'} size={20} />
+              </TouchableOpacity>
+            </View>
+            {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+
+            {/* Buttons */}
+            <TouchableOpacity
+              style={[styles.button, Object.keys(errors).length > 0 && styles.disabledButton]}
+              onPress={handleFormSubmit}
+              disabled={Object.keys(errors).length > 0}
+            >
+              <Text style={styles.buttonText}>Save</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -143,32 +193,65 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.4)',
-    padding: 16,
+    padding: 20,
   },
   modalContent: {
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 20,
+    elevation: 5,
+    maxHeight: '85%',
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 18,
-    marginBottom: 12,
+    fontSize: 20,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   input: {
-    borderBottomWidth: 1,
-    marginBottom: 12,
-    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
   },
   passwordWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    marginBottom: 12,
-    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 8,
+    paddingHorizontal: 10,
   },
   passwordInput: {
     flex: 1,
-    paddingVertical: 4,
+    paddingVertical: 8,
+  },
+  button: {
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 6,
+  },
+  errorInput: {
+    borderColor: 'red',
+  },
+  disabledButton: {
+    backgroundColor: '#aaa',
   },
 });
