@@ -75,13 +75,13 @@ export default function LandingPage() {
             setMessage("Email sent!.");
             setErrorHandler(true)
         } catch (err) {
-            console.error("Failed to send email", err);
+            setLoading(false)
             setMessage("Failed to send email.");
             setErrorHandler(true)
         }
     };
     const sendEmailForgotpassword = async (generatedOtp) => {
-        
+
         try {
             const response = await axios.post('https://brailliantweb.onrender.com/send-email', {
                 context: "forgotPassword",
@@ -92,6 +92,7 @@ export default function LandingPage() {
             setMessage("Email sent!");
             setErrorHandler(true)
         } catch (err) {
+            setLoading(false)
             setMessage("Failed to send email.");
             setErrorHandler(true)
         }
@@ -116,6 +117,7 @@ export default function LandingPage() {
 
             }
         } catch (error) {
+            setLoading(false)
             setMessage("Invalid email. Please try again.");
             setErrorHandler(true)
             clearForm();
@@ -147,6 +149,7 @@ export default function LandingPage() {
                 togglePasswordModal()
 
             } catch (error) {
+                setLoading(false)
                 setMessage("Something went wrong with updating");
                 setErrorHandler(true)
             }
@@ -168,6 +171,7 @@ export default function LandingPage() {
                 setErrorHandler(true)
             }
         } else {
+            setLoading(false)
             setMessage("Invalid OTP.");
             setErrorHandler(true)
         }
@@ -197,6 +201,7 @@ export default function LandingPage() {
             }
 
         } catch (error) {
+            setLoading(false)
             setMessage("Invalid email or password. Please try again.");
             setErrorHandler(true)
             clearForm();
@@ -237,6 +242,7 @@ export default function LandingPage() {
             }
 
         } catch (error) {
+            setLoading(false)
             setMessage("Invalid email or password. Please try again.");
             setErrorHandler(true)
             clearForm();

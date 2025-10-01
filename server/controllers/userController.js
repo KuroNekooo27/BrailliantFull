@@ -3,6 +3,7 @@ const JWT = require('jsonwebtoken');
 const { hashPassword, comparePassword } = require('../helpers/authHelper');
 const User = require("../models/user.model")
 const nodemailer = require('nodemailer');
+const sgTransport = require("nodemailer-sendgrid");
 
 const { ActivationOTP_Template, LoginOTP_Template, ForgotPasswordOTP_Template, TempPassword_Template, EditProfile_Template } = require('./EmailTemplate');
 
@@ -14,18 +15,13 @@ const requireSignIn = jwt({
   algorithms: ['HS256'],
 });
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: process.env.AUTH_EMAIL,
-    pass: process.env.AUTH_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false // Add this line
-  },
-});
+const transporter = nodemailer.createTransport(
+  sgTransport({
+    apiKey: process.env.SENDGRID_API_KEY,
+  })
+);
+
+const FROM_EMAIL = '"Brailliant by Orbit" <brailliant.team@gmail.com>';
 
 
 //emails-----------------------------------------
@@ -34,7 +30,7 @@ const transporter = nodemailer.createTransport({
 const sendTemporaryPassword = async (email, temporaryPassword) => {
   try {
     const info = await transporter.sendMail({
-      from: '"Brailliant by Orbit" <mavyorbit@gmail.com>',
+      from: FROM_EMAIL,
       to: email,
       subject: "Your Temporary Password for Brailliant by Orbit",
       text: `Your temporary password is: ${temporaryPassword}`, // plain-text body
@@ -52,7 +48,7 @@ const sendTemporaryPassword = async (email, temporaryPassword) => {
 const sendResetOTPcode = async (email, otp) => {
   try {
     const info = await transporter.sendMail({
-      from: '"Brailliant by Orbit" <mavyorbit@gmail.com>',
+      from: FROM_EMAIL,
       to: email,
       subject: "Reset Password Code for Brailliant by Orbit",
       text: "Reset your Password", // plain‑text body
@@ -68,7 +64,7 @@ const sendResetOTPcode = async (email, otp) => {
 const sendLoginVerificationCode = async (email, otp) => {
   try {
     const info = await transporter.sendMail({
-      from: '"Brailliant by Orbit" <mavyorbit@gmail.com>',
+      from: FROM_EMAIL,
       to: email,
       subject: "Login Verification Code for Brailliant by Orbit",
       text: "Verify your Device", // plain‑text body
@@ -84,7 +80,7 @@ const sendLoginVerificationCode = async (email, otp) => {
 const sendEditVerificationCode = async (email, otp) => {
   try {
     const info = await transporter.sendMail({
-      from: '"Brailliant by Orbit" <mavyorbit@gmail.com>',
+      from: FROM_EMAIL,
       to: email,
       subject: "Confirmation Code for Brailliant by Orbit",
       text: "Edit your profile", // plain‑text body
@@ -99,7 +95,7 @@ const sendEditVerificationCode = async (email, otp) => {
 const sendActivationCode = async (email, activationCode) => {
   try {
     const info = await transporter.sendMail({
-      from: '"Brailliant by Orbit" <mavyorbit@gmail.com>',
+      from: FROM_EMAIL,
       to: email,
       subject: "Activation Code for Brailliant by Orbit",
       text: "Activate your Account", // plain‑text body
