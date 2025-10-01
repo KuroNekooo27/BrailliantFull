@@ -102,6 +102,7 @@
     overflow-y: auto;
     background-color: #ecf0ff;
     border-radius: 30px;
+    margin-bottom: 10px;
 }
 
 .reading-history thead th {
@@ -127,9 +128,13 @@
     width: 50%;
 }
 
-.view-student-rh label {
+.rh-label {
     font-weight: bold;
     font-size: 32px;
+}
+
+.student-report{
+    font-weight: 500;
 }
 
 .back-btn {

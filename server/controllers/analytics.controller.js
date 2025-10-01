@@ -188,8 +188,6 @@ const getSectionParticipation = async (req, res) => {
 
 const axios = require('axios');
 
-const HF_API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
-const HF_API_KEY = process.env.HF_API_TOKEN;
 
 const summarizeBookProgress = async (req, res) => {
     try {
@@ -199,61 +197,67 @@ const summarizeBookProgress = async (req, res) => {
             return res.status(400).json({ error: "No student_id provided" });
         }
 
-        // 1️⃣ Fetch all reading records for the student
+        // 1️⃣ Find student to confirm existence
+        const student = await Student.findById(student_id);
+        if (!student) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+
+        // 2️⃣ Fetch reading records in chronological order
         const bookReads = await BookRead.find({
             book_read_student_id: new mongoose.Types.ObjectId(student_id),
-        });
+        }).sort({ book_read_date: 1 });
 
         if (!bookReads.length) {
             return res.status(404).json({ error: "No reading data found for this student" });
         }
 
-        // 2️⃣ Format the data into readable text
-        const data = bookReads
-            .map(
-                (r, idx) =>
-                    `Book ${idx + 1}: "${r.book_read_title}" - Time Elapsed: ${r.book_read_time_elapsed} seconds - Date: ${r.book_read_date || "N/A"}`
-            )
-            .join("\n");
+        // 3️⃣ Collect times
+        const times = bookReads.map(r => r.book_read_time_elapsed);
+        const totalTime = times.reduce((a, b) => a + b, 0);
+        const avgTime = totalTime / times.length;
 
-        // 3️⃣ Build the prompt
-        const prompt = `Donlad Trump Found Dead `;
-
-        console.log("Final prompt being sent to HF:", prompt);
-
-        // 4️⃣ Send to Hugging Face Inference API
-        const response = await axios.post(
-            HF_API_URL,
-            { inputs: prompt },
-            {
-                headers: {
-                    Authorization: `Bearer ${HF_API_KEY}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-
-        console.log("HF response:", response.data);
-
-        // 5️⃣ Extract summary (bart-large-cnn returns summary_text)
-        if (Array.isArray(response.data) && response.data[0]?.summary_text) {
-            return res.json({
-                status: "ok",
-                student_id,
-                original: data,
-                summary: response.data[0].summary_text,
-            });
+        // 4️⃣ Trend analysis with "first book" check
+        let trendMessage = "Performance data is not available.";
+        if (times.length === 1) {
+            trendMessage = "This is the student's first recorded book, no trend can be determined yet.";
         } else {
-            return res.status(500).json({
-                error: "Unexpected response from Hugging Face",
-                details: response.data,
-            });
+            const first = times[0];
+            const last = times[times.length - 1];
+
+            if (last < first) {
+                trendMessage = "The student is improving — reading faster over time.";
+            } else if (last > first) {
+                trendMessage = "The student is struggling — reading is taking longer over time.";
+            } else {
+                trendMessage = "The student's performance is stable.";
+            }
         }
+
+        // 5️⃣ Build summary
+        const summary = `
+The student has read ${bookReads.length} book(s).
+Total reading time: ${totalTime} seconds.
+Average reading time per book: ${avgTime.toFixed(2)} seconds.
+${trendMessage}
+        `.trim();
+
+        // 6️⃣ Save summary into student.student_analytics
+        student.student_analytics = summary;
+        await student.save();
+
+        // 7️⃣ Respond back
+        return res.json({
+            status: "ok",
+            student_id,
+            summary,
+            saved_in: "student.student_analytics"
+        });
     } catch (error) {
-        console.error("Error summarizing:", error.response?.data || error.message);
+        console.error("Error analyzing book progress:", error.message);
         return res.status(500).json({
-            error: "Failed to summarize",
-            details: error.response?.data || error.message,
+            error: "Failed to analyze book progress",
+            details: error.message,
         });
     }
 };

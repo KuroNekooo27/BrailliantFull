@@ -311,7 +311,7 @@ export default function ViewStudent() {
                             </div>
 
                             <div className='view-student-rh'>
-                                <label>Reading History:</label>
+                                <label className='rh-label'>Reading History:</label>
                                 <div className='reading-history'>
                                     <table>
                                         <thead>
@@ -344,6 +344,7 @@ export default function ViewStudent() {
                                     </table>
 
                                 </div>
+                                <label className='student-report'>{selectedStudent.student_analytics}</label>
                             </div>
                         </div>
                     </div>
