@@ -112,13 +112,16 @@ export default function AdminCreateAccountTempt() {
                 }
             }
             newErrors[name] = error;
-            setMessage("Provide valid details");
-            setErrorHandler(true);
+
         });
 
         setErrors(newErrors);
 
-        if (Object.values(newErrors).some((err) => err)) return;
+        if (Object.values(newErrors).some((err) => err)) {
+            setMessage("Provide valid details");
+            setErrorHandler(true);
+            return;
+        }
 
         if (newUser.user_password.length < 6) {
             setMessage("Password must be at least 6 characters.");
