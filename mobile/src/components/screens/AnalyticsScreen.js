@@ -18,6 +18,7 @@ import ViewShot from 'react-native-view-shot';
 import CustomHeader from '../ui/CustomHeader';
 import axios from 'axios'
 import { AuthContext } from '../../context/AuthContext';
+import { generateAnalyticsReportHtml } from '../utils/pdfTemplate';
 
 
 const { width } = Dimensions.get('window');
@@ -88,18 +89,7 @@ const AnalyticsScreen = () => {
     try {
       // Capture the pie chart as image
       const chartUri = await chartRef.current.capture();
-
-      const htmlContent = `
-        <h1>Analytics Report</h1>
-        <h2>All Books (Sorted from most accessed)</h2>
-        <ul>
-          ${BOOKS_DATA.map(book => `<li>${book.book_title} — Access Count: ${book.book_count}</li>`).join('')}
-        </ul>
-        <p>Total Accesses: ${totalAccess}</p>
-        <h3>Book Access Distribution</h3>
-        <img src="${chartUri}" style="width:100%;height:auto;" />
-      `;
-
+      const htmlContent = generateAnalyticsReportHtml(BOOKS_DATA, totalAccess, chartUri);
       const pdf = await RNHTMLtoPDF.convert({
         html: htmlContent,
         fileName: 'analytics_report',
@@ -107,13 +97,13 @@ const AnalyticsScreen = () => {
         directory: 'Downloads'
       });
 
-      Alert.alert('Success', `PDF generated at:\n${pdf.filePath}`);
-    } catch (error) {
-      Alert.alert('Error', `Failed to generate PDF: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+        Alert.alert('Success', `PDF generated at:\n${pdf.filePath}`);
+      } catch (error) {
+        Alert.alert('Error', `Failed to generate PDF: ${error.message}`);
+      } finally {
+        setLoading(false);
+        }
+      };
 
   return (
     <>
