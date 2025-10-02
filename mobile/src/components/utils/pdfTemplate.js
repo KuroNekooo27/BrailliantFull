@@ -7,13 +7,11 @@ export const generateAnalyticsReportHtml = (BOOKS_DATA, totalAccess, chartUri) =
   );
 
   const formatTime = (secs) => {
-    const total = Math.floor(secs); 
-    const h = String(Math.floor(total / 3600)).padStart(2, "0");
-    const m = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
-    const s = String(total % 60).padStart(2, "0");
+    const h = String(Math.floor(secs / 3600)).padStart(2, "0");
+    const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "0");
+    const s = String(secs % 60).padStart(2, "0");
     return `${h}:${m}:${s}`;
   };
-
 
   const interpretationText = (() => {
     let text = `The data indicates that <strong>${mostAccessedBook.book_title}</strong> is the most frequently accessed book, suggesting it is either the most popular or most relevant to readers. `;
