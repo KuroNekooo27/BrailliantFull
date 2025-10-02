@@ -33,19 +33,19 @@ const sendToArduino = (req, res) => {
 module.exports = { sendToArduino };
 */
 
-const { SerialPort } = require('serialport');
-const { ReadlineParser } = require('@serialport/parser-readline');
+// const { SerialPort } = require('serialport');
+// const { ReadlineParser } = require('@serialport/parser-readline');
 
-const arduinoPort = new SerialPort({
-    path: 'COM3',
-    baudRate: 9600,
-});
+// const arduinoPort = new SerialPort({
+//     path: 'COM3',
+//     baudRate: 9600,
+// });
 
-const parser = arduinoPort.pipe(new ReadlineParser({ delimiter: '\n' }));
+// const parser = arduinoPort.pipe(new ReadlineParser({ delimiter: '\n' }));
 
-parser.on('data', data => {
-    console.log('From Arduino:', data);
-});
+// parser.on('data', data => {
+//     console.log('From Arduino:', data);
+// });
 
 
 
