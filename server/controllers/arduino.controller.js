@@ -33,33 +33,20 @@ const sendToArduino = (req, res) => {
 module.exports = { sendToArduino };
 */
 
+const { SerialPort } = require('serialport');
+const { ReadlineParser } = require('@serialport/parser-readline');
 
-let arduinoPort = null;
-let parser = null;
+const arduinoPort = new SerialPort({
+    path: 'COM3',
+    baudRate: 9600,
+});
 
-if (process.env.NODE_ENV === "development") {
-    const { SerialPort } = require("serialport");
-    const { ReadlineParser } = require("@serialport/parser-readline");
+const parser = arduinoPort.pipe(new ReadlineParser({ delimiter: '\n' }));
 
-    try {
-        arduinoPort = new SerialPort({
-            path: "COM1",  // change if needed locally
-            baudRate: 9600,
-        });
+parser.on('data', data => {
+    console.log('From Arduino:', data);
+});
 
-        parser = arduinoPort.pipe(new ReadlineParser({ delimiter: "\n" }));
-
-        parser.on("data", (data) => {
-            console.log("From Arduino:", data);
-        });
-
-        console.log("Arduino serial connection initialized.");
-    } catch (err) {
-        console.error("Could not open COM1:", err.message);
-    }
-} else {
-    console.log("Skipping Arduino serial connection in production.");
-}
 
 
 const sendToArduino = (req, res) => {
