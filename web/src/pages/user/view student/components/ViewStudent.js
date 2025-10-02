@@ -342,9 +342,9 @@ export default function ViewStudent() {
                                                 ))}
                                         </tbody>
                                     </table>
-
                                 </div>
-                                <label className='student-report'>{selectedStudent.student_analytics}</label>
+                                <label className='rh-label'>Student Progress:</label>
+                                <div className='student-report'>{selectedStudent.student_analytics}</div>
                             </div>
                         </div>
                     </div>

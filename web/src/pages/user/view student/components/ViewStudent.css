@@ -133,9 +133,16 @@
     font-size: 32px;
 }
 
-.student-report{
+.student-report {
+
     font-weight: 500;
+    white-space: pre-line;
+    line-height: .8;
+    margin: 0;
+    margin-top: 10px;
+    margin-left: 10px;
 }
+
 
 .back-btn {
     display: flex;
