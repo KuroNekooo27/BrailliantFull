@@ -18,8 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthContext';
 import SessionSummaryModal from '../ui/SessionSummaryModal';
 import axios from 'axios';
-
-const CHUNK_SIZE = 8;
+import { useSendToBrailleDevice } from '../utils/sendToBrailleDevice';
 const { width } = Dimensions.get('window');
 
 const BookReadSessionScreen = ({ route }) => {
@@ -32,7 +31,8 @@ const BookReadSessionScreen = ({ route }) => {
   const [showSummary, setShowSummary] = useState(false);
   const { state, setState } = useContext(AuthContext);
   const [sessionStartTime] = useState(Date.now());
-
+  const { sendToBrailleDevice } = useSendToBrailleDevice();
+  
   const { bookTitle = 'Unknown Book', bookUrl = '', studentName = 'Unknown Student', studentId = '', bookId = '' } = route.params || {};
 
   const handleData = async () => {
@@ -95,7 +95,7 @@ const BookReadSessionScreen = ({ route }) => {
     return () => monitor.remove();
   }, [connectedDevice]);
 
-  const handleSync = () => {
+  const handleSync = async () => {
     if (!connectedDevice) {
       Alert.alert(
         'No Device Connected',
@@ -104,8 +104,18 @@ const BookReadSessionScreen = ({ route }) => {
       return;
     }
 
-    // TODO: send text to device via BLE here
-    console.log('Sending Braille data:', text);
+    const textToSend = highlighted.trim();
+    if (!textToSend) {
+      Alert.alert("No Text", "There is no highlighted text to send.");
+      return;
+    }
+
+    const success = await sendToBrailleDevice(textToSend);
+    if (success) {
+      Alert.alert("Success", `Synced "${textToSend}" to device.`);
+    } else {
+      Alert.alert("Error", "Failed to sync to device.");
+    }
   };
 
   useEffect(() => {
@@ -140,23 +150,27 @@ const BookReadSessionScreen = ({ route }) => {
     loadBookContent();
   }, [bookUrl]);
 
-  const [startIndex, setStartIndex] = useState(0);
-  const endIndex = startIndex + CHUNK_SIZE;
-  const before = fullText.slice(0, startIndex);
-  const highlighted = fullText.slice(startIndex, endIndex);
-  const after = fullText.slice(endIndex);
+  const words = fullText.split(/\s+/); // split text by spaces
+  const [currentIndex, setCurrentIndex] = useState(0); // current word index
+  const CHUNK_WORDS = 1; // number of words per highlight
+
+  const startIndex = currentIndex;
+  const endIndex = currentIndex + CHUNK_WORDS;
+
+  const before = words.slice(0, startIndex).join(' ');
+  const highlighted = words.slice(startIndex, endIndex).join(' ');
+  const after = words.slice(endIndex).join(' ');
+
 
   const handlePrev = () => {
-    if (startIndex >= CHUNK_SIZE) {
-      setStartIndex(startIndex - CHUNK_SIZE);
-    }
+    if (currentIndex > 0) setCurrentIndex(currentIndex - CHUNK_WORDS);
   };
 
   const handleNext = () => {
-    if (endIndex < fullText.length) {
-      setStartIndex(startIndex + CHUNK_SIZE);
-    }
+    if (currentIndex + CHUNK_WORDS < words.length) 
+      setCurrentIndex(currentIndex + CHUNK_WORDS);
   };
+
 
   if (isLoading) {
     return (
@@ -183,7 +197,7 @@ const BookReadSessionScreen = ({ route }) => {
         <Text style={styles.bookTitle}>{bookTitle}</Text>
         <View style={styles.pageNav}>
           <Text style={styles.pageIndicator}>
-            Page {Math.floor(startIndex / CHUNK_SIZE) + 1} of {Math.ceil(fullText.length / CHUNK_SIZE)}
+            Word {currentIndex + 1} of {words.length}
           </Text>
           <TouchableOpacity style={styles.pageBtn} onPress={handlePrev} disabled={startIndex === 0}>
             <Text style={styles.navArrow}>&lt;</Text>
