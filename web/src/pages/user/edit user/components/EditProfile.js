@@ -198,6 +198,13 @@ export default function EditProfile() {
 
     const handlePasswordSave = async () => {
         try {
+            setLoading(true)
+            if (editUser.user_password !== cpassword) {
+                setMessage("Password does not match");
+                setErrorHandler(true)
+                setLoading(true)
+                return
+            }
             const response = await axios.put('https://brailliantweb.onrender.com/api/update-password', {
                 password: editUser.user_password,
                 email: editUser.user_email
@@ -208,7 +215,6 @@ export default function EditProfile() {
             setActiveForm('profile');
             setEditUser({ ...editUser, user_password: '' });
             setCpassword('');
-            navigate(-1);
 
             const newAudit = {
                 at_user: editUser.user_email,
@@ -216,6 +222,7 @@ export default function EditProfile() {
                 at_action: 'Password Changed',
             };
             await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
+            setLoading(false)
 
 
         } catch (error) {
@@ -225,33 +232,40 @@ export default function EditProfile() {
     };
 
     const handleVerify = async () => {
+        setLoading(true)
         const newOtp = generateOTP()
         setOtp(newOtp)
 
         if (!cemail) {
             setMessage("Enter new email.");
             setErrorHandler(true)
+            setLoading(false)
             return;
         }
         if (editUser.user_password !== cpassword) {
             setMessage("Passwords do not match.");
             setErrorHandler(true)
+            setLoading(false)
+
             return;
         }
         if (!editUser.user_password || !cpassword) {
+            setLoading(false)
             setMessage("Enter password.");
             setErrorHandler(true)
             return;
         }
+
         try {
             const response = await axios.post("https://brailliantweb.onrender.com/api/handle-credentials", {
-                email: cemail,
+                email: users.user_email,
                 password: editUser.user_password
             })
         } catch (error) {
-            alert("Invalid email or password. Please try again.");
+
             return
         }
+        setLoading(false)
         handleNewEmail(newOtp)
         toggleModal()
     }
@@ -398,25 +412,29 @@ export default function EditProfile() {
 
                                     {activeForm === 'profile' && (
                                         <div className="profile-form">
-                                            <div className='form-row1' >
-                                                <p>First Name</p>
-                                                <p>Last Name</p>
-                                            </div>
-                                            <div className="form-row2">
-                                                <input
-                                                    type="text"
-                                                    placeholder="First Name"
-                                                    value={editUser.user_fname}
-                                                    onChange={(e) => setEditUser({ ...editUser, user_fname: e.target.value })}
+                                            <div className='ep-form'>
+                                                <div className='form-row1' >
+                                                    <p>First Name</p>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="First Name"
+                                                        value={editUser.user_fname}
+                                                        onChange={(e) => setEditUser({ ...editUser, user_fname: e.target.value })}
 
-                                                />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Last Name"
-                                                    value={editUser.user_lname}
-                                                    onChange={(e) => setEditUser({ ...editUser, user_lname: e.target.value })}
-                                                />
+                                                    />
+                                                </div>
+                                                <div className='form-row1' >
+                                                    <p>Last Name</p>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Last Name"
+                                                        value={editUser.user_lname}
+                                                        onChange={(e) => setEditUser({ ...editUser, user_lname: e.target.value })}
+                                                    />
+                                                </div>
                                             </div>
+
+
 
                                             <p>Date of Birth</p>
                                             <input
