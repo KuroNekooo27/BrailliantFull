@@ -39,7 +39,10 @@ const StudentSchema = new Schema({
     },
     student_id: {
         type: String
-    }
+    },
+    student_analytics: {
+        type: String
+    },
 })
 
 const Student = model('Student', StudentSchema)
