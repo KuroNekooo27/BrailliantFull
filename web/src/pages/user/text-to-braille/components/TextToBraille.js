@@ -9,7 +9,7 @@ import SideNavigation from '../../../../global/components/user/SideNavigation';
 import Loading from '../../../../global/components/user/Loading';
 import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
-export default function TextToBraille() {
+export default function TextToBraille(characteristic) {
     const page = "Text-to-Braille";
     const searchBar = false;
 
@@ -30,10 +30,15 @@ export default function TextToBraille() {
             setErrorHandler(true);
             return;
         }
+        if (!characteristic) {
+            setMessage("Device not connected.");
+            setErrorHandler(true);
+            return;
+        }
         try {
-            await axios.post('https://brailliantweb.onrender.com/send-text', {
-                message: plainText
-            });
+            await characteristic.writeValue(new TextEncoder().encode(plainText));
+            setMessage("Text sent to device!");
+            setErrorHandler(false);
         } catch (error) {
             setMessage("Make sure device is connected.");
             setErrorHandler(true);

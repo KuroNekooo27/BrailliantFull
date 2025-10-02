@@ -22,16 +22,16 @@ import Grade1 from '../pages/user/braille/grade 1/Grade1';
 import Grade2 from '../pages/user/braille/grade 2/Grade2';
 import TEST from "../pages/user/test1";
 
-export const UserRoutes = (
+export const UserRoutes = ({characteristic, setCharacteristic}) => (
     <>
         <Route path="/" element={<LandingPage />} />
         <Route path='/home' element={<Home />}></Route>
         <Route path='/library' element={<Library />}></Route>
         <Route path='/class' element={<ClassSettings />}></Route>
         <Route path='/upload' element={<UploadBooks />}></Route>
-        <Route path='/text-to-braille' element={<TextToBraille />}></Route>
+        <Route path='/text-to-braille' element={<TextToBraille characteristic={characteristic}/>}></Route>
         <Route path='/profile' element={<Profile />}></Route>
-        <Route path='/device-settings' element={<DeviceSettings />}></Route>
+        <Route path='/device-settings' element={<DeviceSettings setCharacteristic={setCharacteristic}/>}></Route>
         <Route path='/analytics' element={<Analytics />}></Route>
         <Route path='/section/edit' element={<EditSection />}></Route>
         <Route path='/section/create' element={<CreateSection />}></Route>

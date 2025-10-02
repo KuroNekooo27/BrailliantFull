@@ -2,10 +2,10 @@ import { Routes } from "react-router-dom";
 import { UserRoutes } from "./UserRoutes";
 import { AdminRoutes } from "./AdminRoutes";
 
-export default function AppRoutes() {
+export default function AppRoutes(props) {
   return (
     <Routes>
-      {UserRoutes}
+      {UserRoutes(props)}
       {AdminRoutes}
     </Routes>
   );
