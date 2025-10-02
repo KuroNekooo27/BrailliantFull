@@ -23,17 +23,31 @@ export default function TextToBraille() {
     const [errorHandler, setErrorHandler] = useState(false);
     const [message, setMessage] = useState('');
 
+    // const toArduino = () => {
+    //     const result = convertTextToBrailleDots(text);
+    //     setBrailleDots(result);
+
+    //     const brailleArray = result.split(" ");
+    //     const formatted = brailleArray.map((dots, index) => `M${index + 1}:${dots}`).join('\n');
+
+    //     if (formatted.length != 0) {
+    //         try {
+    //             axios.post('https://brailliantweb.onrender.com/send-text', {
+    //                 message: formatted
+    //             });
+    //         } catch (error) {
+    //             setMessage("Make sure device is connected.");
+    //             setErrorHandler(true)
+    //         }
+    //     }
+    // }
+    
     const toArduino = () => {
-        const result = convertTextToBrailleDots(text);
-        setBrailleDots(result);
-
-        const brailleArray = result.split(" ");
-        const formatted = brailleArray.map((dots, index) => `M${index + 1}:${dots}`).join('\n');
-
-        if (formatted.length != 0) {
+        const plainText = text.toLowerCase().replace(/[^a-z]/g, '');
+        if (plainText.length != 0) {
             try {
                 axios.post('https://brailliantweb.onrender.com/send-text', {
-                    message: formatted
+                    message: plainText
                 });
             } catch (error) {
                 setMessage("Make sure device is connected.");
@@ -167,6 +181,7 @@ export default function TextToBraille() {
                             onChange={(e) => {
                                 if (e.target.value.length <= 8) {
                                     handleTranslate(e.target.value)
+                                    setText(e.target.value)
                                 }
                             }}
                             type="text"
