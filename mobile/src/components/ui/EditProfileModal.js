@@ -122,22 +122,7 @@ const EditProfileModal = ({ visible, onClose, onSubmit, user }) => {
             />
             {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-            {/* Current Password */}
-            <View style={[styles.passwordWrapper, errors.currentPassword && styles.errorInput]}>
-              <TextInput
-                placeholder="Current Password"
-                value={currentPassword}
-                onChangeText={setCurrentPassword}
-                style={styles.passwordInput}
-                secureTextEntry={!showPassword.current}
-              />
-              <TouchableOpacity onPress={() => toggleVisibility('current')}>
-                <Feather name={showPassword.current ? 'eye' : 'eye-off'} size={20} />
-              </TouchableOpacity>
-            </View>
-            {errors.currentPassword && <Text style={styles.errorText}>{errors.currentPassword}</Text>}
-
-            {/* New Password */}
+           {/* New Password */}
             <View style={[styles.passwordWrapper, errors.newPassword && styles.errorInput]}>
               <TextInput
                 placeholder="New Password"
@@ -166,6 +151,26 @@ const EditProfileModal = ({ visible, onClose, onSubmit, user }) => {
               </TouchableOpacity>
             </View>
             {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+
+            {/* Current Password – only show when newPassword is entered */}
+            {newPassword !== '' && (
+              <View style={[styles.passwordWrapper, errors.currentPassword && styles.errorInput]}>
+                <TextInput
+                  placeholder="Current Password"
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                  style={styles.passwordInput}
+                  secureTextEntry={!showPassword.current}
+                />
+                <TouchableOpacity onPress={() => toggleVisibility('current')}>
+                  <Feather name={showPassword.current ? 'eye' : 'eye-off'} size={20} />
+                </TouchableOpacity>
+              </View>
+            )}
+            {newPassword !== '' && errors.currentPassword && (
+              <Text style={styles.errorText}>{errors.currentPassword}</Text>
+            )}
+
 
             {/* Buttons */}
             <TouchableOpacity
