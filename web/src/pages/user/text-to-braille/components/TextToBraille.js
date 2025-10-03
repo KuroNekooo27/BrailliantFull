@@ -8,8 +8,12 @@ import axios from "axios";
 import SideNavigation from '../../../../global/components/user/SideNavigation';
 import Loading from '../../../../global/components/user/Loading';
 import ErrorHandler from "../../../../global/components/user/ErrorHandler";
+import { useDevice } from "../../devide settings/context/DeviceContext";
 
 export default function TextToBraille() {
+
+    const { characteristic, isConnected } = useDevice();
+
     const page = "Text-to-Braille";
     const searchBar = false;
 
@@ -24,18 +28,19 @@ export default function TextToBraille() {
     const [message, setMessage] = useState('');
 
     const toArduino = async () => {
-        const plainText = text.toLowerCase().replace(/[^a-z]/g, '');
-        if (plainText.length === 0) {
-            setMessage("Please input text before syncing.");
+        if (!isConnected || !characteristic) {
+            setMessage("Make sure device is connected.");
             setErrorHandler(true);
             return;
         }
+
+        const plainText = text.toLowerCase().replace(/[^a-z]/g, '');
         try {
-            await axios.post('https://brailliantweb.onrender.com/send-text', {
-                message: plainText
-            });
-        } catch (error) {
-            setMessage("Make sure device is connected.");
+            const encoder = new TextEncoder();
+            await characteristic.writeValue(encoder.encode(plainText));
+            console.log("Sent:", plainText);
+        } catch (err) {
+            setMessage("Failed to send data to device.");
             setErrorHandler(true);
         }
     };
