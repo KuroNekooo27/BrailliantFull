@@ -51,6 +51,7 @@ export default function TextToBraille() {
     };
 
     useEffect(() => {
+        console.log(isConnected)
         handleTranslate(text);
     }, [text]);
 
