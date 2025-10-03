@@ -3,6 +3,7 @@ import AppRoutes from "./routes";
 import { DeviceProvider } from "./pages/user/devide settings/context/DeviceContext";
 
 function App() {
+  
   return (
     <DeviceProvider>
       <BrowserRouter>
