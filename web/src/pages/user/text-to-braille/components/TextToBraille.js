@@ -27,6 +27,24 @@ export default function TextToBraille() {
     const [errorHandler, setErrorHandler] = useState(false);
     const [message, setMessage] = useState('');
 
+    // const toArduino = async () => {
+    //     if (!isConnected || !characteristic) {
+    //         setMessage("Make sure device is connected.");
+    //         setErrorHandler(true);
+    //         return;
+    //     }
+
+    //     const plainText = text.toLowerCase().replace(/[^a-z]/g, '');
+    //     try {
+    //         const encoder = new TextEncoder();
+    //         await characteristic.writeValue(encoder.encode(plainText));
+    //         console.log("Sent:", plainText);
+    //     } catch (err) {
+    //         setMessage("Failed to send data to device.");
+    //         setErrorHandler(true);
+    //     }
+    // };
+
     const toArduino = async () => {
         if (!isConnected || !characteristic) {
             setMessage("Make sure device is connected.");
@@ -35,15 +53,24 @@ export default function TextToBraille() {
         }
 
         const plainText = text.toLowerCase().replace(/[^a-z]/g, '');
+        if (!plainText) return;
+
         try {
-            const encoder = new TextEncoder();
-            await characteristic.writeValue(encoder.encode(plainText));
+            const data = new TextEncoder().encode(plainText + "\n");
+
+            if (characteristic.properties?.writeWithoutResponse) {
+                await characteristic.writeValueWithoutResponse(data);
+            } else {
+                await characteristic.writeValue(data);
+            }
             console.log("Sent:", plainText);
         } catch (err) {
+            console.error("Send error:", err);
             setMessage("Failed to send data to device.");
             setErrorHandler(true);
         }
     };
+
 
     const handleTranslate = (txt) => {
         const result = convertTextToBrailleDots(txt);
