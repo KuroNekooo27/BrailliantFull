@@ -3,8 +3,8 @@ import { Buffer } from "buffer";
 import { BleManager } from "react-native-ble-plx";
 
 const manager = new BleManager();
-const FALLBACK_SERVICE_UUID = "FFE0";
-const FALLBACK_CHARACTERISTIC_UUID = "FFE1";
+const FALLBACK_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
+const FALLBACK_CHARACTERISTIC_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
 
 /**
  * Hook to send text to the connected Braille device
@@ -40,7 +40,7 @@ export const useSendToBrailleDevice = () => {
         );
         targetChar = {
           service: FALLBACK_SERVICE_UUID,
-          char: FALLBACK_CHARACTERISTIC_UUID,
+          uuid: FALLBACK_CHARACTERISTIC_UUID,
         };
       }
 
@@ -50,7 +50,7 @@ export const useSendToBrailleDevice = () => {
         await manager.writeCharacteristicWithResponseForDevice(
           connectedDevice.id,
           targetChar.service,
-          targetChar.char,
+          targetChar.uuid,
           base64Data
         );
         console.log(`✅ Sent (Base64): "${text}"`);
@@ -64,7 +64,7 @@ export const useSendToBrailleDevice = () => {
       await manager.writeCharacteristicWithResponseForDevice(
         connectedDevice.id,
         targetChar.service,
-        targetChar.char,
+        targetChar.uuid,
         rawData.toString("latin1")
       );
       console.log(`✅ Sent (Raw): "${text}"`);
