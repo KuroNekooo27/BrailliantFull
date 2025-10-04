@@ -4,88 +4,118 @@ import './UploadModal.css'
 import BrailleLetter from "./index";
 import Header from '../../../../global/components/user/Header';
 import convertTextToBrailleDots from "../components/api/translate";
-import axios from "axios"
-import SideNavigation from '../../../../global/components/user/SideNavigation'
+import axios from "axios";
+import SideNavigation from '../../../../global/components/user/SideNavigation';
 import Loading from '../../../../global/components/user/Loading';
 import ErrorHandler from "../../../../global/components/user/ErrorHandler";
+import { useDevice } from "../../devide settings/context/DeviceContext";
 
 export default function TextToBraille() {
-    const page = "Text-to-Braille"
-    const searchBar = false
+
+    const { characteristic, isConnected } = useDevice();
+
+    const page = "Text-to-Braille";
+    const searchBar = false;
 
     const [text, setText] = useState("hello");
     const [loading, setLoading] = useState(false);
     const [brailleDots, setBrailleDots] = useState("");
 
-    const [uploadModal, setUploadModal] = useState(false)
-    const [file, setFile] = useState(false)
+    const [uploadModal, setUploadModal] = useState(false);
+    const [file, setFile] = useState(null);
 
     const [errorHandler, setErrorHandler] = useState(false);
     const [message, setMessage] = useState('');
 
-    // const toArduino = () => {
-    //     const result = convertTextToBrailleDots(text);
-    //     setBrailleDots(result);
-
-    //     const brailleArray = result.split(" ");
-    //     const formatted = brailleArray.map((dots, index) => `M${index + 1}:${dots}`).join('\n');
-
-    //     if (formatted.length != 0) {
-    //         try {
-    //             axios.post('https://brailliantweb.onrender.com/send-text', {
-    //                 message: formatted
-    //             });
-    //         } catch (error) {
-    //             setMessage("Make sure device is connected.");
-    //             setErrorHandler(true)
-    //         }
+    // const toArduino = async () => {
+    //     if (!isConnected || !characteristic) {
+    //         setMessage("Make sure device is connected.");
+    //         setErrorHandler(true);
+    //         return;
     //     }
-    // }
-    
-    const toArduino = () => {
-        const plainText = text.toLowerCase().replace(/[^a-z]/g, '');
-        if (plainText.length != 0) {
-            try {
-                axios.post('https://brailliantweb.onrender.com/send-text', {
-                    message: plainText
-                });
-            } catch (error) {
-                setMessage("Make sure device is connected.");
-                setErrorHandler(true)
-            }
-        }
-    }
 
-    const handleTranslate = (text) => {
-        setText(text)
-        const result = convertTextToBrailleDots(text);
-        setBrailleDots(result);
-    }
+    //     const plainText = text.toLowerCase().replace(/[^a-z]/g, '');
+    //     try {
+    //         const encoder = new TextEncoder();
+    //         await characteristic.writeValue(encoder.encode(plainText));
+    //         console.log("Sent:", plainText);
+    //     } catch (err) {
+    //         setMessage("Failed to send data to device.");
+    //         setErrorHandler(true);
+    //     }
+    // };
 
-
-    useEffect(() => {
-        const result = convertTextToBrailleDots(text);
-        setBrailleDots(result);
-    }, [])
-
-    const toggleUploadModal = () => {
-        setUploadModal(!uploadModal)
-        setFile(false)
-    }
-
-
-    ///////////////
-
-    const handleConvertToBrf = async () => {
-        setLoading(true)
-        if (!file) {
-            setMessage("Please attach a PDF file first.");
-            setErrorHandler(true)
-            setLoading(false)
+    const toArduino = async () => {
+        if (!isConnected || !characteristic) {
+            setMessage("Make sure device is connected.");
+            setErrorHandler(true);
             return;
         }
+
+        const plainText = text.toLowerCase().replace(/[^a-z]/g, '');
+        if (!plainText) return;
+
+        try {
+            const data = new TextEncoder().encode(plainText + "\n");
+
+            if (characteristic.properties?.writeWithoutResponse) {
+                await characteristic.writeValueWithoutResponse(data);
+            } else {
+                await characteristic.writeValue(data);
+            }
+            console.log("Sent:", plainText);
+        } catch (err) {
+            console.error("Send error:", err);
+            setMessage("Failed to send data to device.");
+            setErrorHandler(true);
+        }
+    };
+
+
+    const handleTranslate = (txt) => {
+        const result = convertTextToBrailleDots(txt);
+        setBrailleDots(result);
+    };
+
+    useEffect(() => {
+        console.log(isConnected)
+        handleTranslate(text);
+    }, [text]);
+
+    const toggleUploadModal = () => {
+        setUploadModal(!uploadModal);
+        setFile(null);
+    };
+
+    const handleConvertToBrf = async () => {
+        if (!file) {
+            setMessage("Please attach a PDF file first.");
+            setErrorHandler(true);
+            return;
+        }
+
+        setLoading(true);
         const formData = new FormData();
         formData.append('file', file);
+
+        // const toArduino = () => {
+        //     const result = convertTextToBrailleDots(text);
+        //     setBrailleDots(result);
+
+        //     const brailleArray = result.split(" ");
+        //     const formatted = brailleArray.map((dots, index) => `M${index + 1}:${dots}`).join('\n');
+
+        //     if (formatted.length != 0) {
+        //         try {
+        //             axios.post('https://brailliantweb.onrender.com/send-text', {
+        //                 message: formatted
+        //             });
+        //         } catch (error) {
+        //             setMessage("Make sure device is connected.");
+        //             setErrorHandler(true)
+        //         }
+        //     }
+        // }
 
         try {
             const response = await axios.post(
@@ -93,14 +123,9 @@ export default function TextToBraille() {
                 formData,
                 {
                     responseType: 'blob',
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
+                    headers: { 'Content-Type': 'multipart/form-data' }
                 }
-            )
-                .then(
-                    setLoading(false)
-                );
+            );
 
             const originalName = file.name.replace(/\.pdf$/i, "");
             const brfFileName = `${originalName}.brf`;
@@ -114,30 +139,26 @@ export default function TextToBraille() {
             link.remove();
 
             setUploadModal(false);
-            setFile(false);
-
+            setFile(null);
         } catch (error) {
             setMessage("Failed to convert PDF to BRF.");
-            setErrorHandler(true)
+            setErrorHandler(true);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const toggleErrorHandlerModal = () => {
-        setErrorHandler(!errorHandler)
-    }
+    const toggleErrorHandlerModal = () => setErrorHandler(!errorHandler);
 
     return (
         <div className='container'>
-            {loading && (
-                <Loading />
-            )}
+            {loading && <Loading />}
             {errorHandler && (
                 <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
-            )
-            }
+            )}
             {uploadModal && (
                 <div className='modal'>
-                    <div className='overlay' onClick={toggleUploadModal} ></div>
+                    <div className='overlay' onClick={toggleUploadModal}></div>
                     <div className='upload-modal-content'>
                         <button className='close-modal' onClick={toggleUploadModal}>x</button>
                         <div className='upload-modal'>
@@ -147,11 +168,13 @@ export default function TextToBraille() {
                             <input
                                 id="file-upload"
                                 type="file"
-                                accept='application/pdf'
+                                accept="application/pdf"
                                 required
                                 onChange={(e) => setFile(e.target.files[0])}
                             />
-                            <button className='convert-btn' onClick={handleConvertToBrf}>Convert to BRF</button>
+                            <button className='convert-btn' onClick={handleConvertToBrf}>
+                                Convert to BRF
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -170,7 +193,10 @@ export default function TextToBraille() {
                             <p>Type and sync in simple Braille sentences with the Brailliant RBD!</p>
                         </div>
                         <div>
-                            <button className='brf-btn' onClick={toggleUploadModal}><img src={require('../assets/upload.png')} />PDF to BRF</button>
+                            <button className='brf-btn' onClick={toggleUploadModal}>
+                                <img src={require('../assets/upload.png')} alt="upload" />
+                                PDF to BRF
+                            </button>
                         </div>
                     </div>
                     <div className='ttb-translate'>
@@ -180,8 +206,7 @@ export default function TextToBraille() {
                             value={text}
                             onChange={(e) => {
                                 if (e.target.value.length <= 8) {
-                                    handleTranslate(e.target.value)
-                                    setText(e.target.value)
+                                    setText(e.target.value);
                                 }
                             }}
                             type="text"
@@ -195,10 +220,14 @@ export default function TextToBraille() {
                         </div>
                     </div>
                     <label className='char-limit'>{text.length} / 8 characters</label>
-                    <button className='ttb-syc' onClick={() => toArduino()}><img src={require('../assets/sync.png')} />Sync Text</button>
+                    <button className='ttb-syc' onClick={toArduino}>
+                        <img src={require('../assets/sync.png')} alt="sync" />
+                        Sync Text
+                    </button>
                 </div>
             </div>
         </div>
-
-    )
+    );
 }
+
+

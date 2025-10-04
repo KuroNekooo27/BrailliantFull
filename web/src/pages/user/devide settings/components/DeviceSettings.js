@@ -49,23 +49,24 @@
 //     )
 // }
 
-import React, { useState } from 'react';
 import './DeviceSettings.css'
 import SideNavigation from '../../../../global/components/user/SideNavigation'
 import Header from '../../../../global/components/user/Header';
+import { useDevice } from "../context/DeviceContext";
 
-export default function DeviceSettings({ setCharacteristic }) {
+export default function DeviceSettings() {
+    const { deviceName, setDeviceName, isConnected, setIsConnected, setCharacteristic } = useDevice();
+
     const page = "Device Settings"
     const searchBar = false
 
-    const [deviceName, setDeviceName] = useState("");
-    const [isConnected, setIsConnected] = useState(false);
+
     const SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
     const CHARACTERISTIC_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
 
+
     const handleConnect = async () => {
         try {
-            console.log("Requesting BLE device...");
             const device = await navigator.bluetooth.requestDevice({
                 filters: [{ services: [SERVICE_UUID] }]
             });
@@ -73,20 +74,15 @@ export default function DeviceSettings({ setCharacteristic }) {
             setDeviceName(device.name || "Unknown Device");
 
             const server = await device.gatt.connect();
-            console.log("Connected to GATT server");
-
             const service = await server.getPrimaryService(SERVICE_UUID);
             const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
 
-            // Save to parent (so TextToBraille can use it)
             setCharacteristic(characteristic);
-
             setIsConnected(true);
 
             device.addEventListener("gattserverdisconnected", () => {
                 setIsConnected(false);
                 setCharacteristic(null);
-                console.log("Device disconnected");
             });
 
         } catch (error) {

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import './SideNavigation.css'
 
 export default function SideNavigation() {
@@ -8,28 +9,29 @@ export default function SideNavigation() {
     <div className='sidenav-container'>
       <img className='sidenav-logo' src={require('../../asset/Brailliant-Logo.png')} /><br />
       <label>MENU</label>
-      <a href='/home'><img src={require('../../asset/Home.png')} /> Home</a>
+
+      <Link to='/home'><img src={require('../../asset/Home.png')} /> Home</Link>
 
       {user?.isActivated ? (
-        <a href='/library'><img src={require('../../asset/off.png')} /> Library</a>
+        <Link to='/library'><img src={require('../../asset/off.png')} /> Library</Link>
       ) : (
         <span className="disabled-link"><img src={require('../../asset/off.png')} /> Library</span>
       )}
 
-      <a href='/class'><img src={require('../../asset/Users.png')} /> Class Settings</a>
-      <a href='/text-to-braille'><img src={require('../../asset/Type.png')} /> Text-to-Braille</a>
+      <Link to='/class'><img src={require('../../asset/Users.png')} /> Class Settings</Link>
+      <Link to='/text-to-braille'><img src={require('../../asset/Type.png')} /> Text-to-Braille</Link>
 
       {user?.isActivated ? (
-        <a href='/analytics'><img src={require('../../asset/Bar chart-2.png')} /> Analytics</a>
+        <Link to='/analytics'><img src={require('../../asset/Bar chart-2.png')} /> Analytics</Link>
       ) : (
         <span className="disabled-link"><img src={require('../../asset/Bar chart-2.png')} /> Analytics</span>
       )}
 
       <hr />
-      <a href='/profile'><img src={require('../../asset/User.png')} /> Profile</a>
+      <Link to='/profile'><img src={require('../../asset/User.png')} /> Profile</Link>
       <hr />
       <label>Device: --</label>
-      <a href='/device-settings'><img src={require('../../asset/Settings.png')} /> Device Settings</a>
+      <Link to='/device-settings'><img src={require('../../asset/Settings.png')} /> Device Settings</Link>
     </div>
   )
 }

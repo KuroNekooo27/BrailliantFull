@@ -186,7 +186,14 @@ const getSectionParticipation = async (req, res) => {
 };
 
 
-const axios = require('axios');
+const formatTime = (secs) => {
+    secs = Math.floor(secs); // ensure no decimals
+    const h = String(Math.floor(secs / 3600)).padStart(2, "0");
+    const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "0");
+    const s = String(secs % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
+};
+
 
 
 const summarizeBookProgress = async (req, res) => {
@@ -236,9 +243,9 @@ const summarizeBookProgress = async (req, res) => {
 
         // 5️⃣ Build summary
         const summary = `
-The student has read ${bookReads.length} book(s).
-Total reading time: ${totalTime} seconds.
-Average reading time per book: ${avgTime.toFixed(2)} seconds.
+The student has read ${bookReads.length} book(s). \n
+Total reading time: ${formatTime(totalTime)} \n
+Average reading time per book: ${formatTime(avgTime)} \n
 ${trendMessage}
         `.trim();
 
