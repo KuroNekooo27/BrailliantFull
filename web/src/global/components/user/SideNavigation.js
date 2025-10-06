@@ -1,9 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import './SideNavigation.css'
+import { useDevice } from "../../../pages/user/devide settings/context/DeviceContext";
+
 
 export default function SideNavigation() {
   const user = JSON.parse(localStorage.getItem('users'))
+  const { isConnected } = useDevice();
+
 
   return (
     <div className='sidenav-container'>
@@ -30,7 +34,13 @@ export default function SideNavigation() {
       <hr />
       <Link to='/profile'><img src={require('../../asset/User.png')} /> Profile</Link>
       <hr />
-      <label>Device: --</label>
+      {isConnected ? (
+        <label>Device: Connected</label>
+      ) : (
+        <label>Device: Not Connected</label>
+      )
+      }
+
       <Link to='/device-settings'><img src={require('../../asset/Settings.png')} /> Device Settings</Link>
     </div>
   )
