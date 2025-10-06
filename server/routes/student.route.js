@@ -10,5 +10,7 @@ module.exports = app => {
     app.put('/api/update/student/:id', StudentController.updateStudent)
     app.delete('/api/delete/student/:id', StudentController.deleteStudent)
     app.delete('/api/delete/student/section/:namex', StudentController.deleteStudentBySection)
+    app.delete('/cleanup', StudentController.deleteBookReadWithMissingStudents)
+
     app.get('/api/students/count', StudentController.getStudentCount);
 }

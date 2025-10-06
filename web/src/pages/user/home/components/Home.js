@@ -27,6 +27,7 @@ export default function Home() {
                 setTopBooks(response.data);
                 console.log(response.data)
             })
+
     }, [])
 
     const chartData = {

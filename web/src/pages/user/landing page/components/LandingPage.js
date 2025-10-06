@@ -46,7 +46,6 @@ export default function LandingPage() {
 
     useEffect(() => {
 
-
         const interval = setInterval(() => {
             setCurrentIndex((prevIndex) =>
                 prevIndex === SlidesData.length - 1 ? 0 : prevIndex + 1

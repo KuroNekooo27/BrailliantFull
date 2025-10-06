@@ -1,5 +1,6 @@
 const Student = require("../models/students.model")
 const mongoose = require('mongoose');
+const BookRead = require("../models/book_read.model")
 
 
 const testconnection = (req, res) => {
@@ -15,6 +16,39 @@ const findAllStudent = (req, res) => {
             res.json({ message: 'Something went wrong', err })
         })
 }
+
+const deleteBookReadWithMissingStudents = async (req, res) => {
+    try {
+        // Step 1: Get all existing student _ids
+        const allStudents = await Student.find({}, '_id');
+        const studentIds = allStudents.map(student => student._id.toString());
+
+        // Step 2: Get all BookRead records
+        const allBookReads = await BookRead.find({}, 'book_read_student_id');
+        const bookReadIds = allBookReads.map(book => book.book_read_student_id.toString());
+
+        // Step 3: Identify bookRead records with student IDs not existing in Student
+        const invalidBookReadIds = bookReadIds.filter(id => !studentIds.includes(id));
+
+        if (invalidBookReadIds.length === 0) {
+            return res.json({ message: 'No invalid BookRead records found.' });
+        }
+
+        // Step 4: Delete BookRead records with invalid student references
+        const result = await BookRead.deleteMany({
+            book_read_student_id: { $in: invalidBookReadIds }
+        });
+
+        res.json({
+            message: 'Deleted BookRead records with missing students.',
+            deletedCount: result.deletedCount,
+            invalidStudentIds: invalidBookReadIds
+        });
+    } catch (err) {
+        console.error('Error deleting invalid BookRead records:', err);
+        res.status(500).json({ message: 'Error deleting invalid BookRead records', error: err });
+    }
+};
 
 const findStudentByName = (req, res) => {
     Student.findOne({ name: req.params.namex })
@@ -89,11 +123,11 @@ const createStudent = async (req, res) => {
         const studentDob = new Date(req.body.student_dob);
         const studentAge = calculateAge(studentDob);
 
-        const studentId = await generateUniqueStudentId(); 
+        const studentId = await generateUniqueStudentId();
 
         const studentData = {
             ...req.body,
-            student_id: studentId, 
+            student_id: studentId,
             student_dob: studentDob,
             student_age: studentAge,
             student_section: new mongoose.Types.ObjectId(req.body.student_section),
@@ -130,6 +164,13 @@ const deleteStudent = (req, res) => {
         .catch((err) => {
             res.json({ message: 'Something went wrong with creating', err })
         })
+    BookRead.findById({ book_read_student_id: req.params.id })
+        .then((result) => {
+            res.json({ useRef: result, status: 'Deleted Successfuly' })
+        })
+        .catch((err) => {
+            res.json({ message: 'Something went wrong with creating', err })
+        })
 }
 
 const deleteStudentBySection = (req, res) => {
@@ -152,4 +193,4 @@ const getStudentCount = async (req, res) => {
     }
 };
 
-module.exports = { findAllStudent, testconnection, createStudent, updateStudent, deleteStudent, findStudentByName, getStudentCount, deleteStudentBySection, findStudentByTeacher, findStudentsBySection, findStudentById }
+module.exports = { findAllStudent, testconnection, createStudent, updateStudent, deleteStudent, findStudentByName, getStudentCount, deleteStudentBySection, findStudentByTeacher, findStudentsBySection, findStudentById, deleteBookReadWithMissingStudents}

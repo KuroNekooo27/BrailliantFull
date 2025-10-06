@@ -183,7 +183,7 @@ export default function AdminEditBooks() {
                             <div className='aeb-right-container'>
                                 <label>Title</label>
                                 <input
-                                    required
+                                    disabled
                                     type='text'
                                     placeholder='Enter book title here'
                                     value={newBook.book_title}

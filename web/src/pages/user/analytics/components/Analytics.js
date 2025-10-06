@@ -70,6 +70,7 @@ export default function Analytics() {
         axios.get('https://brailliantweb.onrender.com/top-books-avg')
             .then((response) => {
                 setTopBooksAvg(response.data);
+                console.log(response.data)
             });
         axios.get(`https://brailliantweb.onrender.com/participation-rate/${user?._id}`)
             .then((response) => {
@@ -165,7 +166,7 @@ export default function Analytics() {
                                                     onClick={() => {
                                                         navigate('/book/detail', { state: { book: book } });
                                                     }}>
-                                                    <span>{index + 1}. {book.book_title}</span>  {book.book_count} views
+                                                    <span>{index + 1}. {book.book_title}</span>  {book.book_count} sessions
                                                 </li>
                                             ))
                                         ) : (

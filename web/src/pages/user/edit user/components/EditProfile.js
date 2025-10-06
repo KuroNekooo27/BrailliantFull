@@ -202,7 +202,7 @@ export default function EditProfile() {
             if (editUser.user_password !== cpassword) {
                 setMessage("Password does not match");
                 setErrorHandler(true)
-                setLoading(true)
+                setLoading(false)
                 return
             }
             const response = await axios.put('https://brailliantweb.onrender.com/api/update-password', {
@@ -212,6 +212,7 @@ export default function EditProfile() {
 
             setMessage("Password updated successfully");
             setErrorHandler(true)
+            setLoading(false)
             setActiveForm('profile');
             setEditUser({ ...editUser, user_password: '' });
             setCpassword('');
@@ -222,7 +223,7 @@ export default function EditProfile() {
                 at_action: 'Password Changed',
             };
             await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
-            setLoading(false)
+
 
 
         } catch (error) {
@@ -243,7 +244,7 @@ export default function EditProfile() {
             return;
         }
         if (editUser.user_password !== cpassword) {
-            setMessage("Passwords do not match.");
+            setMessage("Invalid password.");
             setErrorHandler(true)
             setLoading(false)
 
@@ -262,7 +263,6 @@ export default function EditProfile() {
                 password: editUser.user_password
             })
         } catch (error) {
-
             return
         }
         setLoading(false)
@@ -298,7 +298,7 @@ export default function EditProfile() {
             setEditUser(updatedUser);
             setCpassword('');
             setActiveForm('profile');
-            navigate(-1);
+
 
             const newAudit = {
                 at_user: cemail,
@@ -321,7 +321,7 @@ export default function EditProfile() {
                 }
             };
             await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
-
+            navigate(-1);
         } catch (error) {
             setMessage("Incorrect password!");
             setErrorHandler(true)

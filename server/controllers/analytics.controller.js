@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const getReadsPerSection = async (req, res) => {
     try {
-        const userId = req.params.id; // <-- passed from route
+        const userId = req.params.id;
         const result = await BookRead.aggregate([
             // Join BookRead → Student
             {
@@ -96,6 +96,7 @@ const getTopBooksWithAvgTime = async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 };
+
 
 
 

@@ -33,6 +33,7 @@ body.active-modal {
 }
 
 .otpl-head {
+    text-align: center;
     font-weight: bold;
     font-size: 27px;
     color: black;
