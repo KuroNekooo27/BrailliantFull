@@ -1,13 +1,12 @@
 import { useDevice } from "../../context/DeviceContext";
 import { Buffer } from "buffer";
-import { BleManager } from "react-native-ble-plx";
+import { Alert } from "react-native";
 
-const manager = new BleManager();
-const FALLBACK_SERVICE_UUID = "FFE0";
-const FALLBACK_CHARACTERISTIC_UUID = "FFE1";
+const FALLBACK_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
+const FALLBACK_CHARACTERISTIC_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
 
 /**
- * Hook to send text to the connected Braille device
+ * Hook to send text to the connected Braille device (AT-09)
  */
 export const useSendToBrailleDevice = () => {
   const { connectedDevice } = useDevice();
@@ -21,57 +20,56 @@ export const useSendToBrailleDevice = () => {
 
       await connectedDevice.discoverAllServicesAndCharacteristics();
 
-      let targetChar = null;
+      // Encode to Base64
+      const base64Data = Buffer.from(text+".", "utf-8").toString("base64");
 
-      // Try to dynamically find a writable characteristic
+      // ✅ Use writeWithoutResponse (AT-09/HM-10 requirement)
+      try {
+        await connectedDevice.writeCharacteristicWithoutResponseForService(
+          FALLBACK_SERVICE_UUID,
+          FALLBACK_CHARACTERISTIC_UUID,
+          base64Data
+        );
+        Alert.alert("✅ Success", `Sent via FFE0/FFE1: "${text}"`);
+        return true;
+      } catch (ffeError) {
+        Alert.alert("⚠️ FFE0/FFE1 Failed", ffeError.message || String(ffeError));
+        console.warn("FFE0/FFE1 write failed:", ffeError);
+      }
+
+      // 🔍 Fallback → search all services for writable characteristic
+      let targetChar = null;
       const services = await connectedDevice.services();
+
       for (const service of services) {
         const characteristics = await service.characteristics();
         targetChar = characteristics.find(
           (c) => c.isWritableWithResponse || c.isWritableWithoutResponse
         );
-        if (targetChar) break;
+        if (targetChar) {
+          console.log("✅ Found writable:", targetChar.uuid, "in service:", service.uuid);
+          break;
+        }
       }
 
-      // Fallback to known FFE1 characteristic if none found
       if (!targetChar) {
-        console.warn(
-          "⚠️ No writable characteristic found dynamically, using fallback 0xFFE1"
-        );
-        targetChar = {
-          service: FALLBACK_SERVICE_UUID,
-          char: FALLBACK_CHARACTERISTIC_UUID,
-        };
+        Alert.alert("❌ Error", "No writable characteristic found");
+        return false;
       }
 
-      // Try Base64 first
-      const base64Data = Buffer.from(text, "utf-8").toString("base64");
-      try {
-        await manager.writeCharacteristicWithResponseForDevice(
-          connectedDevice.id,
-          targetChar.service,
-          targetChar.char,
-          base64Data
-        );
-        console.log(`✅ Sent (Base64): "${text}"`);
-        return true;
-      } catch (base64Error) {
-        console.warn("⚠️ Base64 send failed, retrying as raw text...", base64Error);
-      }
-
-      // Fallback → send as raw bytes
-      const rawData = Buffer.from(text, "utf-8");
-      await manager.writeCharacteristicWithResponseForDevice(
-        connectedDevice.id,
-        targetChar.service,
-        targetChar.char,
-        rawData.toString("latin1")
+      // Try sending again via discovered characteristic
+      await connectedDevice.writeCharacteristicWithoutResponseForService(
+        targetChar.serviceUUID,
+        targetChar.uuid,
+        base64Data
       );
-      console.log(`✅ Sent (Raw): "${text}"`);
+
+      Alert.alert("✅ Success", `Sent via dynamic char: "${text}"`);
       return true;
 
     } catch (err) {
-      console.error("❌ Failed to send to Braille device:", err.message || err);
+      Alert.alert("❌ Failed", err.message || String(err));
+      console.error("❌ Failed to send:", err);
       return false;
     }
   };
