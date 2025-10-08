@@ -8,38 +8,36 @@ import "./SummaryModal.css";
 import Loading from '../../../../global/components/user/Loading';
 import './TextToBraille.css';
 import './ConfirmationModal.css';
-
 import convertTextToBrailleDots from "../components/api/translate";
 import BrailleLetter from "./index";
+import { useDevice } from "../../devide settings/context/DeviceContext";
+import ErrorHandler from "../../../../global/components/user/ErrorHandler";
 
 export default function BookSession() {
     const navigate = useNavigate();
     const location = useLocation();
     const { book, studentId } = location.state;
     const selectedBook = book.book;
-
+    const { characteristic, isConnected } = useDevice();
     const [confirmationModal, setConfirmationModal] = useState(false);
     const [summaryModal, setSummaryModal] = useState(false);
-
+    const [errorHandler, setErrorHandler] = useState(false);
+    const [message, setMessage] = useState('');
     const user = JSON.parse(localStorage.getItem('users'));
     if (!user) navigate(-1);
-
     const [student, setStudent] = useState({});
     const [loading, setLoading] = useState(false);
     const [brailleDots, setBrailleDots] = useState("");
     const [bookData, setBookData] = useState({});
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [chunks, setChunks] = useState([]); // store chunk objects
-    const [words, setWords] = useState([]); // store full words
-
+    const [chunks, setChunks] = useState([]);
+    const [words, setWords] = useState([]);
     const CHUNK_SIZE = 8;
     const currentChunkObj = chunks[currentIndex] || { part: "", wordIndex: 0, start: 0, end: 0 };
 
-    // Smart chunking: keep track of wordIndex and slice positions
     function chunkTextWithRefs(text, chunkSize) {
         const words = text.split(/\s+/);
         const chunks = [];
-
         words.forEach((word, wordIndex) => {
             if (word.length <= chunkSize) {
                 chunks.push({ part: word, wordIndex, start: 0, end: word.length });
@@ -54,11 +52,9 @@ export default function BookSession() {
                 }
             }
         });
-
         return { words, chunks };
     }
 
-    // Timer
     const [seconds, setSeconds] = useState(0);
     const [intervalId, setIntervalId] = useState(null);
     useEffect(() => {
@@ -79,11 +75,9 @@ export default function BookSession() {
         return `${h}:${m}:${s}`;
     };
 
-    // Load book text and chunk
     useEffect(() => {
         setLoading(true);
         if (!selectedBook?.book_file) return;
-
         fetch('https://brailliantweb.onrender.com/extract-text', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -95,14 +89,12 @@ export default function BookSession() {
                 const { words, chunks } = chunkTextWithRefs(trimmedText, CHUNK_SIZE);
                 setWords(words);
                 setChunks(chunks);
-
                 if (chunks.length > 0) {
                     setBrailleDots(convertTextToBrailleDots(chunks[0].part));
                 }
                 setLoading(false);
             })
             .catch(err => console.error('Error extracting text:', err));
-
         axios.get(`https://brailliantweb.onrender.com/api/student/${studentId}`)
             .then((res) => setStudent(res.data.student));
     }, []);
@@ -111,6 +103,28 @@ export default function BookSession() {
         if (chunks.length === 0) return;
         setBrailleDots(convertTextToBrailleDots(currentChunkObj.part));
     }, [currentIndex, chunks]);
+
+    const toArduino = async () => {
+        if (!isConnected || !characteristic) {
+            setMessage("Make sure device is connected.");
+            setErrorHandler(true);
+            return;
+        }
+        const plainText = currentChunkObj.part.toLowerCase().replace(/[^a-z]/g, '');
+        if (!plainText) return;
+        try {
+            const data = new TextEncoder().encode(plainText + "\n");
+            if (characteristic.properties?.writeWithoutResponse) {
+                await characteristic.writeValueWithoutResponse(data);
+            } else {
+                await characteristic.writeValue(data);
+            }
+        } catch (err) {
+            console.error("Send error:", err);
+            setMessage("Failed to send data to device.");
+            setErrorHandler(true);
+        }
+    };
 
     const endSession = async () => {
         clearInterval(intervalId);
@@ -127,10 +141,14 @@ export default function BookSession() {
 
     const togggleConfirmationModal = () => setConfirmationModal(!confirmationModal);
     const togggleSummaryModal = () => setSummaryModal(!summaryModal);
+    const toggleErrorHandlerModal = () => setErrorHandler(!errorHandler);
 
     return (
         <div className='container'>
             {loading && <Loading />}
+            {errorHandler && (
+                <ErrorHandler message={message} onClose={toggleErrorHandlerModal} />
+            )}
             {confirmationModal && (
                 <div className='bs-modal'>
                     <div className='bs-confirm-overlay' onClick={togggleConfirmationModal}>
@@ -179,7 +197,6 @@ export default function BookSession() {
                                         <button onClick={() => setCurrentIndex(prev => prev + 1 < chunks.length ? prev + 1 : prev)} disabled={currentIndex + 1 >= chunks.length}><img src={require(`../assets/next.png`)} /></button>
                                     </div>
                                 </div>
-
                                 <div className='highlighted-textarea'>
                                     {words.map((word, idx) => (
                                         <React.Fragment key={idx}>
@@ -197,12 +214,11 @@ export default function BookSession() {
                                     ))}
                                 </div>
                             </div>
-
                             <div className='bs-braille'>
                                 <div className='bs-preview'><label>Only highlighted characters are synced to the display</label></div>
                                 <div className='textarea-braille'>{brailleDots.split(" ").map((word, index) => (<BrailleLetter key={index} dots={word} />))}</div>
                                 <div>
-                                    <button className='bs-sync'>SYNC</button>
+                                    <button className='bs-sync' onClick={toArduino}>SYNC</button>
                                     <button className='bs-end' onClick={togggleConfirmationModal}>END SESSION</button>
                                 </div>
                             </div>
