@@ -156,22 +156,32 @@ const updateStudent = (req, res) => {
         })
 }
 
-const deleteStudent = (req, res) => {
-    Student.findByIdAndDelete({ _id: req.params.id })
-        .then((result) => {
-            res.json({ useRef: result, status: 'Deleted Successfuly' })
-        })
-        .catch((err) => {
-            res.json({ message: 'Something went wrong with creating', err })
-        })
-    BookRead.findById({ book_read_student_id: req.params.id })
-        .then((result) => {
-            res.json({ useRef: result, status: 'Deleted Successfuly' })
-        })
-        .catch((err) => {
-            res.json({ message: 'Something went wrong with creating', err })
-        })
-}
+const deleteStudent = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedStudent = await Student.findByIdAndDelete(id);
+        if (!deletedStudent) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        const deletedBookReads = await BookRead.deleteMany({ book_read_student_id: id });
+
+        res.status(200).json({
+            message: "Student and related book records deleted successfully",
+            deletedStudent,
+            deletedBookReads: deletedBookReads.deletedCount
+        });
+
+    } catch (err) {
+        console.error("Error deleting student:", err);
+        res.status(500).json({
+            message: "Error deleting student or related book reads",
+            error: err.message
+        });
+    }
+};
+
 
 const deleteStudentBySection = (req, res) => {
 
@@ -193,4 +203,4 @@ const getStudentCount = async (req, res) => {
     }
 };
 
-module.exports = { findAllStudent, testconnection, createStudent, updateStudent, deleteStudent, findStudentByName, getStudentCount, deleteStudentBySection, findStudentByTeacher, findStudentsBySection, findStudentById, deleteBookReadWithMissingStudents}
+module.exports = { findAllStudent, testconnection, createStudent, updateStudent, deleteStudent, findStudentByName, getStudentCount, deleteStudentBySection, findStudentByTeacher, findStudentsBySection, findStudentById, deleteBookReadWithMissingStudents }

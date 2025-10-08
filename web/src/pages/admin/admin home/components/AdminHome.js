@@ -32,7 +32,7 @@ export default function AdminHome() {
         axios.get('https://brailliantweb.onrender.com/api/allusers')
             .then((response) => {
                 setAllUsers(response.data);
-                const activated = response.data.users?.filter(user => user.user_status === "Activated").length || 0;
+                const activated = response.data.users?.filter(user => user.isActivated === true).length || 0;
                 setActivatedUsers(activated);
             });
 

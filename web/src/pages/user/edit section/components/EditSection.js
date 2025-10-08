@@ -54,6 +54,8 @@ export default function EditSection() {
     };
 
     const handleDelete = async () => {
+        toggleConfirmation()
+        setLoading(true)
         const newAudit = {
             at_user: users.user_email,
             at_date: new Date(),
@@ -66,8 +68,9 @@ export default function EditSection() {
             }
         };
         await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
-        axios.delete(`https://brailliantweb.onrender.com/api/delete/student/section/${section._id}`)
-        axios.delete(`https://brailliantweb.onrender.com/api/delete/section/${section._id}`)
+        await axios.delete(`https://brailliantweb.onrender.com/api/delete/student/section/${section._id}`)
+        await axios.delete(`https://brailliantweb.onrender.com/api/delete/section/${section._id}`)
+        setLoading(false)
         navigate(-1)
     };
 

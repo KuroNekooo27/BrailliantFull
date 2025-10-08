@@ -84,8 +84,8 @@ export default function EditProfile() {
             setErrorHandler(true)
             return;
         }
-        if (!/^[A-Za-z]+$/.test(user_fname)) {
-            setMessage("First name must only contain letters.");
+        if (!/^[A-Za-z\s'-]+$/.test(user_fname)) {
+            setMessage("First name must only contain letters, spaces, hyphens, or apostrophes.");
             setErrorHandler(true)
             return;
         }
@@ -95,8 +95,8 @@ export default function EditProfile() {
             setErrorHandler(true)
             return;
         }
-        if (!/^[A-Za-z]+$/.test(user_lname)) {
-            setMessage("Last name must only contain letters.");
+        if (!/^[A-Za-z\s'-]+$/.test(user_lname)) {
+            setMessage("Last name must only contain letters, spaces, hyphens, or apostrophes.");
             setErrorHandler(true)
             return;
         }

@@ -9,9 +9,11 @@
 
 .analytics-performance {
     display: flex;
-    margin-top: 80px;
-    gap: 60px;
+    margin-top: 60px;
+    justify-content: space-evenly;
 }
+
+
 
 .analytics-cp {
     margin-bottom: 10px;
@@ -26,8 +28,8 @@
 
 
 .analytics-tb {
-    width: 30%;
     margin-bottom: 10px;
+    width: 500px;
 }
 
 .analytics-tb label {
@@ -40,7 +42,7 @@
 
 .analytics-details {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-around;
     height: 150px;
 }
 
@@ -150,7 +152,9 @@
     border: 2px solid gray;
     border-radius: 30px;
     padding: 20px;
+    box-sizing: border-box;
     background-color: #fefefe;
+    width: 400px;
 }
 
 .analytics-tba label {
@@ -182,4 +186,24 @@
 
 .top-books-average-list li span {
     font-weight: 200;
+}
+
+.export-analytics {
+    border: none;
+    background-color: #101734;
+    color: white;
+    border-radius: 10px;
+    height: 45px;
+    font-weight: bold;
+    font-size: 18px;
+    width: 220px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.export-btn {
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    margin-top: 20px;
 }

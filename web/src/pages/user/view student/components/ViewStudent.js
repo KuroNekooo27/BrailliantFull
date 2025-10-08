@@ -166,12 +166,6 @@ export default function ViewStudent() {
     };
 
     const handleDelete = async () => {
-        axios
-            .delete(`https://brailliantweb.onrender.com/api/delete/student/${selectedStudent._id}`)
-            .then(() => {
-                navigate('/class');
-            })
-
         const newAudit = {
             at_user: users.user_email,
             at_date: new Date(),
@@ -189,7 +183,12 @@ export default function ViewStudent() {
                 }
             }
         };
+
         await axios.post('https://brailliantweb.onrender.com/api/newaudittrail', newAudit);
+        axios.delete(`https://brailliantweb.onrender.com/api/delete/student/${selectedStudent._id}`)
+            .then(() => {
+                navigate('/class');
+            })
     };
 
     const formatTime = (secs) => {

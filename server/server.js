@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use("/files", express.static("files"));
-app.use(morgan('dev')); // HTTP request logger
+app.use(morgan('dev')); 
 
 // Config
 require("./config/mongoose.config");

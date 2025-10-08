@@ -149,18 +149,19 @@ export default function AddStudent() {
             setErrorHandler(true)
             return;
         }
-        if (!/^[A-Za-z]+$/.test(newStudent.student_fname)) {
-            setLoading(false)
-            setMessage("First name must only contain letters.");
-            setErrorHandler(true)
+        if (!/^[A-Za-z\s]+$/.test(newStudent.student_fname)) {
+            setLoading(false);
+            setMessage("First name must only contain letters and spaces.");
+            setErrorHandler(true);
             return;
         }
-        if (!/^[A-Za-z]+$/.test(newStudent.student_lname)) {
-            setLoading(false)
-            setMessage("Last name must only contain letters.");
-            setErrorHandler(true)
+        if (!/^[A-Za-z\s]+$/.test(newStudent.student_lname)) {
+            setLoading(false);
+            setMessage("Last name must only contain letters and spaces.");
+            setErrorHandler(true);
             return;
         }
+
         if (newStudent.student_mi && !/^[A-Za-z]{1}$/.test(newStudent.student_mi)) {
             setLoading(false)
             setMessage("Middle initial must only be a single letter.");
