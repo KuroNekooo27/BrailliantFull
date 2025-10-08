@@ -3,9 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   Image,
   TouchableOpacity,
+  ScrollView,
   RefreshControl,
   Dimensions,
   ActivityIndicator,
@@ -13,12 +13,13 @@ import {
 import CustomHeader from '../ui/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import RNPickerSelect from 'react-native-picker-select';
 import { AuthContext } from '../../context/AuthContext';
 
 const AllBooksScreen = () => {
   const navigation = useNavigation();
   const [books, setBooks] = useState([]);
-  const [genres, setGenres] = useState([]); // dynamic genres
+  const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ const AllBooksScreen = () => {
       const bookList = response.data.books || [];
       setBooks(bookList);
 
-      // Extract unique genres (filter out null or undefined)
+      // Extract unique genres
       const uniqueGenres = [...new Set(bookList.map(b => b.book_genre).filter(Boolean))];
       setGenres(uniqueGenres);
     } catch (err) {
@@ -51,7 +52,6 @@ const AllBooksScreen = () => {
     fetchBooks();
   }, [fetchBooks]);
 
-  // Filtered book list
   const filteredBooks = useMemo(() => {
     return books.filter(b =>
       selectedGenre ? b.book_genre === selectedGenre : true
@@ -71,89 +71,60 @@ const AllBooksScreen = () => {
 
   return (
     <>
-      <CustomHeader title="Library" onBack={() => navigation.goBack()} image={state.user?.user_img} />
-      <View style={styles.container}>
+      <CustomHeader
+        title="Library"
+        onBack={() => navigation.goBack()}
+        image={state.user?.user_img}
+      />
+
+      {/* Sticky Dropdown Section */}
+      <View style={styles.stickyDropdownContainer}>
+        <Text style={styles.filterLabel}>Select Genre:</Text>
+        <RNPickerSelect
+          onValueChange={(value) => setSelectedGenre(value)}
+          value={selectedGenre}
+          items={[
+            { label: 'All', value: null },
+            ...genres.map((g) => ({ label: g, value: g })),
+          ]}
+          placeholder={{ label: 'Choose a genre...', value: null }}
+          style={pickerSelectStyles}
+          useNativeAndroidPickerStyle={false}
+        />
+      </View>
+
+      {/* Scrollable Grid */}
+      <ScrollView
+        style={styles.scrollContainer}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
         <View style={styles.content}>
-          <View style={styles.headerRow}>
-            <Text style={styles.sectionTitle}>All Books</Text>
-          </View>
+          <Text style={styles.sectionTitle}>All Books</Text>
 
-          {/* ✅ Dynamic Genre Filters */}
-          <View style={styles.filters}>
-            <Text style={styles.filterLabel}>Genres:</Text>
-
-            {/* "All" filter */}
-            <TouchableOpacity
-              style={[
-                styles.filterChip,
-                selectedGenre === null && styles.filterChipSelected,
-              ]}
-              onPress={() => setSelectedGenre(null)}
-            >
-              <Text
-                style={[
-                  styles.filterText,
-                  selectedGenre === null && styles.filterTextSelected,
-                ]}
-              >
-                All
-              </Text>
-            </TouchableOpacity>
-
-            {genres.map((genre) => {
-              const isSelected = selectedGenre === genre;
-              return (
-                <TouchableOpacity
-                  key={genre}
-                  style={[
-                    styles.filterChip,
-                    isSelected && styles.filterChipSelected,
-                  ]}
-                  onPress={() => setSelectedGenre(genre)}
-                >
-                  <Text
-                    style={[
-                      styles.filterText,
-                      isSelected && styles.filterTextSelected,
-                    ]}
+          <View style={styles.grid}>
+            {filteredBooks.length > 0 ? (
+              <View style={styles.gridWrapper}>
+                {filteredBooks.map((item) => (
+                  <TouchableOpacity
+                    key={item._id}
+                    style={styles.bookItem}
+                    onPress={() => navigation.navigate('BookDetails', { book: item })}
                   >
-                    {genre}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* Book Grid */}
-          <FlatList
-            data={filteredBooks}
-            numColumns={3}
-            keyExtractor={(item) => item._id}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            contentContainerStyle={[styles.grid, { paddingBottom: 100 }]}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.bookItem}
-                onPress={() => navigation.navigate('BookDetails', { book: item })}
-              >
-                <View style={styles.shadowWrapper}>
-                  <Image
-                    source={
-                      item.book_img
-                        ? { uri: item.book_img }
-                        : require('../../../assets/noimg.png')
-                    }
-                    style={styles.bookImage}
-                    onError={(e) =>
-                      console.log('Image loading error:', e.nativeEvent.error)
-                    }
-                  />
-                </View>
-              </TouchableOpacity>
-            )}
-            ListEmptyComponent={
+                    <View style={styles.shadowWrapper}>
+                      <Image
+                        source={
+                          item.book_img
+                            ? { uri: item.book_img }
+                            : require('../../../assets/noimg.png')
+                        }
+                        style={styles.bookImage}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ) : (
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyText}>
                   {selectedGenre
@@ -161,10 +132,10 @@ const AllBooksScreen = () => {
                     : 'No books available.'}
                 </Text>
               </View>
-            }
-          />
+            )}
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 };
@@ -175,7 +146,7 @@ const { width } = Dimensions.get('window');
 const imageWidth = (width - 48) / 3;
 
 const styles = StyleSheet.create({
-  container: {
+  scrollContainer: {
     flex: 1,
     backgroundColor: '#f2f2f2',
   },
@@ -191,53 +162,33 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: width < 600 ? 20 : 24,
     fontWeight: 'bold',
+    marginBottom: 8,
   },
-  filters: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginVertical: 12,
-    alignItems: 'center',
+  stickyDropdownContainer: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    zIndex: 100,
+    elevation: 6,
   },
   filterLabel: {
-    marginRight: 8,
     fontWeight: 'bold',
-  },
-  filterChip: {
-    backgroundColor: '#e5e5ea',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginRight: 8,
-    marginTop: 4,
-  },
-  filterChipSelected: {
-    backgroundColor: '#007AFF',
-  },
-  filterText: {
-    fontSize: 12,
+    marginBottom: 6,
     color: '#333',
-  },
-  filterTextSelected: {
-    color: '#fff',
-    fontWeight: 'bold',
   },
   grid: {
     paddingTop: 8,
   },
+  gridWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
   bookItem: {
     width: imageWidth,
     padding: 4,
-  },
-  bookImage: {
-    width: '100%',
-    height: imageWidth * 1.5,
-    borderRadius: 8,
-    resizeMode: 'cover',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   shadowWrapper: {
     backgroundColor: '#fff',
@@ -248,15 +199,44 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
+  bookImage: {
+    width: '100%',
+    height: imageWidth * 1.5,
+    borderRadius: 8,
+    resizeMode: 'cover',
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 40,
   },
   emptyText: {
     textAlign: 'center',
     color: '#666',
     fontSize: 16,
+  },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    color: '#333',
+    backgroundColor: '#fff',
+  },
+  inputAndroid: {
+    fontSize: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    color: '#333',
+    backgroundColor: '#fff',
   },
 });
