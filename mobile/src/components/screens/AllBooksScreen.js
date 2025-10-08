@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect, useContext} from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -8,28 +8,32 @@ import {
   TouchableOpacity,
   RefreshControl,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import CustomHeader from '../ui/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
-import axios from "axios"
+import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
-
-const filters = ['Filipino', 'English', 'Uploads'];
 
 const AllBooksScreen = () => {
   const navigation = useNavigation();
   const [books, setBooks] = useState([]);
+  const [genres, setGenres] = useState([]); // dynamic genres
+  const [selectedGenre, setSelectedGenre] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { state, setState } = useContext(AuthContext);
+  const { state } = useContext(AuthContext);
 
   const fetchBooks = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`https://brailliantweb.onrender.com/api/allbooks`);
-      setBooks(response.data.books);
+      const response = await axios.get('https://brailliantweb.onrender.com/api/allbooks');
+      const bookList = response.data.books || [];
+      setBooks(bookList);
+
+      // Extract unique genres (filter out null or undefined)
+      const uniqueGenres = [...new Set(bookList.map(b => b.book_genre).filter(Boolean))];
+      setGenres(uniqueGenres);
     } catch (err) {
       console.error('Error fetching books:', err);
     } finally {
@@ -47,35 +51,12 @@ const AllBooksScreen = () => {
     fetchBooks();
   }, [fetchBooks]);
 
-  const toggleFilter = (filter) => {
-    setSelectedFilters((prev) =>
-      prev.includes(filter)
-        ? prev.filter((f) => f !== filter)
-        : [...prev, filter]
-    );
-  };
-
-  // Filter books based on selected filters
+  // Filtered book list
   const filteredBooks = useMemo(() => {
-    if (selectedFilters.length === 0) return books;
-    
-    return books.filter((book) => {
-      // Check if book matches any of the selected filters
-      return selectedFilters.some(filter => {
-        switch(filter) {
-          case 'Filipino':
-            return book.language === 'Filipino' || book.category === 'Filipino';
-          case 'English':
-            return book.language === 'English' || book.category === 'English';
-          case 'Uploads':
-            // Assuming 'Uploads' filter shows user-uploaded books
-            return book.uploadedBy === state.user?.id;
-          default:
-            return book.category === filter || book.language === filter;
-        }
-      });
-    });
-  }, [books, selectedFilters, state.user]);
+    return books.filter(b =>
+      selectedGenre ? b.book_genre === selectedGenre : true
+    );
+  }, [books, selectedGenre]);
 
   if (loading) {
     return (
@@ -97,18 +78,38 @@ const AllBooksScreen = () => {
             <Text style={styles.sectionTitle}>All Books</Text>
           </View>
 
+          {/* ✅ Dynamic Genre Filters */}
           <View style={styles.filters}>
-            <Text style={styles.filterLabel}>Filters:</Text>
-            {filters.map((filter) => {
-              const isSelected = selectedFilters.includes(filter);
+            <Text style={styles.filterLabel}>Genres:</Text>
+
+            {/* "All" filter */}
+            <TouchableOpacity
+              style={[
+                styles.filterChip,
+                selectedGenre === null && styles.filterChipSelected,
+              ]}
+              onPress={() => setSelectedGenre(null)}
+            >
+              <Text
+                style={[
+                  styles.filterText,
+                  selectedGenre === null && styles.filterTextSelected,
+                ]}
+              >
+                All
+              </Text>
+            </TouchableOpacity>
+
+            {genres.map((genre) => {
+              const isSelected = selectedGenre === genre;
               return (
                 <TouchableOpacity
-                  key={filter}
+                  key={genre}
                   style={[
                     styles.filterChip,
                     isSelected && styles.filterChipSelected,
                   ]}
-                  onPress={() => toggleFilter(filter)}
+                  onPress={() => setSelectedGenre(genre)}
                 >
                   <Text
                     style={[
@@ -116,13 +117,14 @@ const AllBooksScreen = () => {
                       isSelected && styles.filterTextSelected,
                     ]}
                   >
-                    {filter}
+                    {genre}
                   </Text>
                 </TouchableOpacity>
               );
             })}
           </View>
 
+          {/* Book Grid */}
           <FlatList
             data={filteredBooks}
             numColumns={3}
@@ -138,12 +140,15 @@ const AllBooksScreen = () => {
               >
                 <View style={styles.shadowWrapper}>
                   <Image
-                    source={item.book_img 
-                      ? { uri: item.book_img } 
-                      : require('../../../assets/noimg.png')
+                    source={
+                      item.book_img
+                        ? { uri: item.book_img }
+                        : require('../../../assets/noimg.png')
                     }
                     style={styles.bookImage}
-                    onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
+                    onError={(e) =>
+                      console.log('Image loading error:', e.nativeEvent.error)
+                    }
                   />
                 </View>
               </TouchableOpacity>
@@ -151,8 +156,8 @@ const AllBooksScreen = () => {
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyText}>
-                  {selectedFilters.length > 0 
-                    ? 'No books match the selected filters.' 
+                  {selectedGenre
+                    ? 'No books found for this genre.'
                     : 'No books available.'}
                 </Text>
               </View>
