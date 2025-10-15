@@ -5,6 +5,7 @@ import './BookSession.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./SummaryModal.css";
+import "./SpeedModal.css";
 import Loading from '../../../../global/components/user/Loading';
 import './TextToBraille.css';
 import './ConfirmationModal.css';
@@ -21,6 +22,7 @@ export default function BookSession() {
     const { characteristic, isConnected } = useDevice();
     const [confirmationModal, setConfirmationModal] = useState(false);
     const [summaryModal, setSummaryModal] = useState(false);
+    const [speedModal, setSpeedModal] = useState(false);
     const [errorHandler, setErrorHandler] = useState(false);
     const [message, setMessage] = useState('');
     const user = JSON.parse(localStorage.getItem('users'));
@@ -32,6 +34,7 @@ export default function BookSession() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [chunks, setChunks] = useState([]);
     const [words, setWords] = useState([]);
+    const [brailleSpeed, setBrailleSpeed] = useState(5);
     const CHUNK_SIZE = 8;
     const currentChunkObj = chunks[currentIndex] || { part: "", wordIndex: 0, start: 0, end: 0 };
 
@@ -142,6 +145,7 @@ export default function BookSession() {
     const togggleConfirmationModal = () => setConfirmationModal(!confirmationModal);
     const togggleSummaryModal = () => setSummaryModal(!summaryModal);
     const toggleErrorHandlerModal = () => setErrorHandler(!errorHandler);
+    const toggleSpeedModal = () => setSpeedModal(!speedModal);
 
     return (
         <div className='container'>
@@ -179,6 +183,30 @@ export default function BookSession() {
                     </div>
                 </div>
             )}
+            {speedModal && (
+                <div className='speed-modal'>
+                    <div className='speed-overlay'>
+                        <div className='speed-modal-content'>
+                            <div className='speed'>
+                                <label className='speed-head'>Adjust Braille Speed</label>
+                                <input
+                                    type="range"
+                                    id="my-range-slider"
+                                    min="1"
+                                    max="10"
+                                    value={brailleSpeed}
+                                    onChange={(e) => setBrailleSpeed(e.target.value)}
+                                />
+                                <label>
+                                    Current Speed: {brailleSpeed}
+                                </label>
+                                <button className='speed-btn' onClick={toggleSpeedModal}>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <SideNavigation />
             <div className='bs-container'>
                 <div className='bs-header'>
@@ -192,7 +220,10 @@ export default function BookSession() {
                         <div className='bs-translate'>
                             <div className='bs-text'>
                                 <div className='bs-page'>
+                                    <button className='bs-speed' onClick={toggleSpeedModal}>Adjust Braille Speed</button>
+
                                     <div className='bs-page-button'>
+
                                         <button onClick={() => setCurrentIndex(prev => Math.max(prev - 1, 0))} disabled={currentIndex === 0}><img src={require(`../assets/prev.png`)} /></button>
                                         <button onClick={() => setCurrentIndex(prev => prev + 1 < chunks.length ? prev + 1 : prev)} disabled={currentIndex + 1 >= chunks.length}><img src={require(`../assets/next.png`)} /></button>
                                     </div>
@@ -218,8 +249,8 @@ export default function BookSession() {
                                 <div className='bs-preview'><label>Only highlighted characters are synced to the display</label></div>
                                 <div className='textarea-braille'>{brailleDots.split(" ").map((word, index) => (<BrailleLetter key={index} dots={word} />))}</div>
                                 <div>
-                                    <button className='bs-sync' onClick={toArduino}>SYNC</button>
-                                    <button className='bs-end' onClick={togggleConfirmationModal}>END SESSION</button>
+                                    <button className='bs-sync' onClick={toArduino}>Sync</button>
+                                    <button className='bs-end' onClick={togggleConfirmationModal}>End Session</button>
                                 </div>
                             </div>
                         </div>

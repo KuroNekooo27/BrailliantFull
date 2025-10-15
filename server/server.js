@@ -43,7 +43,6 @@ app.use('/api/pdf', pdfRoutes);
 
 
 
-
 // Multer setup (temp storage for uploaded files)
 const upload = multer({ dest: "uploads/" });
 

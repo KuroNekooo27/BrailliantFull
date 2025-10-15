@@ -1,0 +1,138 @@
+body.active-modal {
+  overflow-y: hidden;
+}
+
+/* Overlay */
+.speed-modal,
+.speed-overlay {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
+
+.speed-overlay {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+/* Modal Box */
+.speed-modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  border-radius: 20px;
+  width: 420px;
+  padding: 40px 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Content Layout */
+.speed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Heading */
+.speed-head {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* Range Input Styling */
+#my-range-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  background: #ddd;
+  outline: none;
+  margin: 15px 0;
+  transition: background 0.3s ease;
+}
+
+#my-range-slider:hover {
+  background: #ccc;
+}
+
+/* Custom thumb (slider handle) */
+#my-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ff8b47;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#my-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  background-color: #ff9b5e;
+}
+
+#my-range-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ff8b47;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#my-range-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  background-color: #ff9b5e;
+}
+
+/* Label under slider */
+.speed label {
+  font-size: 16px;
+  color: #444;
+  text-align: center;
+}
+
+/* Button */
+.speed-btn {
+  width: 60%;
+  height: 45px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ff8b47;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: all 0.3s ease;
+}
+
+.speed-btn:hover {
+  background-color: #ff9b5e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
