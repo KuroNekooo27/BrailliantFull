@@ -229,6 +229,7 @@ export default function TextToBraille() {
                                 <img src={require('../assets/upload.png')} alt="upload" />
                                 PDF to BRF
                             </button>
+                            <button onClick={toggleSpeedModal} className='ttb-speed'>Adjust Braille Speed</button>
                         </div>
                     </div>
                     <div className='ttb-translate'>
@@ -256,7 +257,6 @@ export default function TextToBraille() {
                         <img src={require('../assets/sync.png')} alt="sync" />
                         Sync Text
                     </button>
-                    <button onClick={toggleSpeedModal} className='ttb-speed'>Adjust Braille Speed</button>
                 </div>
             </div>
         </div>

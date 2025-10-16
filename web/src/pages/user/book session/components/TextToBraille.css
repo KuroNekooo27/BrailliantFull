@@ -45,7 +45,7 @@
     width: 50%
 }
 
-.ttb-body button {
+/* .ttb-body button {
     border: none;
     color: black;
     background-color: #ff8b47;
@@ -60,7 +60,7 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-}
+} */
 
 
 .label {

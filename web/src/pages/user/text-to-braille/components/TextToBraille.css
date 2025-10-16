@@ -63,6 +63,7 @@
     border-radius: 10px;
     font-size: 20px;
     margin-top: 20px;
+    margin-right: 30px;
     float: right;
     cursor: pointer;
     display: flex;
@@ -70,7 +71,7 @@
     align-items: center;
 }
 
-.ttb-syc {
+.ttb-sync {
     border: none;
     color: black;
     background-color: #ff8b47;
@@ -160,7 +161,7 @@
     background-color: #374151;
 }
 
-.ttb-btns{
+.ttb-btns {
     background-color: #38b2ac;
     display: flex;
 }
