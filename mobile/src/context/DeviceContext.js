@@ -8,6 +8,7 @@ export const DeviceProvider = ({ children }) => {
   const [deviceCharacteristics, setDeviceCharacteristics] = useState([]);
   const [writeService, setWriteService] = useState(null);
   const [writeCharacteristic, setWriteCharacteristic] = useState(null);
+  const [brailleSeconds, setBrailleSeconds] = useState(1750); 
 
   return (
     <DeviceContext.Provider
@@ -22,6 +23,8 @@ export const DeviceProvider = ({ children }) => {
         setWriteService,
         writeCharacteristic,
         setWriteCharacteristic,
+        brailleSeconds,
+        setBrailleSeconds,
       }}
     >
       {children}

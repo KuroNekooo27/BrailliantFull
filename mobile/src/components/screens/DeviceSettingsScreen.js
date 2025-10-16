@@ -19,6 +19,7 @@ import CustomHeader from '../ui/CustomHeader';
 import DisconnectionModal from '../ui/DisconnectionModal';
 import { Buffer } from 'buffer';
 import { useDevice } from '../../context/DeviceContext';
+import Slider from '@react-native-community/slider';
 
 const { width } = Dimensions.get('window');
 
@@ -43,6 +44,8 @@ const {
   setDeviceCharacteristics,
   setWriteService,
   setWriteCharacteristic,
+  brailleSeconds,
+  setBrailleSeconds
 } = useDevice();
 
 
@@ -248,6 +251,22 @@ return (
             </Text>
           </View>
 
+           <View style={styles.sliderContainer}>
+              <Text style={styles.sliderTitle}>Braille Display Duration</Text>
+              <Slider
+                style={styles.slider}
+                minimumValue={500}
+                maximumValue={5000}
+                step={50}
+                value={brailleSeconds}
+                onValueChange={setBrailleSeconds}
+                minimumTrackTintColor="#007bff"
+                maximumTrackTintColor="#ccc"
+                thumbTintColor="#007bff"
+              />
+              <Text style={styles.sliderValue}>{brailleSeconds.toFixed(1)} seconds</Text>
+            </View>
+
           <TouchableOpacity style={styles.disconnectButton} onPress={disconnectDevice}>
             <Text style={styles.disconnectText}>Disconnect</Text>
           </TouchableOpacity>
@@ -382,5 +401,25 @@ closeText: {
   textAlign: 'center',
   color: '#007bff',
   fontWeight: 'bold',
+},
+sliderContainer: {
+  width: '90%',
+  alignItems: 'center',
+  marginBottom: 24,
+},
+sliderTitle: {
+  fontSize: width < 600 ? 16 : 18,
+  fontWeight: '600',
+  marginBottom: 8,
+  color: '#333',
+},
+slider: {
+  width: '100%',
+  height: 40,
+},
+sliderValue: {
+  fontSize: width < 600 ? 14 : 16,
+  color: '#555',
+  marginTop: 6,
 },
 });
