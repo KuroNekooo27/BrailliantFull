@@ -116,29 +116,7 @@ export default function BookSession() {
         const plainText = currentChunkObj.part.toLowerCase().replace(/[^a-z]/g, '');
         if (!plainText) return;
         try {
-            const data = new TextEncoder().encode(plainText + "\n");
-            if (characteristic.properties?.writeWithoutResponse) {
-                await characteristic.writeValueWithoutResponse(data);
-            } else {
-                await characteristic.writeValue(data);
-            }
-        } catch (err) {
-            console.error("Send error:", err);
-            setMessage("Failed to send data to device.");
-            setErrorHandler(true);
-        }
-    };
-
-    const timeInterval = async (secs) => {
-        if (!isConnected || !characteristic) {
-            setMessage("Make sure device is connected.");
-            setErrorHandler(true);
-            return;
-        }
-        const plainText = currentChunkObj.part.toLowerCase().replace(/[^a-z]/g, '');
-        if (!plainText) return;
-        try {
-            const data = new TextEncoder().encode(plainText + "|" + secs + "\n");
+            const data = new TextEncoder().encode(plainText + "|" + brailleSeconds + "\n");
             if (characteristic.properties?.writeWithoutResponse) {
                 await characteristic.writeValueWithoutResponse(data);
             } else {
@@ -221,7 +199,6 @@ export default function BookSession() {
                                     onChange={(e) => {
                                         const value = Number(e.target.value);
                                         setBrailleSeconds(value);
-                                        timeInterval(value);
                                     }}
                                 />
                                 <label>
