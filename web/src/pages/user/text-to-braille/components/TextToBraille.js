@@ -220,10 +220,12 @@ export default function TextToBraille() {
                         </div>
                     </div>
                     <label className='char-limit'>{text.length} / 8 characters</label>
+
                     <button className='ttb-syc' onClick={toArduino}>
                         <img src={require('../assets/sync.png')} alt="sync" />
                         Sync Text
                     </button>
+                    <button className='ttb-syc'>Adjust Braille Speed</button>
                 </div>
             </div>
         </div>

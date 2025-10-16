@@ -34,7 +34,7 @@ export default function BookSession() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [chunks, setChunks] = useState([]);
     const [words, setWords] = useState([]);
-    const [brailleSpeed, setBrailleSpeed] = useState(5);
+    const [brailleSeconds, setBrailleSeconds] = useState(1750);
     const CHUNK_SIZE = 8;
     const currentChunkObj = chunks[currentIndex] || { part: "", wordIndex: 0, start: 0, end: 0 };
 
@@ -129,6 +129,28 @@ export default function BookSession() {
         }
     };
 
+    const timeInterval = async (secs) => {
+        if (!isConnected || !characteristic) {
+            setMessage("Make sure device is connected.");
+            setErrorHandler(true);
+            return;
+        }
+        const plainText = currentChunkObj.part.toLowerCase().replace(/[^a-z]/g, '');
+        if (!plainText) return;
+        try {
+            const data = new TextEncoder().encode(plainText + "|" + secs + "\n");
+            if (characteristic.properties?.writeWithoutResponse) {
+                await characteristic.writeValueWithoutResponse(data);
+            } else {
+                await characteristic.writeValue(data);
+            }
+        } catch (err) {
+            console.error("Send error:", err);
+            setMessage("Failed to send data to device.");
+            setErrorHandler(true);
+        }
+    };
+
     const endSession = async () => {
         clearInterval(intervalId);
         const BookReadData = {
@@ -192,13 +214,18 @@ export default function BookSession() {
                                 <input
                                     type="range"
                                     id="my-range-slider"
-                                    min="1"
-                                    max="10"
-                                    value={brailleSpeed}
-                                    onChange={(e) => setBrailleSpeed(e.target.value)}
+                                    min="500"
+                                    max="5000"
+                                    step="50"
+                                    value={brailleSeconds}
+                                    onChange={(e) => {
+                                        const value = Number(e.target.value);
+                                        setBrailleSeconds(value);
+                                        timeInterval(value);
+                                    }}
                                 />
                                 <label>
-                                    Current Speed: {brailleSpeed}
+                                    Current Speed: {brailleSeconds}
                                 </label>
                                 <button className='speed-btn' onClick={toggleSpeedModal}>Close</button>
                             </div>
