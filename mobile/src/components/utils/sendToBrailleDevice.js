@@ -22,7 +22,7 @@ export const useSendToBrailleDevice = () => {
       await connectedDevice.discoverAllServicesAndCharacteristics();
 
       // Encode to Base64
-      const base64Data = Buffer.from(text+"."+brailleSeconds+"\n", "utf-8").toString("base64");
+      const base64Data = Buffer.from(text+"|"+brailleSeconds+".", "utf-8").toString("base64");
 
       // ✅ Use writeWithoutResponse (AT-09/HM-10 requirement)
       try {

@@ -264,7 +264,7 @@ return (
                 maximumTrackTintColor="#ccc"
                 thumbTintColor="#007bff"
               />
-              <Text style={styles.sliderValue}>{brailleSeconds.toFixed(1)} seconds</Text>
+              <Text style={styles.sliderValue}>{(brailleSeconds / 1000).toFixed(2)} seconds</Text>
             </View>
 
           <TouchableOpacity style={styles.disconnectButton} onPress={disconnectDevice}>

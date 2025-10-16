@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Brailliant",
-    "slug": "Brailliant",
+    "slug": "brailliant",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/brailliant_icon.png",
@@ -16,7 +16,7 @@
       "supportsTablet": true
     },
     "android": {
-      "icon":"./assets/brailliant_icon.png",
+      "icon": "./assets/brailliant_icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/brailliant_adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -29,8 +29,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "f2ca34e3-1c5a-46bf-9adf-d843904b77a9"
+        "projectId": "3cb80db1-5c8d-4c1c-bd1e-0c27d2e0f996"
       }
-    }
+    },
+    "owner": "kuroneko000"
   }
 }
