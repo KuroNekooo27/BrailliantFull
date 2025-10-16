@@ -23,9 +23,13 @@ export default function TextToBraille() {
 
     const [uploadModal, setUploadModal] = useState(false);
     const [file, setFile] = useState(null);
+    const [speedModal, setSpeedModal] = useState(false);
 
     const [errorHandler, setErrorHandler] = useState(false);
     const [message, setMessage] = useState('');
+
+    const [brailleSeconds, setBrailleSeconds] = useState(1750);
+
 
     // const toArduino = async () => {
     //     if (!isConnected || !characteristic) {
@@ -56,7 +60,7 @@ export default function TextToBraille() {
         if (!plainText) return;
 
         try {
-            const data = new TextEncoder().encode(plainText + "\n");
+            const data = new TextEncoder().encode(plainText + "|" + brailleSeconds + "\n");
 
             if (characteristic.properties?.writeWithoutResponse) {
                 await characteristic.writeValueWithoutResponse(data);
@@ -149,6 +153,7 @@ export default function TextToBraille() {
     };
 
     const toggleErrorHandlerModal = () => setErrorHandler(!errorHandler);
+    const toggleSpeedModal = () => setSpeedModal(!speedModal);
 
     return (
         <div className='container'>
@@ -175,6 +180,33 @@ export default function TextToBraille() {
                             <button className='convert-btn' onClick={handleConvertToBrf}>
                                 Convert to BRF
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {speedModal && (
+                <div className='speed-modal'>
+                    <div className='speed-overlay'>
+                        <div className='speed-modal-content'>
+                            <div className='speed'>
+                                <label className='speed-head'>Adjust Braille Speed</label>
+                                <input
+                                    type="range"
+                                    id="my-range-slider"
+                                    min="500"
+                                    max="5000"
+                                    step="50"
+                                    value={brailleSeconds}
+                                    onChange={(e) => {
+                                        const value = Number(e.target.value);
+                                        setBrailleSeconds(value);
+                                    }}
+                                />
+                                <label>
+                                    Current Speed: {brailleSeconds}
+                                </label>
+                                <button className='speed-btn' onClick={toggleSpeedModal}>Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>
