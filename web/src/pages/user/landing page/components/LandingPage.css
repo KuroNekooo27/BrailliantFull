@@ -15,7 +15,6 @@
 
 
 .landing-page-header {
-    width: 100%;
     height: 50px;
     padding: 50px;
     display: flex;
@@ -31,7 +30,6 @@
 
 
 .sign-in-btn {
-    margin-right: 150px;
     border: none;
     color: white;
     background-color: #101734;
@@ -47,7 +45,6 @@
 
 .landing-page-body {
     width: 100%;
-    height: 100vh;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

@@ -8,7 +8,6 @@ const getReadsPerSection = async (req, res) => {
     try {
         const userId = req.params.id;
         const result = await BookRead.aggregate([
-            // Join BookRead → Student
             {
                 $lookup: {
                     from: 'students',
@@ -19,7 +18,6 @@ const getReadsPerSection = async (req, res) => {
             },
             { $unwind: '$student' },
 
-            // Join Student → Section
             {
                 $lookup: {
                     from: 'sections',
@@ -30,14 +28,12 @@ const getReadsPerSection = async (req, res) => {
             },
             { $unwind: '$section' },
 
-            // ✅ Filter by section_instructor = userId
             {
                 $match: {
                     'section.section_instructor': new mongoose.Types.ObjectId(userId)
                 }
             },
 
-            // Group by section
             {
                 $group: {
                     _id: '$section._id',
@@ -46,7 +42,6 @@ const getReadsPerSection = async (req, res) => {
                 }
             },
 
-            // Sort descending by reads
             { $sort: { totalReads: -1 } }
         ]);
 
@@ -63,7 +58,7 @@ const getTopBooksWithAvgTime = async (req, res) => {
         const result = await BookRead.aggregate([
             {
                 $group: {
-                    _id: "$book_read_title",  // group by title string
+                    _id: "$book_read_title",  
                     book_count: { $sum: 1 },
                     avg_time: { $avg: "$book_read_time_elapsed" }
                 }
@@ -71,12 +66,12 @@ const getTopBooksWithAvgTime = async (req, res) => {
             {
                 $lookup: {
                     from: "books",
-                    localField: "_id",        // the grouped title
-                    foreignField: "book_title", // match against Book.book_title
+                    localField: "_id",       
+                    foreignField: "book_title", 
                     as: "book"
                 }
             },
-            { $unwind: "$book" },  // ensures only existing books remain
+            { $unwind: "$book" }, 
             { $sort: { book_count: -1 } },
             { $limit: 5 },
             {
@@ -106,14 +101,12 @@ const getSectionParticipation = async (req, res) => {
         const userId = req.params.id;
 
         const result = await Section.aggregate([
-            // 1. Match sections owned by this instructor
             {
                 $match: {
                     section_instructor: new mongoose.Types.ObjectId(userId),
                 },
             },
 
-            // 2. Attach students
             {
                 $lookup: {
                     from: "students",
@@ -123,7 +116,6 @@ const getSectionParticipation = async (req, res) => {
                 },
             },
 
-            // 3. Attach reads
             {
                 $lookup: {
                     from: "bookreads",
@@ -133,7 +125,6 @@ const getSectionParticipation = async (req, res) => {
                 },
             },
 
-            // 4. Calculate participation per section
             {
                 $project: {
                     section_name: 1,
@@ -162,7 +153,6 @@ const getSectionParticipation = async (req, res) => {
                 },
             },
 
-            // 5. Average across all sections
             {
                 $group: {
                     _id: null,
@@ -170,16 +160,14 @@ const getSectionParticipation = async (req, res) => {
                 },
             },
 
-            // 6. Return just the number (not an array)
             {
                 $project: {
                     _id: 0,
-                    avgParticipation: { $round: ["$avgParticipation", 2] }, // round to 2 decimals
+                    avgParticipation: { $round: ["$avgParticipation", 2] }, 
                 },
             },
         ]);
 
-        // Send single number instead of array
         res.json(result.length > 0 ? result[0].avgParticipation : 0);
     } catch (err) {
         res.status(500).json({ error: "Server error" });
@@ -188,7 +176,7 @@ const getSectionParticipation = async (req, res) => {
 
 
 const formatTime = (secs) => {
-    secs = Math.floor(secs); // ensure no decimals
+    secs = Math.floor(secs); 
     const h = String(Math.floor(secs / 3600)).padStart(2, "0");
     const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "0");
     const s = String(secs % 60).padStart(2, "0");
@@ -205,13 +193,11 @@ const summarizeBookProgress = async (req, res) => {
             return res.status(400).json({ error: "No student_id provided" });
         }
 
-        // 1️⃣ Find student to confirm existence
         const student = await Student.findById(student_id);
         if (!student) {
             return res.status(404).json({ error: "Student not found" });
         }
 
-        // 2️⃣ Fetch reading records in chronological order
         const bookReads = await BookRead.find({
             book_read_student_id: new mongoose.Types.ObjectId(student_id),
         }).sort({ book_read_date: 1 });
@@ -220,12 +206,10 @@ const summarizeBookProgress = async (req, res) => {
             return res.status(404).json({ error: "No reading data found for this student" });
         }
 
-        // 3️⃣ Collect times
         const times = bookReads.map(r => r.book_read_time_elapsed);
         const totalTime = times.reduce((a, b) => a + b, 0);
         const avgTime = totalTime / times.length;
 
-        // 4️⃣ Trend analysis with "first book" check
         let trendMessage = "Performance data is not available.";
         if (times.length === 1) {
             trendMessage = "This is the student's first recorded book, no trend can be determined yet.";
@@ -242,7 +226,6 @@ const summarizeBookProgress = async (req, res) => {
             }
         }
 
-        // 5️⃣ Build summary
         const summary = `
 The student has read ${bookReads.length} book(s). \n
 Total reading time: ${formatTime(totalTime)} \n
@@ -250,11 +233,9 @@ Average reading time per book: ${formatTime(avgTime)} \n
 ${trendMessage}
         `.trim();
 
-        // 6️⃣ Save summary into student.student_analytics
         student.student_analytics = summary;
         await student.save();
 
-        // 7️⃣ Respond back
         return res.json({
             status: "ok",
             student_id,

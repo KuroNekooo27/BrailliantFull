@@ -19,22 +19,18 @@ const findAllStudent = (req, res) => {
 
 const deleteBookReadWithMissingStudents = async (req, res) => {
     try {
-        // Step 1: Get all existing student _ids
         const allStudents = await Student.find({}, '_id');
         const studentIds = allStudents.map(student => student._id.toString());
 
-        // Step 2: Get all BookRead records
         const allBookReads = await BookRead.find({}, 'book_read_student_id');
         const bookReadIds = allBookReads.map(book => book.book_read_student_id.toString());
 
-        // Step 3: Identify bookRead records with student IDs not existing in Student
         const invalidBookReadIds = bookReadIds.filter(id => !studentIds.includes(id));
 
         if (invalidBookReadIds.length === 0) {
             return res.json({ message: 'No invalid BookRead records found.' });
         }
 
-        // Step 4: Delete BookRead records with invalid student references
         const result = await BookRead.deleteMany({
             book_read_student_id: { $in: invalidBookReadIds }
         });
@@ -109,7 +105,7 @@ const generateUniqueStudentId = async () => {
     let exists = true;
 
     while (exists) {
-        const randomDigits = Math.floor(100000 + Math.random() * 900000); // 6 digits
+        const randomDigits = Math.floor(100000 + Math.random() * 900000); 
         studentId = `${year}-${randomDigits}`;
         const existingStudent = await Student.findOne({ student_id: studentId });
         exists = !!existingStudent;

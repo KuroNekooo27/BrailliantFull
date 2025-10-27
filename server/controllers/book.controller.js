@@ -7,7 +7,6 @@ const pdfParse = require('pdf-parse');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('../config/cloudinary.config');
 
-// Cloudinary storage for images
 const imageStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
@@ -18,7 +17,6 @@ const imageStorage = new CloudinaryStorage({
     }
 });
 
-// Cloudinary storage for PDF files
 const fileStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
@@ -31,13 +29,11 @@ const fileStorage = new CloudinaryStorage({
     }
 });
 
-// Middlewares
 const bookImageMiddleware = multer({ storage: imageStorage }).single('bookImage');
 const bookFileMiddleware = multer({ storage: fileStorage }).single('bookFile');
 
 
 
-// ---------- CONTROLLERS ----------
 const uploadBookFile = async (req, res) => {
     try {
         const fileUrl = req.file.path;
