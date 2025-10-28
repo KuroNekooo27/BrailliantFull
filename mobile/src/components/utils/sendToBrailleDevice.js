@@ -10,6 +10,7 @@ const FALLBACK_CHARACTERISTIC_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
  */
 export const useSendToBrailleDevice = () => {
   const { connectedDevice } = useDevice();
+  const { brailleSeconds } = useDevice();
 
   const sendToBrailleDevice = async (text) => {
     try {
@@ -21,7 +22,7 @@ export const useSendToBrailleDevice = () => {
       await connectedDevice.discoverAllServicesAndCharacteristics();
 
       // Encode to Base64
-      const base64Data = Buffer.from(text+".", "utf-8").toString("base64");
+      const base64Data = Buffer.from(text+"|"+brailleSeconds+".", "utf-8").toString("base64");
 
       // ✅ Use writeWithoutResponse (AT-09/HM-10 requirement)
       try {
