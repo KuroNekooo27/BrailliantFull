@@ -56,27 +56,22 @@ app.post("/upload-pdf-to-brf", upload.single("file"), async (req, res) => {
     const pdfPath = req.file.path;
     const pdfOriginalName = path.parse(req.file.originalname).name;
 
-    // extract text from PDF
     const pdfBuffer = fs.readFileSync(pdfPath);
     const data = await pdfParse(pdfBuffer);
     const text = data.text;
 
     const brfFilePath = `output_${Date.now()}.brf`;
 
-    // use lou_translate with forward translation and English Grade 2 table
-    const table = "/usr/share/liblouis/tables/en-us-g2.ctb"; // adjust path if needed
+    const table = "/usr/share/liblouis/tables/en-us-g2.ctb"; 
     const child = spawn("lou_translate", ["--forward", table]);
 
-    // pipe stdout to file
     const outputStream = fs.createWriteStream(brfFilePath);
     child.stdout.pipe(outputStream);
 
-    // pipe stderr for debugging
     child.stderr.on("data", (data) => {
       console.error("lou_translate error:", data.toString());
     });
 
-    // write text to stdin
     child.stdin.write(text);
     child.stdin.end();
 

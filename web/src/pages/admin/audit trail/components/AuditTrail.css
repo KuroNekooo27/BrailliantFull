@@ -4,6 +4,7 @@
 
 .admin-content-request {
     padding: 40px;
+    box-sizing: border-box;
 }
 
 
@@ -104,8 +105,6 @@
     overflow-y: auto;
     background-color: #f1f0ff;
     border-radius: 20px;
-    margin-bottom: 20px;
-
 }
 
 .admin-cr-table {

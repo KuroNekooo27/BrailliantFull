@@ -8,12 +8,11 @@ const testconnection = (req, res) => {
     res.json({ status: "Okay connection" })
 }
 
-// Setup for profile image upload
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'user_images', // Folder in Cloudinary
+        folder: 'user_images', 
         allowed_formats: ['jpg', 'png', 'jpeg'],
     }
 });
@@ -23,9 +22,7 @@ const uploadProfileIconMiddleware = multer({ storage: storage }).single('image')
 //const uploads = multer({ storage: storages });
 //const uploadProfileIconMiddleware = uploads.single('image');
 
-// Controller function
 
-// Web Image upload
 const uploadProfileIcon = async (req, res) => {
     try {
         const imageUrl = req.file.secure_url || req.file.path || req.file.url;
@@ -45,14 +42,12 @@ const uploadProfileIcon = async (req, res) => {
 const uploadProfileIconMobile = async (req, res) => {
     try {
         const { image, type } = req.body;
-        // `image` = base64 string or file URI
-        // `type` = optional mime type ("image/jpeg")
+     
 
         if (!image) {
             return res.status(400).json({ status: 'error', message: 'No image provided' });
         }
 
-        // Upload directly to Cloudinary
         const uploadResponse = await cloudinary.uploader.upload(image, {
             folder: 'user_images',
             resource_type: "image"
@@ -101,7 +96,7 @@ const createUser = async (req, res) => {
         const currentYear = new Date().getFullYear();
 
         while (!isUnique) {
-            const randomDigits = Math.floor(100000 + Math.random() * 900000); // 6 digits
+            const randomDigits = Math.floor(100000 + Math.random() * 900000);
             user_id = `${currentYear}-${randomDigits}`;
 
             const existingUser = await User.findOne({ user_id });
@@ -115,7 +110,7 @@ const createUser = async (req, res) => {
 
         const newUser = await User.create({
             ...rest,
-            user_id, // include the generated ID
+            user_id,
             user_password: hashedPassword
         });
 

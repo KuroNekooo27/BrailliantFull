@@ -2,9 +2,9 @@ const fs = require('fs');
 const path = require('path');
 
 const convertTextToBrf = async (req, res) => {
-  const { text } = req.body; // or extracted from PDF
+  const { text } = req.body; 
   try {
-    const tableSpec = "en-us-brf.dis"; // output BRF standard table
+    const tableSpec = "en-us-brf.dis"; 
     const braille = liblouis.translateString(tableSpec, text);
     const filename = `output-${Date.now()}.brf`;
     const filePath = path.join(__dirname, '..', 'files', filename);s

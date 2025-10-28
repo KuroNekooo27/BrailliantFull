@@ -53,7 +53,6 @@ const handleCredentials = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Try Admin first
         const adminRaw = await Admin.findOne({ admin_email: email });
         if (adminRaw) {
             const isMatch = await bcrypt.compare(password, adminRaw.admin_password);
@@ -67,7 +66,6 @@ const handleCredentials = async (req, res) => {
             return res.json({ status: 'ok match cla', requiresOtp, role: 'admin' });
         }
 
-        // Try User next
         const userRaw = await User.findOne({ user_email: email });
         if (!userRaw) {
             return res.status(401).json({ message: 'Invalid user credentials' });
